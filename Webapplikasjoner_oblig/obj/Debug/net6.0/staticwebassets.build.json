@@ -1,11 +1,54 @@
 {
   "Version": 1,
-  "Hash": "AezrPMLl1zq4lrbUS03Wr5xEjEyR7ubEenOpJ9s3SbY=",
+  "Hash": "tQ5+VexRF/dL2b9xzLPgVIL5Y/U4v01+aBXrsGoyY2I=",
   "Source": "Webapplikasjoner_oblig",
   "BasePath": "_content/Webapplikasjoner_oblig",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "Webapplikasjoner_oblig\\wwwroot",
+      "Source": "Webapplikasjoner_oblig",
+      "ContentRoot": "C:\\Users\\awet0\\Documents\\ITP3200\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\wwwroot\\",
+      "BasePath": "_content/Webapplikasjoner_oblig",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\awet0\\Documents\\ITP3200\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\wwwroot\\index.html",
+      "SourceId": "Webapplikasjoner_oblig",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\awet0\\Documents\\ITP3200\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\wwwroot\\",
+      "BasePath": "_content/Webapplikasjoner_oblig",
+      "RelativePath": "index.html",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\index.html"
+    },
+    {
+      "Identity": "C:\\Users\\awet0\\Documents\\ITP3200\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\wwwroot\\js\\index.js",
+      "SourceId": "Webapplikasjoner_oblig",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\awet0\\Documents\\ITP3200\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\wwwroot\\",
+      "BasePath": "_content/Webapplikasjoner_oblig",
+      "RelativePath": "js/index.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\index.js"
+    }
+  ]
 }
