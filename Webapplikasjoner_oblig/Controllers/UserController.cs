@@ -8,8 +8,9 @@ namespace Webapplikasjoner_oblig.Controllers
     [Route("[controller]/[action]")]
     public class UserController : ControllerBase
     {
-        private readonly UserRepository _tradingContext;
-        public UserController(UserRepository tradingContext)
+
+        private readonly IUserRepository _tradingContext;
+        public UserController(IUserRepository tradingContext)
         {
             _tradingContext = tradingContext;
         }
