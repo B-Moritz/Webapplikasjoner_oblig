@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL

@@ -1,4 +1,9 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.DAL;
 using Webapplikasjoner_oblig.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +15,7 @@ namespace Webapplikasjoner_oblig.Controllers
     {
 
         private readonly IUserRepository _tradingContext;
+
         public UserController(IUserRepository tradingContext)
         {
             _tradingContext = tradingContext;
