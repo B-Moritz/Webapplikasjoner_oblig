@@ -246,6 +246,16 @@
         "build": {
           "buildTransitive/netcoreapp3.1/_._": {}
         }
+      },
+      "AlphaVantageInterface/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "compile": {
+          "bin/placeholder/AlphaVantageInterface.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/AlphaVantageInterface.dll": {}
+        }
       }
     }
   },
@@ -572,10 +582,16 @@
         "system.runtime.compilerservices.unsafe.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "AlphaVantageInterface/1.0.0": {
+      "type": "project",
+      "path": "../AlphaVantageInterface/AlphaVantageInterface.csproj",
+      "msbuildProject": "../AlphaVantageInterface/AlphaVantageInterface.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
+      "AlphaVantageInterface >= 1.0.0",
       "Microsoft.EntityFrameworkCore >= 6.0.9"
     ]
   },
@@ -605,7 +621,11 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\AlphaVantageInterface\\AlphaVantageInterface.csproj": {
+              "projectPath": "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\AlphaVantageInterface\\AlphaVantageInterface.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
