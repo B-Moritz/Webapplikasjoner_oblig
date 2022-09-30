@@ -26,30 +26,8 @@ namespace AlphaVantageInterface {
         {
             this._apiKey = apiKey;
             this._isLimited = isLimited;
-
-            updateInfoCache();
-        }
-
-        private async Task<InfoCache> readInfoFile() 
-        {
-            Stream infoFileStream = File.OpenRead(_apiKeyInfoPath);
-            InfoCache? info = await JsonSerializer.DeserializeAsync<InfoCache>(infoFileStream);
-            infoFileStream.Dispose();
-
-            if (info is null) {
-                // Write to file and return a custom info object
-                InfoCache custom = new InfoCache {
-                    Today = DateTime.Today,
-                    CallCounter = this.CallCounter
-                };
-
-                // Write the custom infoCache to file
-                await writeInfoFile(custom);
-
-                return custom;
-            }
-
-            return info;
+            // Load the InfoCache, verify that the date is correct and that another api call is possible.
+            verifyInfoCache();
         }
 
         private async Task<bool> writeInfoFile() 
@@ -94,7 +72,8 @@ namespace AlphaVantageInterface {
             string function = "SYMBOL_SEARCH";
             string searchUri = $"{_baseUri}function={function}&keywords={keyword}&apikey={_apiKey}";
 
-            // Increment counter and update infoCache
+            // Verify that antother api call is possible
+            verifyInfoCache();
 
             Stream resp = await cli.GetStreamAsync(searchUri);
 
@@ -134,25 +113,17 @@ namespace AlphaVantageInterface {
                 this.CallCounter = addCounter;
             }     
             else {
-                if (DateTime.Today.Date == curInfo.Today.AddDays(1).Date) 
-                {
-                    // The last call was yesterday. Set call counter to 0
-                    this.CallCounter = addCounter;
-                    curInfo.CallCounter = addCounter;
-                    this.DateOfLatstApiCall = DateTime.Today;
-                    curInfo.Today = DateTime.Today;
-                } else {                
-                    this.CallCounter += addCounter;
-                }
+                cleanInfoCache(curInfo);               
 
                 if (curInfo.CallCounter >= AlphaVantageConnection.CallLimitDaily) {
                     // Close file with no writing:
                     curInfoStream.Dispose();
-                    throw new Exception($"The number of calls today ({curInfo.Today.ToString()}) have reached the limit");
-                } else {
-                    curInfo.CallCounter += addCounter;
+                    throw new AlphaVantageApiCallNotPossible($"The number of calls today ({curInfo.Today.ToString()}) have reached the limit");
                 }
             }
+
+            this.CallCounter += addCounter;
+            curInfo.CallCounter += addCounter;
             // Write to file
             await JsonSerializer.SerializeAsync<InfoCache>(curInfoStream, curInfo);
             curInfoStream.Dispose();
@@ -160,7 +131,68 @@ namespace AlphaVantageInterface {
             return true;
         }
 
-        
+        private async Task<InfoCache> readInfoFile() 
+        {
+            InfoCache? info;
+            Stream infoFileStream;
+            try {
+                infoFileStream = File.OpenRead(_apiKeyInfoPath);
+                info = await JsonSerializer.DeserializeAsync<InfoCache>(infoFileStream);
+            } catch (FileNotFoundException e) 
+            {
+                // Create the infoCache file
+                infoFileStream =  File.Create(_apiKeyInfoPath);
+                info = null;
+            }
+            
+            if (info is null) {
+                // Write to file and return a custom info object
+                InfoCache custom = new InfoCache {
+                    Today = DateTime.Today,
+                    CallCounter = this.CallCounter
+                };
+                // Write the custom infoCache to file
+                await JsonSerializer.SerializeAsync<InfoCache>(infoFileStream, custom);
+                infoFileStream.Dispose();
+                return custom;
+            }
+            infoFileStream.Dispose();
+            return info;
+        }
+
+        private void cleanInfoCache(InfoCache curInfo)
+        {
+            if (DateTime.Today.Date == curInfo.Today.AddDays(1).Date) 
+                {
+                    // The last call was yesterday. Set call counter to 0
+                    this.CallCounter = 0;
+                    curInfo.CallCounter = 0;
+                    this.DateOfLatstApiCall = DateTime.Today;
+                    curInfo.Today = DateTime.Today;
+                }
+        }
+
+        private async void verifyInfoCache()
+        {
+            InfoCache curInfo = await readInfoFile();
+            // Make sure that call counter is from today
+            cleanInfoCache(curInfo);
+
+            if (curInfo.CallCounter >= AlphaVantageConnection.CallLimitDaily) {
+                throw new AlphaVantageApiCallNotPossible($"The number of calls today ({curInfo.Today.ToString()}) have reached the limit");
+            }
+        }
+    }
+
+    public class AlphaVantageApiCallNotPossible : Exception
+    {
+        // Defining custom exceptions: 
+        // https://learn.microsoft.com/en-us/dotnet/standard/exceptions/how-to-create-user-defined-exceptions
+        public AlphaVantageApiCallNotPossible() {}
+
+        public AlphaVantageApiCallNotPossible(string msg) : base(msg) {}
+
+        public AlphaVantageApiCallNotPossible(string msg, Exception inner) : base(msg, inner) {}
     }
 }
 
