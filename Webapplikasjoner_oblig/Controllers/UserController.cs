@@ -21,12 +21,11 @@ namespace Webapplikasjoner_oblig.Controllers
             _tradingContext = tradingContext;
         }
 
-
-        // ...
         public async Task<bool> Lagre(User innKunde)
         {
             return await _tradingContext.Lagre(innKunde);
         }
+
         public async Task<List<User>> HentAlle()
         {
             return await _tradingContext.HentAlle();
@@ -43,5 +42,7 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             return await _tradingContext.Endre(changeUser);
         }
+
+
     }
 }
