@@ -4,15 +4,13 @@ namespace AlphaVantageInterface.Models {
 
     public class SearchResult 
     {
-        public int Id {get; set;}
-
         [JsonPropertyName("bestMatches")]
         public List<Stock>? BestMatches {get; set;}
 
 
         override public string ToString() 
         {
-            string outString = $"Search Result nr: {this.Id}\n";
+            string outString = "Search Result: \n";
             
             if (BestMatches == null)  {
                 return "The search result is empy";
