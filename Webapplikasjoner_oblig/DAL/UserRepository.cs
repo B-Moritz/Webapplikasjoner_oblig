@@ -147,13 +147,34 @@ namespace Webapplikasjoner_oblig.DAL
                 return false;
             }
         }
-
+        /*
         public async Task<User> HentEn(int id)
         {
             try
             {
                 User enUser = await _tradingContext.Users.FindAsync(id);
                 return enUser;
+            }
+            catch
+            {
+                return null;
+            }
+        }*/
+
+        public async Task<User> HentEn(int id)
+        {
+            try
+            {
+                User enUser = await _tradingContext.Users.FindAsync(id);
+                var hentetKunde = new User()
+                {
+                    Id = enUser.Id,
+                    Name = enUser.Name,
+                    LastName = enUser.LastName,
+                    Email = enUser.Email,
+                    Password = enUser.Password
+                };
+                return hentetKunde;
             }
             catch
             {
