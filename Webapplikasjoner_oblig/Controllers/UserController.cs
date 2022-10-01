@@ -14,16 +14,16 @@ namespace Webapplikasjoner_oblig.Controllers
     public class UserController : ControllerBase
     {
 
-        private readonly IUserRepository _tradingContext;
+        private readonly UserRepository _tradingContext;
 
-        public UserController(IUserRepository tradingContext)
+        public UserController(UserRepository tradingContext)
         {
             _tradingContext = tradingContext;
         }
 
-        public async Task<bool> Lagre(User innKunde)
+        public async Task<bool> Lagre(User innUser)
         {
-            return await _tradingContext.Lagre(innKunde);
+            return await _tradingContext.Lagre(innUser);
         }
 
         public async Task<List<User>> HentAlle()

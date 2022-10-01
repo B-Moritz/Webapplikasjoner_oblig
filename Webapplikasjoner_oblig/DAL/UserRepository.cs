@@ -16,6 +16,8 @@ namespace Webapplikasjoner_oblig.DAL
         {
             _tradingContext = tradingContext;
         }
+
+        /*
         public async Task<bool> Lagre(User innKunde)
         {
             try
@@ -98,16 +100,16 @@ namespace Webapplikasjoner_oblig.DAL
             var endreObjekt = await _tradingContext.Users.FindAsync(endreKunde.Id);
             if (endreObjekt.Email)
         }
-
+        */
 
 
         // .....
-        /*
-        public async Task<bool> Lagre(User innKunde)
+       
+        public async Task<bool> Lagre(User innUser)
         {
             try
             {
-                _tradingContext.Users.Add(innKunde);
+                _tradingContext.Users.Add(innUser);
                 await _tradingContext.SaveChangesAsync();
                 return true;
             }
@@ -122,8 +124,8 @@ namespace Webapplikasjoner_oblig.DAL
         {
             try
             {
-                List<User> alleKundene = await _tradingContext.Users.ToList(); // hent hele tabellen
-                return alleKundene;
+                List<User> allUsers = await _tradingContext.Users.ToListAsync(); // hent hele tabellen
+                return allUsers;
             }
             catch
             {
@@ -131,13 +133,13 @@ namespace Webapplikasjoner_oblig.DAL
             }
         }
 
-        public bool Slett(int id)
+        public async Task<bool> Delete(int id)
         {
             try
             {
-                User enKunde = _tradingContext.Users.Find(id);
-                _tradingContext.Users.Remove(enKunde);
-                _tradingContext.SaveChanges();
+                User enUser = await _tradingContext.Users.FindAsync(id);
+                _tradingContext.Users.Remove(enUser);
+                await _tradingContext.SaveChangesAsync();
                 return true;
             }
             catch
@@ -146,12 +148,12 @@ namespace Webapplikasjoner_oblig.DAL
             }
         }
 
-        public User HentEn(int id)
+        public async Task<User> HentEn(int id)
         {
             try
             {
-                User enKunde = _tradingContext.Users.Find(id);
-                return enKunde;
+                User enUser = await _tradingContext.Users.FindAsync(id);
+                return enUser;
             }
             catch
             {
@@ -159,14 +161,16 @@ namespace Webapplikasjoner_oblig.DAL
             }
         }
 
-        public bool Endre(User endreKunde)
+        public async Task<bool> Endre(User changeUser)
         {
             try
             {
-                User enKunde = _tradingContext.Users.Find(endreKunde.Id);
-                enKunde.Name = endreKunde.Name;
-                enKunde.LastName = endreKunde.LastName;
-                _tradingContext.SaveChanges();
+                User enUser = await _tradingContext.Users.FindAsync(changeUser.Id);
+                enUser.Name = changeUser.Name;
+                enUser.LastName = changeUser.LastName;
+                enUser.Email = changeUser.Email;
+                enUser.Password = changeUser.Password;
+                await _tradingContext.SaveChangesAsync();
                 return true;
             }
             catch
@@ -174,12 +178,6 @@ namespace Webapplikasjoner_oblig.DAL
                 return false;
             }
         }
-        */
-
-
-
-
-
-        // .....
+       
     }
 }

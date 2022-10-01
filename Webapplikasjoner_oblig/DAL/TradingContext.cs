@@ -3,6 +3,7 @@ using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL
 {
+    /*
     public class Users
     {
         public int Id { get; set; }
@@ -13,7 +14,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         virtual public Users Users { get; set; }
 
-    }
+    }*/
 
     public class TradingContext : DbContext
     {
@@ -24,9 +25,9 @@ namespace Webapplikasjoner_oblig.DAL
             Database.EnsureCreated();
         }
 
-        public DbSet<StockDetails> stocks;
-        //public DbSet<User> users;
+        public DbSet<StockDetails> stocks { get; set; }
         public DbSet<User> Users { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
