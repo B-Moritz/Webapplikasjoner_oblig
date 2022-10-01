@@ -5,6 +5,7 @@ using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL
 {
+    /*
     public interface IUserRepository
     {
         Task<bool> Lagre(User innKunde);
@@ -13,5 +14,6 @@ namespace Webapplikasjoner_oblig.DAL
         Task<User> HentEn(int id);
         Task<bool> Endre(User changeUser);
     }
+    */
 }
 
