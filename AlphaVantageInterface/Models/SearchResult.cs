@@ -8,7 +8,7 @@ namespace AlphaVantageInterface.Models {
         public List<Stock>? BestMatches {get; set;}
 
 
-        override public string ToString() 
+        public override string ToString() 
         {
             string outString = "Search Result: \n";
             

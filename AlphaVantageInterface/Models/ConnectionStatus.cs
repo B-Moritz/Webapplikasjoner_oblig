@@ -8,7 +8,7 @@ namespace AlphaVantageInterface.Models {
 
         public bool IsLimited {get; set;}
 
-        override public string ToString() 
+        public override string ToString() 
         {
             string Out = String.Format("Alpha Vantage Connection Summary\n" + 
                                        "API key: {0} \n" + 

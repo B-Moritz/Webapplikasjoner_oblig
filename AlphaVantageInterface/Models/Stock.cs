@@ -10,7 +10,30 @@ namespace AlphaVantageInterface.Models {
         [JsonPropertyName("2. name")]
         public string? Name {get; set;}
 
-        override public string ToString() 
+        [JsonPropertyName("3. type")]
+        public string? Type {get; set;}
+
+        [JsonPropertyName("4. region:")]
+        public string? Region {get; set;}
+
+        [JsonPropertyName("5. marketOpen")]
+        public string? MarketOpen {get; set;}
+
+        [JsonPropertyName("6. marketClose")]
+        public string? MarketClose {get; set;}
+
+        [JsonPropertyName("7. timezone")]
+        public string? Timezone {get; set;}
+
+        [JsonPropertyName("8. currency")]
+        public string? Currency {get; set;}
+
+        [JsonPropertyName("9. matchScore")]
+        public float MatchScore {get; set;}
+
+        public StockQuote? StockQuoteObject {get; set;}
+
+        public override string ToString() 
         {
             if (Name == null) {
                 Name = "Not found";
