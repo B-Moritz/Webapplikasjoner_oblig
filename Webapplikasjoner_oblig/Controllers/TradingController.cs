@@ -12,6 +12,7 @@ namespace Webapplikasjoner_oblig.Controllers
         private readonly TradingContext _db;
         // private readonly ITradingRepository _db som det er i repository eksempel;
 
+
         public TradingController(TradingContext db)
         // public TradingController(ITradingRepository db)
         {
@@ -31,5 +32,6 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             return await _db.HentEnTrading(id);
         }
+
     }
 }
