@@ -26,7 +26,11 @@
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
-            "projectReferences": {}
+            "projectReferences": {
+              "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\AlphaVantageInterface\\AlphaVantageInterface.csproj": {
+                "projectPath": "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\AlphaVantageInterface\\AlphaVantageInterface.csproj"
+              }
+            }
           }
         },
         "warningProperties": {
