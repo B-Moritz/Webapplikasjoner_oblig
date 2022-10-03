@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj": {}
+    "C:\\Users\\Basti\\source\\repos\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj": {}
   },
   "projects": {
-    "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj": {
+    "C:\\Users\\Basti\\source\\repos\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj",
+        "projectUniqueName": "C:\\Users\\Basti\\source\\repos\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj",
         "projectName": "Webapplikasjoner_oblig",
-        "projectPath": "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj",
-        "packagesPath": "C:\\Users\\b-mor\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\b-mor\\OneDrive\\Documents\\Data ingeniør_1\\Webapplikasjoner\\prosjekter\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\obj\\",
+        "projectPath": "C:\\Users\\Basti\\source\\repos\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig.csproj",
+        "packagesPath": "C:\\Users\\Basti\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Basti\\source\\repos\\Webapplikasjoner_oblig\\Webapplikasjoner_oblig\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\b-mor\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Basti\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -40,6 +40,10 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "EntityFramework": {
+              "target": "Package",
+              "version": "[6.4.4, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[6.0.9, )"
@@ -64,7 +68,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }
