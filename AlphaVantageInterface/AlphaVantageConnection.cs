@@ -81,6 +81,7 @@ namespace AlphaVantageInterface {
             }
             
             // Create the StockQuote object:
+            // Documentation used: https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonelement?view=net-6.0
             StockQuote resultObject = new StockQuote {
                 Symbol = quoteTemp.GlobalQuote["01. symbol"].GetString(),
                 Open = double.Parse(quoteTemp.GlobalQuote["02. open"].GetString().Replace(".", ",")),

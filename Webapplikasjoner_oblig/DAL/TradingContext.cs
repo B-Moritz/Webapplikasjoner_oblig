@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL
@@ -31,6 +32,11 @@ namespace Webapplikasjoner_oblig.DAL
             // connect to sqlite database
             options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"));
         }
+
+        // det er det som kobler til databasen
+        public DbSet<StockDetail> stocks { get; set; }
+        public DbSet<User> Users { get; set; }
+
 
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Webapplikasjoner_oblig.Model
 {
-    public class StockDetails
+    public class StockDetail
     {
         public string Id { get; set; }
         public string StockName { get; set; }
