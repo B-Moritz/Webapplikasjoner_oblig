@@ -9,28 +9,25 @@ namespace Webapplikasjoner_oblig.Controllers
     [Route("[controller]/[action]")]
     public class TradingController
     {
-        private readonly TradingContext _db;
-        // private readonly ITradingRepository _db som det er i repository eksempel;
+        private readonly ITradingRepository _db;
 
-
-        public TradingController(TradingContext db)
-        // public TradingController(ITradingRepository db)
+        public TradingController(ITradingRepository db)
         {
             _db = db;
         }
-        public async Task<bool> Lagre(Trading innTrading)
+        public async Task<bool> SaveTrade(Trade innTrading)
         {
-            return await _db.Lagre(innTrading);
+            return await _db.SaveTradeAsync(innTrading);
         }
 
-        public async Task<List<Trading>> HentAlleTrading()
+        public async Task<List<Trade>> GetAllTrades()
         {
-            return await _db.HentAlleTrading();
+            return await _db.GetAllTradesAsync();
         }
 
-        public async Task<Trading> HentEnTrading(int id)
+        public async Task<Trade> HentEnTrading(int id)
         {
-            return await _db.HentEnTrading(id);
+            return await _db.GetOneTradeAsync(id);
         }
 
     }
