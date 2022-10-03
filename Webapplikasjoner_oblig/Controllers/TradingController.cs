@@ -8,6 +8,8 @@ namespace Webapplikasjoner_oblig.Controllers
     [Route("[controller]/[action]")]
     public class TradingController
     {
-       
+
+        // Tester
+
     }
 }

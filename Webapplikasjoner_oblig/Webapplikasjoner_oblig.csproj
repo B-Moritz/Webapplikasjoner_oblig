@@ -28,4 +28,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AlphaVantageInterface\AlphaVantageInterface.csproj" />
+  </ItemGroup>
+
 </Project>
