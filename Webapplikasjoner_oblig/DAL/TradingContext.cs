@@ -10,7 +10,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         public TradingContext(IConfiguration configuration)
         {
-            Configuration = configuration;
+           Configuration = configuration;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
