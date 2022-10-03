@@ -4,18 +4,7 @@ using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL
 {
-    /*
-    public class Users
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-
-        virtual public Users Users { get; set; }
-
-    }*/
+   
 
     public class TradingContext : DbContext
     {
@@ -27,6 +16,13 @@ namespace Webapplikasjoner_oblig.DAL
            Configuration = configuration;
         }
 
+
+        //Migrations microsoft tutorial 
+        //https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
+
+        //.net core web api microsoft tutorial
+        //https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-6.0&tabs=visual-studio
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sqlite database
@@ -36,7 +32,5 @@ namespace Webapplikasjoner_oblig.DAL
         // det er det som kobler til databasen
         public DbSet<StockDetail> stocks { get; set; }
         public DbSet<User> Users { get; set; }
-
-
-    }
+     }
 }

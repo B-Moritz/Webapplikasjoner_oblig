@@ -7,7 +7,7 @@ using System.Text;
 namespace Webapplikasjoner_oblig.Controllers
 {
     [Route("[controller]/[action]")]
-    public class TradingController
+    public class TradingController : ControllerBase
     {
         private readonly ITradingRepository _db;
 
