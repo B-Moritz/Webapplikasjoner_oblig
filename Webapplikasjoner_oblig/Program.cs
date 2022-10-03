@@ -4,9 +4,11 @@ using Webapplikasjoner_oblig.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
 
 builder.Services.AddDbContext<TradingContext>(options => options.UseSqlite("Name=WebApiDatabase"));
+
+builder.Services.AddScoped<ITradingRepository, TradingRepository>();
 
 var app = builder.Build();
 
