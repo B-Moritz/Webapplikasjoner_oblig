@@ -16,7 +16,7 @@ namespace Webapplikasjoner_oblig.DAL.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
 
-            modelBuilder.Entity("Webapplikasjoner_oblig.Model.StockDetails", b =>
+            modelBuilder.Entity("Webapplikasjoner_oblig.Model.StockDetail", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
