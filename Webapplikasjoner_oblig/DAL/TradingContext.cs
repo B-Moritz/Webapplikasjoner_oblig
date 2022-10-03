@@ -18,20 +18,18 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class TradingContext : DbContext
     {
-       
+        protected readonly IConfiguration Configuration;
 
-        public TradingContext(DbContextOptions<TradingContext> options) : base(options)
+
+        public TradingContext(IConfiguration configuration)
         {
-            Database.EnsureCreated();
+           Configuration = configuration;
         }
 
-        public DbSet<StockDetails> stocks { get; set; }
-        public DbSet<User> Users { get; set; }
-
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            optionsBuilder.UseLazyLoadingProxies();
+            // connect to sqlite database
+            options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"));
         }
 
     }
