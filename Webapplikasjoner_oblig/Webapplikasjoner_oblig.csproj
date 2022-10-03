@@ -32,4 +32,7 @@
     <ProjectReference Include="..\AlphaVantageInterface\AlphaVantageInterface.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Microsoft.EntityFrameworkCore.Proxies" />
+  </ItemGroup>
 </Project>
