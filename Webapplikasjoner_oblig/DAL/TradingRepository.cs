@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Webapplikasjoner_oblig.Model;
@@ -20,9 +21,9 @@ namespace Webapplikasjoner_oblig.DAL
                 var nyTradingRad = new Trade()
                 {
                     Id = innTrading.Id,
-                    StockName = innTrading.StockName,
+                    StockSymbol = innTrading.StockSymbol,
                     Date = innTrading.Date,
-                    User = innTrading.User
+                    UserId = innTrading.Id
                 };
 
                 _db.Trades.Add(nyTradingRad);
@@ -45,9 +46,9 @@ namespace Webapplikasjoner_oblig.DAL
                 List<Trade> allTrades = await _db.Trades.Select(k => new Trade
                 {
                     Id = k.Id,
-                    StockName = k.StockName,
+                    StockSymbol = k.StockSymbol,
                     Date = k.Date,
-                    User = k.User
+                    UserId = k.UserId
 
                 }).ToListAsync();
                 return allTrades;
@@ -65,9 +66,9 @@ namespace Webapplikasjoner_oblig.DAL
             var hentetTrading = new Trade()
             {
                 Id = oneTrade.Id,
-                StockName = oneTrade.StockName,
+                StockSymbol = oneTrade.StockSymbol,
                 Date = oneTrade.Date,
-                User = oneTrade.User
+                UserId = oneTrade.UserId
 
             };
             return hentetTrading;

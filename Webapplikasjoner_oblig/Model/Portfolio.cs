@@ -2,5 +2,7 @@
 {
     public class Portfolio
     {
+        public Dictionary<int, string> Dic { get; set; }
+        public int Amount { get; set; }
     }
 }
