@@ -11,7 +11,6 @@ namespace AlphaVantageInterface {
     public class AlphaVantageConnection
     {
         private readonly string _apiKey;
-
         private readonly HttpClient _cli = new HttpClient();
         private bool IsLimited;
         private static readonly string _connectionStatusCache = "ConnectionStatusCache.json"; 

@@ -11,9 +11,15 @@ namespace Webapplikasjoner_oblig.Controllers
     {
         private readonly ITradingRepository _db;
 
-        public TradingController(ITradingRepository db)
+        private readonly IConfiguration _config;
+
+        public TradingController(ITradingRepository db, IConfiguration config)
         {
             _db = db;
+            // Adding configuration object that contains the appsettings.json content
+            _config = config;
+            // We can now access the AlphaVantage api key:
+            // string apiKey = _config["AlphaVantageApi:ApiKey"];
         }
         public async Task<bool> SaveTrade(Trade innTrading)
         {
