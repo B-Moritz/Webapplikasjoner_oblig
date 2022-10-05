@@ -35,6 +35,7 @@ namespace Webapplikasjoner_oblig.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
+            modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
         }
 
         // det er det som kobler til databasen
@@ -72,5 +73,44 @@ namespace Webapplikasjoner_oblig.DAL
 
         public DateTime SearchTimestamp {get; set;}
     }
+
+    public class Users
+    {
+
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+
+        public decimal FundsAvailable { get; set; }
+        public decimal Fundsspent { get; set; }
+    }
+
+    public class Trades
+    {
+        public int Id { get; set; }
+        public string StockSymbol { get; set; }
+        public DateTime Date { get; set; }
+
+        virtual public Stocks Symbol { get; set; }
+
+        virtual public Users UserId { get; set; }
+
+
+    }
+    //kommentar
+
+    public class StockOwnerships
+    {
+        virtual public Users UserId { get; set; }
+        virtual public Stocks Symbol { get; set; }
+
+        public int StockCount { get; set; }
+
+    }
+
+    
+
 
 }
