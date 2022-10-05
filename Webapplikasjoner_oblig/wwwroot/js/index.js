@@ -2,7 +2,7 @@
 
 function buyStock() {
     const innkjop = {
-        aksje: $("#stockBuy").val(),
+        aksjeInn: $("#stockBuy").val(),
     }
     const url = "Trading/BuyStock";
     $.post(url, innkjop, function (OK) {
@@ -16,7 +16,7 @@ function buyStock() {
 
 function sellStock() {
     const utsalg = {
-        aksje: $("#stockSell").val(),
+        aksjeUt: $("#stockSell").val(),
     }
     const url = "Trading/SellStock";
     $.post(url, utsalg, function (OK) {
@@ -30,7 +30,7 @@ function sellStock() {
 };
 
 function hentAlleAksjer() {
-    $.get("portfolio/hentAlleAksjer", function (stocks) {
+    $.get("Trading/GetPortfolio", function (stocks) {
         formaterPortfolio(stocks);
     });
 }
@@ -47,5 +47,5 @@ function formaterPortfolio(stocks) {
             "</tr>";
     }
     ut += "</table>";
-    $("#srivportfolio").html(ut);
+    $("#skrivportfolio").html(ut);
 }
