@@ -37,12 +37,14 @@ namespace Webapplikasjoner_oblig.DAL
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
+            modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StockSymbol, c.Timestamp });
+            modelBuilder.Entity<Favorites>().HasKey(c => new { c.UserId, c.Symbol });
         }
 
         // det er det som kobler til databasen
 
         public DbSet<Stocks> Stocks { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<Users> Users { get; set; }
 
         public DbSet<Trade> Trades { get; set; }
 
@@ -88,6 +90,7 @@ namespace Webapplikasjoner_oblig.DAL
         public decimal Fundsspent { get; set; }
     }
 
+
     public class Trades
     {
         public int Id { get; set; }
@@ -111,6 +114,29 @@ namespace Webapplikasjoner_oblig.DAL
 
     }
 
+    public class Favorites
+    {
+        virtual public Users UserId { get; set; }
+        virtual public Stocks Symbol { get; set; }
+
+    }
+
+    public class StockQuotes
+    {
+        virtual public Stocks StockSymbol { get; set; }
+        public DateTime Timestamp { get; set; }
+        public string? Symbol { get; set; }
+        public double Open { get; set; }
+        public double High { get; set; }
+        public double Low { get; set; }
+        public double Price { get; set; }
+        public int Volume { get; set; }
+        public string? LatestTradingDay { get; set; }
+        public double PreviousClose { get; set; }
+        public double Change { get; set; }
+        public string? ChangePercent { get; set; }
+
+    }
     
 
 
