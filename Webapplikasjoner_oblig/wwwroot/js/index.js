@@ -4,7 +4,7 @@ function buyStock() {
     const innkjop = {
         aksje: $("#stockBuy").val(),
     }
-    const url = "Trade/Buy";
+    const url = "Trading/BuyStock";
     $.post(url, innkjop, function (OK) {
         if (OK) {
             window.location.href = 'index.html';
@@ -18,7 +18,7 @@ function sellStock() {
     const utsalg = {
         aksje: $("#stockSell").val(),
     }
-    const url = "Trade/Sell";
+    const url = "Trading/SellStock";
     $.post(url, utsalg, function (OK) {
         if (OK) {
             window.location.href = 'index.html';
