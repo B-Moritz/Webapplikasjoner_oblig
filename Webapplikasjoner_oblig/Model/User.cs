@@ -1,6 +1,6 @@
 ﻿namespace Webapplikasjoner_oblig.Model
 {
-    public class Users
+    public class User
     {
 
         public int Id { get; set; }

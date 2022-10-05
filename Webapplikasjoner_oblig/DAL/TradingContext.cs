@@ -37,15 +37,23 @@ namespace Webapplikasjoner_oblig.DAL
         // https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations#configuring-a-primary-key
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Stocks>();
-            modelBuilder.Entity<Users>();
-            modelBuilder.Entity<Trades>();
-            modelBuilder.Entity<SearchResults>();
+            modelBuilder.Entity<Stocks>().HasMany(c => c.StockQuotes).WithOne(c => c.Stocks);//.HasMany().WithOne(c => c.Stocks );
+            modelBuilder.Entity<Stocks>().HasMany(c => c.StockOwnerships).WithOne(c => c.Stocks);
+       
+            modelBuilder.Entity<Users>().HasMany(c => c.StockOwnerships).WithOne(c => c.Users);//.HasMany(c => c.Trades).WithOne(c => c.Users );
+            modelBuilder.Entity<Users>().HasOne(c => c.Favorites).WithOne(c => c.Users);
+            modelBuilder.Entity<Trades>().HasOne(d => d.Stocks).WithMany(c => c.Trades);
+            modelBuilder.Entity<Trades>().HasOne(d => d.Users).WithMany(c => c.Trades);
 
-            modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
-            modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
-            modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StockSymbol, c.Timestamp });
-            modelBuilder.Entity<Favorites>().HasKey(c => new { c.UserId, c.Symbol });
+            modelBuilder.Entity<SearchResults>().HasMany(d => d.Stocks).WithMany(d => d.SearchResults);
+
+            //modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchResultsId, c.StocksId });
+            //modelBuilder.Entity<StockOccurances>().HasOne(d =>  d.Stocks ).HasOne(d => d.SearchResults).WithMany();
+
+            modelBuilder.Entity<StockOwnerships>();
+            modelBuilder.Entity<StockQuotes>();//.HasKey(c => new { c.Stocks, c.Timestamp });
+            modelBuilder.Entity<Favorites>().HasOne(c => c.Users).WithOne(c => c.Favorites);
+            modelBuilder.Entity<Favorites>().HasMany(c => c.Stocks).WithMany(c => c.Favorites);
         }
 
         // det er det som kobler til databasen
@@ -56,6 +64,10 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Trades> Trades { get; set; }
 
         public DbSet<SearchResults> SearchResults { get; set; }
+
+        public DbSet<Favorites> Favorites { get; set; }
+
+        public DbSet<StockOwnerships> StockOwnerships { get; set; }
 
      }
 
@@ -69,13 +81,27 @@ namespace Webapplikasjoner_oblig.DAL
         public string Description { get; set; }
 
         public DateTime LastUpdated { get; set; }
+
+        virtual public List<Trades> Trades { get; set; }
+
+        virtual public List<StockQuotes> StockQuotes { get; set; }
+
+        virtual public List<StockOwnerships> StockOwnerships { get; set; }
+
+        virtual public List<Favorites> Favorites { get; set; }
+
+        virtual public List<SearchResults> SearchResults { get; set; }
+
     }
 
-    public class StockOccurances
+    /*public class StockOccurances
     {
-        virtual public SearchResult SearchKeyword { get; set; }
-        virtual public Stocks StockSymbol { get; set; }
-    }
+        virtual public SearchResults SearchResultsId { get; set; }
+        virtual public SearchResults SearchResults { get; set; }
+
+        public int StocksId { get; set; }
+        virtual public Stocks Stocks { get; set; }
+    }*/
 
     public class SearchResults
     {
@@ -83,12 +109,13 @@ namespace Webapplikasjoner_oblig.DAL
         public string SearchKeyword { get; set; }
 
         public DateTime SearchTimestamp {get; set;}
+
+        virtual public List<Stocks> Stocks { get; set; }
     }
 
     public class Users
     {
-
-        public int UserId { get; set; }
+        public int UsersId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -96,27 +123,32 @@ namespace Webapplikasjoner_oblig.DAL
 
         public decimal FundsAvailable { get; set; }
         public decimal Fundsspent { get; set; }
+
+        virtual public List<Trades> Trades { get; set; }
+
+        virtual public List<StockOwnerships> StockOwnerships { get; set; }
+
+        virtual public Favorites Favorites { get; set; }  
     }
 
 
     public class Trades
     {
-        public int Id { get; set; }
-        public string StockSymbol { get; set; }
+        public int TradesId { get; set; }
+        public int Count { get; set; }
         public DateTime Date { get; set; }
-
-        virtual public Stocks Symbol { get; set; }
-
-        virtual public Users UserId { get; set; }
-
-
+        public decimal Saldo { get; set; }
+        public int StockId { get; set; }
+        virtual public Stocks Stocks { get; set; }
+        public int UsersId { get; set; }
+        virtual public Users Users { get; set; }
     }
-    //kommentar
 
     public class StockOwnerships
     {
-        virtual public Users UserId { get; set; }
-        virtual public Stocks Symbol { get; set; }
+        public int StockOwnershipsId { get; set; }
+        virtual public Users Users { get; set; }
+        virtual public Stocks Stocks { get; set; }
 
         public int StockCount { get; set; }
 
@@ -124,14 +156,18 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class Favorites
     {
-        virtual public Users UserId { get; set; }
-        virtual public Stocks Symbol { get; set; }
+        public int FavoritesId { get; set; }
+        public int UsersId { get; set; }
+        virtual public Users Users { get; set; }
+
+        public int StocksId { get; set; }
+        virtual public List<Stocks> Stocks { get; set; }
 
     }
 
     public class StockQuotes
     {
-        virtual public Stocks StockSymbol { get; set; }
+        public int StockQuotesId { get; set; }
         public DateTime Timestamp { get; set; }
         public string? Symbol { get; set; }
         public double Open { get; set; }
@@ -143,6 +179,7 @@ namespace Webapplikasjoner_oblig.DAL
         public double PreviousClose { get; set; }
         public double Change { get; set; }
         public string? ChangePercent { get; set; }
+        virtual public Stocks Stocks { get; set; }
 
     }
     

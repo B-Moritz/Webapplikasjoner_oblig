@@ -30,7 +30,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> GetPortfolio(int userId)
         {
-            throw new NotImplementedException();    
+            throw new NotImplementedException();   
         }
 
         public async Task<FavoriteList> GetFavoriteList(int userId) 
@@ -40,11 +40,10 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count) 
         {
-            
             throw new NotImplementedException();  
         }
 
-        public async Task<Portfolio> SellStock(int userId, string symbol)
+        public async Task<Portfolio> SellStock(int userId, string symbol, int count)
         {
             throw new NotImplementedException();
         }
