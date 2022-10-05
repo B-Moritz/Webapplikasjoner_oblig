@@ -17,8 +17,8 @@ namespace Webapplikasjoner_oblig.DAL
                 context.Database.EnsureCreated();
 
 
-                var user1 = new User { Name = "Okab", LastName = "Mussie", Email = "okab@gmail.com", Password = "8989" };
-                var user2 = new User { Name = "Ole", LastName = "Jensen", Email = "ole@gmail.com", Password = "7878" };
+                var user1 = new Users { FirstName = "Okab", LastName = "Mussie", Email = "okab@gmail.com", Password = "8989" };
+                var user2 = new Users { FirstName = "Ole", LastName = "Jensen", Email = "ole@gmail.com", Password = "7878" };
                 context.Users.Add(user1);
                 context.Users.Add(user2);
 
