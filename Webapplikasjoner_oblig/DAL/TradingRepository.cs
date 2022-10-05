@@ -7,7 +7,7 @@ namespace Webapplikasjoner_oblig.DAL
     {
         private readonly TradingContext _db;
 
-            public TradingRepository(TradingContext db)
+        public TradingRepository(TradingContext db)
         {
             _db = db;
         }
