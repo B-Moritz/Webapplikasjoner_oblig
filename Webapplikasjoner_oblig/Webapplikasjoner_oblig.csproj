@@ -35,4 +35,8 @@
   <ItemGroup>
     <None Remove="Microsoft.EntityFrameworkCore.Proxies" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DAL\Migrations\" />
+  </ItemGroup>
 </Project>

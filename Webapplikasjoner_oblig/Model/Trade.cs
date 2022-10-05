@@ -3,8 +3,8 @@
     public class Trade
     {
         public int Id { get; set; }
-        public string StockName { get; set; }
-        public string Date { get; set; }
-        public string User { get; set; }
+        public string StockSymbol { get; set; }
+        public DateTime Date { get; set; }
+        public int UserId { get; set; }
     }
 }

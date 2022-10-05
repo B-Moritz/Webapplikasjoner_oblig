@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -30,8 +32,39 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
         // det er det som kobler til databasen
-        public DbSet<StockDetail> stocks { get; set; }
+
+        public DbSet<Stocks> Stocks { get; set; }
         public DbSet<User> Users { get; set; }
-        public object Trades { get; internal set; }
+
+        public DbSet<Trade> Trades { get; set; }
+     }
+
+    public class Stocks
+    {
+        [Key]
+        public string Symbol { get; set; }
+
+        public string StockName { get; set; }
+
+        public string Description { get; set; }
+
+        public DateTime lastUpdated { get; set; }
     }
+
+    public class StockOccurances
+    {
+        [Key]
+        public string SearchKeyword { get; set; }
+        public Stocks StockSymbol { get; set; }
+    }
+
+    public class SearchResults
+    {
+        [Key]
+        public string SearchKeyword { get; set; }
+
+        public DateTime SearchTimestamp {get; set;}
+
+    }
+
 }

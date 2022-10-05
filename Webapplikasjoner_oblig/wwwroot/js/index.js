@@ -1,35 +1,11 @@
-﻿$(function () {
-    printUsers();
-});
+// Må sende via URL "Trade/Sell"    Trade er controller?? og sell er function i controller?
 
-function printUsers() {
-    $.get("kunde/hentAlle", function (users) {
-        formaterUsers(users);
-    });
-}
-
-function formaterUsers(users) {
-    let ut = "<table class='table table-striped'>" +
-        "<tr>" +
-        "<th>Name</th><th>Lastname</th><th>Email</th><th>Password</th><th>Poststed</th><th></th><th></th>" +
-        "</tr>";
-    for (let user of users) {
-        ut += "<tr>" +
-            "<td>" + user.name + "</td>" +
-            "<td>" + user.lastname + "</td>" +
-            "<td>" + user.email + "</td>" +
-            "<td>" + user.password + "</td>" +
-            "<td> <a class='btn btn-primary' href='endre.html?id=" + user.id + "'>Endre</a></td>" +
-            "<td> <button class='btn btn-danger' onclick='slettKunde(" + user.id + ")'>Slett</button></td>" +
-            "</tr>";
+function buyStock() {
+    const innkjop = {
+        aksje: $("#stockBuy").val(),
     }
-    ut += "</table>";
-    $("#kundene").html(ut);
-}
-
-function slettKunde(id) {
-    const url = "Kunde/Slett?id=" + id;
-    $.get(url, function (OK) {
+    const url = "Trade/Buy";
+    $.post(url, innkjop, function (OK) {
         if (OK) {
             window.location.href = 'index.html';
         }
@@ -37,6 +13,39 @@ function slettKunde(id) {
             $("#feil").html("Feil i db - prøv igjen senere");
         }
 
+
+function sellStock() {
+    const utsalg = {
+        aksje: $("#stockSell").val(),
+    }
+    const url = "Trade/Sell";
+    $.post(url, utsalg, function (OK) {
+        if (OK) {
+            window.location.href = 'index.html';
+        }
+        else {
+            $("#feil").html("Feil i db - prøv igjen senere");
+        }
     });
 };
 
+function hentAlleAksjer() {
+    $.get("portfolio/hentAlleAksjer", function (stocks) {
+        formaterPortfolio(stocks);
+    });
+}
+
+function formaterPortfolio(stocks) {
+    let ut = "<table class='table table-striped'>" +
+        "<tr>" +
+        "<th>Name</th><th>Antall</th><th></th><th></th>" +
+        "</tr>";
+    for (let stock of stocks) {
+        ut += "<tr>" +
+            "<td>" + stock.name + "</td>" +
+            "<td>" + stock.antall + "</td>" +
+            "</tr>";
+    }
+    ut += "</table>";
+    $("#srivportfolio").html(ut);
+}
