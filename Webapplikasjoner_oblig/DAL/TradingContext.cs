@@ -35,4 +35,5 @@ namespace Webapplikasjoner_oblig.DAL
 
         public DbSet<Trade> Trades { get; set; }
      }
+
 }
