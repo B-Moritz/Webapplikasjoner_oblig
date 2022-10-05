@@ -26,7 +26,8 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             // Denne metoden skal lage et søkeresultat 
             throw new NotImplementedException();
-        } 
+        }
+
 
         public async Task<Portfolio> GetPortfolio(int userId)
         {
