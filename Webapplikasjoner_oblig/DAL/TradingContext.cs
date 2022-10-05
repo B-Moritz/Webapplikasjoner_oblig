@@ -36,8 +36,11 @@ namespace Webapplikasjoner_oblig.DAL
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
+<<<<<<< HEAD
             modelBuilder.Entity<StockQuotes>().HasKey(c => new {c.StockSymbol, c.Timestamp})
 
+=======
+>>>>>>> 330032179d36011d9af719f713646c97aceee20e
         }
 
         // det er det som kobler til databasen
