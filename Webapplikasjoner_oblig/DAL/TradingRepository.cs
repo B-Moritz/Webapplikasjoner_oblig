@@ -1,7 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL
