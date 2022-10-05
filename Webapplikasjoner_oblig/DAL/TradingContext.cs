@@ -28,7 +28,10 @@ namespace Webapplikasjoner_oblig.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sqlite database
+
             options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase")).UseLazyLoadingProxies();
+
+
         }
 
         // https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations#configuring-a-primary-key
@@ -43,7 +46,6 @@ namespace Webapplikasjoner_oblig.DAL
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
             modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StockSymbol, c.Timestamp });
             modelBuilder.Entity<Favorites>().HasKey(c => new { c.UserId, c.Symbol });
-
         }
 
         // det er det som kobler til databasen
@@ -143,7 +145,6 @@ namespace Webapplikasjoner_oblig.DAL
         public string? ChangePercent { get; set; }
 
     }
-
     
 
 

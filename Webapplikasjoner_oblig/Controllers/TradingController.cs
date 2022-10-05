@@ -24,6 +24,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<SearchResult> FindStock(string keyword) 
         {
+            // Denne metoden skal lage et søkeresultat 
             throw new NotImplementedException();
         } 
 
@@ -45,6 +46,13 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> SellStock(int userId, string symbol)
         {
+            throw new NotImplementedException();
+        }
+
+        public async Task<UserProfile> GetUserProfile(int userId)
+        {
+            // Denne metoden skal returnere informasjon om bruker, portfoliolisten og favorittlisten.
+            // Egner seg når frontend lastes inn første gang.
             throw new NotImplementedException();
         }
 
