@@ -13,31 +13,34 @@ namespace Webapplikasjoner_oblig.DAL
         }
         public async Task<bool> SaveTradeAsync(Trade innTrading)
         {
-            try
-            {
-                var nyTradingRad = new Trade()
+            /**{
+                try
                 {
-                    Id = innTrading.Id,
-                    StockSymbol = innTrading.StockSymbol,
-                    Date = innTrading.Date,
-                    UserId = innTrading.Id
-                };
+                    var nyTradingRad = new Trades()
+                    {
+                        Id = innTrading.Id,
+                        StockSymbol = innTrading.StockSymbol,
+                        Date = innTrading.Date,
+                        UserId = innTrading.Id
+                    };
 
-                _db.Trades.Add(nyTradingRad);
-                await _db.SaveChangesAsync();
-                return true;
+                    _db.Trades.Add(nyTradingRad);
+                    await _db.SaveChangesAsync();
+                    return true;
 
-            }
-            catch
-            {
-                return false;
-            }
+                }
+                catch
+                {
+                    return false;
+                }
+            */
+            throw new NotImplementedException();
         }
 
 
 
         public async Task<List<Trade>> GetAllTradesAsync()
-        {
+        { /**
             try
             {
                 List<Trade> allTrades = await _db.Trades.Select(k => new Trade
@@ -54,11 +57,14 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return null;
             }
+            */
+            throw new NotImplementedException();
         }
 
 
         public async Task<Trade> GetOneTradeAsync(int id)
         {
+            /**
             Trade oneTrade = await _db.Trades.FindAsync(id);
             var hentetTrading = new Trade()
             {
@@ -71,5 +77,9 @@ namespace Webapplikasjoner_oblig.DAL
             return hentetTrading;
         }
 
+    }
+            */
+            throw new NotImplementedException();
+        }
     }
 }
