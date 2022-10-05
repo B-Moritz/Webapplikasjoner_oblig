@@ -35,11 +35,7 @@ namespace Webapplikasjoner_oblig.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
-<<<<<<< HEAD
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
-=======
-
->>>>>>> 496b02fe716fa6854eed1e52a905e33abdffe0c5
         }
 
         // det er det som kobler til databasen
