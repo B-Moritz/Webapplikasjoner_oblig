@@ -4,34 +4,6 @@ $(function () {
 });
 
 
-function buyStock() {
-    const innkjop = {
-        aksjeInn: $("#stockBuy").val(),
-    }
-    const url = "Trading/BuyStock";
-    $.post(url, innkjop, function (OK) {
-        if (OK) {
-            window.location.href = 'index.html';
-        }
-        else {
-            $("#feil").html("Feil i db - prøv igjen senere");
-        }
-
-
-function sellStock() {
-    const utsalg = {
-        aksjeUt: $("#stockSell").val(),
-    }
-    const url = "Trading/SellStock";
-    $.post(url, utsalg, function (OK) {
-        if (OK) {
-            window.location.href = 'index.html';
-        }
-        else {
-            $("#feil").html("Feil i db - prøv igjen senere");
-        }
-    });
-};
 
 function hentAlleAksjer() {
     $.get("Trading/GetPortfolio", function (stocks) {
