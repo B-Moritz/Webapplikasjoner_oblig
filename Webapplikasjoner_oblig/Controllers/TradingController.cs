@@ -21,6 +21,29 @@ namespace Webapplikasjoner_oblig.Controllers
             // We can now access the AlphaVantage api key:
             // string apiKey = _config["AlphaVantageApi:ApiKey"];
         }
+
+
+        public async Task<Portfolio> GetPortfolio(int userId, string symbol)
+        {
+            throw new NotImplementedException();    
+        }
+
+        public async Task<FavoriteList> GetFavoriteList(int userId) 
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<> BuyStock(int userId, string symbol) 
+        {
+            
+            throw new NotImplementedException();  
+        }
+
+        public async Task<> SellStock(int userId, string symbol)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<bool> SaveTrade(Trade innTrading)
         {
             return await _db.SaveTradeAsync(innTrading);
@@ -31,7 +54,7 @@ namespace Webapplikasjoner_oblig.Controllers
             return await _db.GetAllTradesAsync();
         }
 
-        public async Task<Trade> HentEnTrading(int id)
+        public async Task<Trade> GetOneTrade(int id)
         {
             return await _db.GetOneTradeAsync(id);
         }
