@@ -46,7 +46,7 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Stocks> Stocks { get; set; }
         public DbSet<Users> Users { get; set; }
 
-        public DbSet<Trade> Trades { get; set; }
+        public DbSet<Trades> Trades { get; set; }
 
         public DbSet<SearchResults> SearchResults { get; set; }
      }
@@ -80,7 +80,7 @@ namespace Webapplikasjoner_oblig.DAL
     public class Users
     {
 
-        public int Id { get; set; }
+        public int UserId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
