@@ -36,7 +36,8 @@ namespace Webapplikasjoner_oblig.DAL
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
-            modelBuilder.Entity<StockQuotes>().HasKey(c => new {c.StockSymbol, c.Timestamp})
+            modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StockSymbol, c.Timestamp });
+            modelBuilder.Entity<Favorites>().HasKey(c => new { c.UserId, c.Symbol });
 
         }
 
@@ -89,6 +90,7 @@ namespace Webapplikasjoner_oblig.DAL
         public decimal Fundsspent { get; set; }
     }
 
+
     public class Trades
     {
         public int Id { get; set; }
@@ -109,6 +111,13 @@ namespace Webapplikasjoner_oblig.DAL
         virtual public Stocks Symbol { get; set; }
 
         public int StockCount { get; set; }
+
+    }
+
+    public class Favorites
+    {
+        virtual public Users UserId { get; set; }
+        virtual public Stocks Symbol { get; set; }
 
     }
 
