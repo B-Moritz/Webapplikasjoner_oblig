@@ -2,12 +2,10 @@
 {
     public class Portfolio
     {
-        public Dictionary<int, string> Dic { get; set; }
-        public int Amount { get; set; }
-    }
+        public DateTime LastUpdate { get; set; }
+        public decimal TotalValueSpent { get; set; }
+        public decimal TotalPortfolioValue { get; set; }
 
-    public class portfolios
-    { 
-        
+        public List<PortfolioStock> Stocks { get; set; }
     }
 }
