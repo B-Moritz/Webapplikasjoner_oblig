@@ -28,7 +28,8 @@ namespace Webapplikasjoner_oblig.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sqlite database
-            options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"));
+            options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"))
+                   .UseLazyLoadingProxies();
         }
 
         // https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations#configuring-a-primary-key
@@ -36,8 +37,6 @@ namespace Webapplikasjoner_oblig.DAL
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
-            modelBuilder.Entity<StockQuotes>().HasKey(c => new {c.StockSymbol, c.Timestamp})
-
         }
 
         // det er det som kobler til databasen
@@ -109,23 +108,6 @@ namespace Webapplikasjoner_oblig.DAL
         virtual public Stocks Symbol { get; set; }
 
         public int StockCount { get; set; }
-
-    }
-
-    public class StockQuotes
-    {
-        virtual public Stocks StockSymbol { get; set; }
-        public DateTime Timestamp { get; set; }
-        public string? Symbol { get; set; }
-        public double Open { get; set; }
-        public double High { get; set; }
-        public double Low { get; set; }
-        public double Price { get; set; }
-        public int Volume { get; set; }
-        public string? LatestTradingDay { get; set; }
-        public double PreviousClose { get; set; }
-        public double Change { get; set; }
-        public string? ChangePercent { get; set; }
 
     }
 
