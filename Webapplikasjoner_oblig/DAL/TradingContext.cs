@@ -38,6 +38,7 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
         // det er det som kobler til databasen
+
         public DbSet<Stocks> Stocks { get; set; }
         public DbSet<User> Users { get; set; }
 
