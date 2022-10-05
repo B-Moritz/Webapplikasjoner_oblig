@@ -36,6 +36,7 @@ namespace Webapplikasjoner_oblig.DAL
         {
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
+            modelBuilder.Entity<Favorites>().HasKey(c => new { c.UserId, c.Symbol });
         }
 
         // det er det som kobler til databasen
@@ -110,7 +111,11 @@ namespace Webapplikasjoner_oblig.DAL
 
     }
 
-    
+    public class Favorites
+    {
+        virtual public Users UserId { get; set; }
+        virtual public Stocks Symbol { get; set; }
 
+    }
 
 }
