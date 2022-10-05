@@ -38,7 +38,7 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();
         }
 
-        public async Task<Portfolio> BuyStock(int userId, string symbol, int count) 
+        public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
             throw new NotImplementedException();  
         }
