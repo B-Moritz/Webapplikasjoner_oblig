@@ -93,6 +93,7 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class Trades
     {
+
         public int Id { get; set; }
         public string StockSymbol { get; set; }
         public DateTime Date { get; set; }
