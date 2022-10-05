@@ -22,8 +22,12 @@ namespace Webapplikasjoner_oblig.Controllers
             // string apiKey = _config["AlphaVantageApi:ApiKey"];
         }
 
+        public async Task<SearchResult> FindStock(string keyword) 
+        {
+            throw new NotImplementedException();
+        } 
 
-        public async Task<Portfolio> GetPortfolio(int userId, string symbol)
+        public async Task<Portfolio> GetPortfolio(int userId)
         {
             throw new NotImplementedException();    
         }
@@ -33,13 +37,13 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();
         }
 
-        public async Task<> BuyStock(int userId, string symbol) 
+        public async Task<Portfolio> BuyStock(int userId, string symbol, int count) 
         {
             
             throw new NotImplementedException();  
         }
 
-        public async Task<> SellStock(int userId, string symbol)
+        public async Task<Portfolio> SellStock(int userId, string symbol)
         {
             throw new NotImplementedException();
         }
