@@ -1,5 +1,3 @@
-﻿
-
 // Må sende via URL "Trade/Sell"    Trade er controller?? og sell er function i controller?
 
 function buyStock() {
@@ -14,8 +12,7 @@ function buyStock() {
         else {
             $("#feil").html("Feil i db - prøv igjen senere");
         }
-    });
-};
+
 
 function sellStock() {
     const utsalg = {
