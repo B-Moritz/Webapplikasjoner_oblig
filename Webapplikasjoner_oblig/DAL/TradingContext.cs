@@ -31,11 +31,19 @@ namespace Webapplikasjoner_oblig.DAL
             options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"));
         }
 
+        // https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations#configuring-a-primary-key
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
+        }
+
         // det er det som kobler til databasen
         public DbSet<Stocks> Stocks { get; set; }
         public DbSet<User> Users { get; set; }
 
         public DbSet<Trade> Trades { get; set; }
+
+        public DbSet<SearchResults> SearchResults { get; set; }
      }
 
     public class Stocks
@@ -52,9 +60,8 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class StockOccurances
     {
-        [Key]
-        public string SearchKeyword { get; set; }
-        public Stocks StockSymbol { get; set; }
+        virtual public SearchResult SearchKeyword { get; set; }
+        virtual public Stocks StockSymbol { get; set; }
     }
 
     public class SearchResults
@@ -63,7 +70,6 @@ namespace Webapplikasjoner_oblig.DAL
         public string SearchKeyword { get; set; }
 
         public DateTime SearchTimestamp {get; set;}
-
     }
 
 }
