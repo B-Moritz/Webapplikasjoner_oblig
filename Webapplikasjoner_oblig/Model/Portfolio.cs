@@ -6,8 +6,5 @@
         public int Amount { get; set; }
     }
 
-    public class portfolios
-    { 
-        
-    }
+   
 }
