@@ -107,7 +107,7 @@ namespace Webapplikasjoner_oblig.DAL
        
         public async Task<bool> Lagre(User innUser)
         {
-            try
+           /** try
             {
                 _tradingContext.Users.Add(innUser);
                 await _tradingContext.SaveChangesAsync();
@@ -117,11 +117,14 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return false;
             }
+           */
+           throw new NotImplementedException();
         }
 
 
         public async Task<List<User>> HentAlle()
         {
+            /**
             try
             {
                 List<User> allUsers = await _tradingContext.Users.ToListAsync(); // hent hele tabellen
@@ -131,10 +134,13 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return null;
             }
+            */
+            throw new NotImplementedException();
         }
 
         public async Task<bool> Delete(int id)
         {
+            /**
             try
             {
                 User enUser = await _tradingContext.Users.FindAsync(id);
@@ -146,6 +152,9 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return false;
             }
+            */
+
+            throw new NotImplementedException();
         }
         /*
         public async Task<User> HentEn(int id)
@@ -163,6 +172,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         public async Task<User> HentEn(int id)
         {
+            /**
             try
             {
                 User enUser = await _tradingContext.Users.FindAsync(id);
@@ -180,10 +190,14 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return null;
             }
+            */
+
+            throw new NotImplementedException();
         }
 
         public async Task<bool> Endre(User changeUser)
         {
+            /**
             try
             {
                 User enUser = await _tradingContext.Users.FindAsync(changeUser.Id);
@@ -198,6 +212,8 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return false;
             }
+*/
+            throw new NotImplementedException();
         }
        
     }

@@ -28,13 +28,20 @@ namespace Webapplikasjoner_oblig.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sqlite database
-            options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase"))
-                   .UseLazyLoadingProxies();
+
+            options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase")).UseLazyLoadingProxies();
+
+
         }
 
         // https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations#configuring-a-primary-key
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Stocks>();
+            modelBuilder.Entity<Users>();
+            modelBuilder.Entity<Trades>();
+            modelBuilder.Entity<SearchResults>();
+
             modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchKeyword, c.StockSymbol });
             modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UserId, c.Symbol });
             modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StockSymbol, c.Timestamp });
@@ -49,6 +56,7 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Trades> Trades { get; set; }
 
         public DbSet<SearchResults> SearchResults { get; set; }
+
      }
 
     public class Stocks
@@ -60,7 +68,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         public string Description { get; set; }
 
-        public DateTime lastUpdated { get; set; }
+        public DateTime LastUpdated { get; set; }
     }
 
     public class StockOccurances
