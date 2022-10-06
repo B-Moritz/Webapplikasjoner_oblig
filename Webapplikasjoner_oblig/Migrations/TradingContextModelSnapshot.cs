@@ -17,21 +17,6 @@ namespace Webapplikasjoner_oblig.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
 
-            modelBuilder.Entity("FavoritesStocks", b =>
-                {
-                    b.Property<int>("FavoritesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("StocksSymbol")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("FavoritesId", "StocksSymbol");
-
-                    b.HasIndex("StocksSymbol");
-
-                    b.ToTable("FavoritesStocks");
-                });
-
             modelBuilder.Entity("SearchResultsStocks", b =>
                 {
                     b.Property<string>("SearchResultsSearchKeyword")
@@ -44,27 +29,36 @@ namespace Webapplikasjoner_oblig.Migrations
 
                     b.HasIndex("StocksSymbol");
 
-                    b.ToTable("SearchResultsStocks");
+                    b.ToTable("StockOccurances", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            SearchResultsSearchKeyword = "Microsoft",
+                            StocksSymbol = "MSFT"
+                        });
                 });
 
-            modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Favorites", b =>
+            modelBuilder.Entity("StocksUsers", b =>
                 {
-                    b.Property<int>("FavoritesId")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("FavoriteUsersUsersId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("StocksId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("FavoritesSymbol")
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("UsersId")
-                        .HasColumnType("INTEGER");
+                    b.HasKey("FavoriteUsersUsersId", "FavoritesSymbol");
 
-                    b.HasKey("FavoritesId");
+                    b.HasIndex("FavoritesSymbol");
 
-                    b.HasIndex("UsersId")
-                        .IsUnique();
+                    b.ToTable("FavoriteLists", (string)null);
 
-                    b.ToTable("Favorites");
+                    b.HasData(
+                        new
+                        {
+                            FavoriteUsersUsersId = 1,
+                            FavoritesSymbol = "MSFT"
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.SearchResults", b =>
@@ -78,38 +72,48 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasKey("SearchKeyword");
 
                     b.ToTable("SearchResults");
+
+                    b.HasData(
+                        new
+                        {
+                            SearchKeyword = "Microsoft",
+                            SearchTimestamp = new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(978)
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.StockOwnerships", b =>
                 {
-                    b.Property<int>("StockOwnershipsId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("StockCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("StocksSymbol")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("UsersId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("StockOwnershipsId");
+                    b.Property<string>("StocksId")
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("StocksSymbol");
+                    b.Property<int>("StockCounter")
+                        .HasColumnType("INTEGER");
 
-                    b.HasIndex("UsersId");
+                    b.HasKey("UsersId", "StocksId");
+
+                    b.HasIndex("StocksId");
 
                     b.ToTable("StockOwnerships");
+
+                    b.HasData(
+                        new
+                        {
+                            UsersId = 1,
+                            StocksId = "MSFT",
+                            StockCounter = 10
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.StockQuotes", b =>
                 {
-                    b.Property<int>("StockQuotesId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("StocksId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("TEXT");
 
                     b.Property<double>("Change")
                         .HasColumnType("REAL");
@@ -120,7 +124,7 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.Property<double>("High")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("LatestTradingDay")
+                    b.Property<DateTime?>("LatestTradingDay")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Low")
@@ -135,24 +139,28 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("REAL");
 
-                    b.Property<string>("StocksSymbol")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Symbol")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Volume")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("StockQuotesId");
-
-                    b.HasIndex("StocksSymbol");
+                    b.HasKey("StocksId", "Timestamp");
 
                     b.ToTable("StockQuotes");
+
+                    b.HasData(
+                        new
+                        {
+                            StocksId = "MSFT",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Change = 0.35999999999999999,
+                            ChangePercent = "0.2373%",
+                            High = 153.41999999999999,
+                            LatestTradingDay = new DateTime(2019, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Low = 151.02000000000001,
+                            Open = 151.65000000000001,
+                            PreviousClose = 151.69999999999999,
+                            Price = 152.06,
+                            Volume = 9425575
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Stocks", b =>
@@ -161,19 +169,26 @@ namespace Webapplikasjoner_oblig.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StockName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Symbol");
 
                     b.ToTable("Stocks");
+
+                    b.HasData(
+                        new
+                        {
+                            Symbol = "MSFT",
+                            Description = "Tech company",
+                            LastUpdated = new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(941),
+                            StockName = "Microsoft"
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Trades", b =>
@@ -182,32 +197,43 @@ namespace Webapplikasjoner_oblig.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Count")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("Saldo")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("StockId")
+                    b.Property<int>("StockCount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("StocksSymbol")
-                        .IsRequired()
+                    b.Property<string>("StocksId")
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("TradeTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("UserIsBying")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("UsersId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("TradesId");
 
-                    b.HasIndex("StocksSymbol");
+                    b.HasIndex("StocksId");
 
                     b.HasIndex("UsersId");
 
                     b.ToTable("Trades");
+
+                    b.HasData(
+                        new
+                        {
+                            TradesId = 1,
+                            Saldo = 100m,
+                            StockCount = 10,
+                            StocksId = "MSFT",
+                            TradeTime = new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(1744),
+                            UserIsBying = false,
+                            UsersId = 1
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Users", b =>
@@ -217,45 +243,38 @@ namespace Webapplikasjoner_oblig.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("FundsAvailable")
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Fundsspent")
+                    b.Property<decimal>("FundsSpent")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("UsersId");
 
                     b.ToTable("Users");
-                });
 
-            modelBuilder.Entity("FavoritesStocks", b =>
-                {
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Favorites", null)
-                        .WithMany()
-                        .HasForeignKey("FavoritesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", null)
-                        .WithMany()
-                        .HasForeignKey("StocksSymbol")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasData(
+                        new
+                        {
+                            UsersId = 1,
+                            Email = "DevUser@test.com",
+                            FirstName = "Dev",
+                            FundsAvailable = 1000m,
+                            FundsSpent = 0m,
+                            LastName = "User",
+                            Password = "testpwd"
+                        });
                 });
 
             modelBuilder.Entity("SearchResultsStocks", b =>
@@ -273,81 +292,78 @@ namespace Webapplikasjoner_oblig.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Favorites", b =>
+            modelBuilder.Entity("StocksUsers", b =>
                 {
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Users", "Users")
-                        .WithOne("Favorites")
-                        .HasForeignKey("Webapplikasjoner_oblig.DAL.Favorites", "UsersId")
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Users", null)
+                        .WithMany()
+                        .HasForeignKey("FavoriteUsersUsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Users");
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", null)
+                        .WithMany()
+                        .HasForeignKey("FavoritesSymbol")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.StockOwnerships", b =>
                 {
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", "Stocks")
-                        .WithMany("StockOwnerships")
-                        .HasForeignKey("StocksSymbol")
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StocksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Users", "Users")
-                        .WithMany("StockOwnerships")
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Users", "User")
+                        .WithMany("Portfolio")
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Stocks");
+                    b.Navigation("Stock");
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.StockQuotes", b =>
                 {
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", "Stocks")
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", "Stock")
                         .WithMany("StockQuotes")
-                        .HasForeignKey("StocksSymbol")
+                        .HasForeignKey("StocksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Stocks");
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Trades", b =>
                 {
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", "Stocks")
-                        .WithMany("Trades")
-                        .HasForeignKey("StocksSymbol")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Stocks", "Stock")
+                        .WithMany("TradeOccurances")
+                        .HasForeignKey("StocksId");
 
-                    b.HasOne("Webapplikasjoner_oblig.DAL.Users", "Users")
+                    b.HasOne("Webapplikasjoner_oblig.DAL.Users", "User")
                         .WithMany("Trades")
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Stocks");
+                    b.Navigation("Stock");
 
-                    b.Navigation("Users");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Stocks", b =>
                 {
-                    b.Navigation("StockOwnerships");
-
                     b.Navigation("StockQuotes");
 
-                    b.Navigation("Trades");
+                    b.Navigation("TradeOccurances");
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Users", b =>
                 {
-                    b.Navigation("Favorites")
-                        .IsRequired();
-
-                    b.Navigation("StockOwnerships");
+                    b.Navigation("Portfolio");
 
                     b.Navigation("Trades");
                 });

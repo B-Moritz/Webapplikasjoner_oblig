@@ -26,8 +26,8 @@ namespace Webapplikasjoner_oblig.Migrations
                 columns: table => new
                 {
                     Symbol = table.Column<string>(type: "TEXT", nullable: false),
-                    StockName = table.Column<string>(type: "TEXT", nullable: false),
-                    Description = table.Column<string>(type: "TEXT", nullable: false),
+                    StockName = table.Column<string>(type: "TEXT", nullable: true),
+                    Description = table.Column<string>(type: "TEXT", nullable: true),
                     LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -41,12 +41,12 @@ namespace Webapplikasjoner_oblig.Migrations
                 {
                     UsersId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
-                    LastName = table.Column<string>(type: "TEXT", nullable: false),
-                    Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
+                    LastName = table.Column<string>(type: "TEXT", nullable: true),
+                    Email = table.Column<string>(type: "TEXT", nullable: true),
+                    Password = table.Column<string>(type: "TEXT", nullable: true),
                     FundsAvailable = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Fundsspent = table.Column<decimal>(type: "TEXT", nullable: false)
+                    FundsSpent = table.Column<decimal>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -54,7 +54,7 @@ namespace Webapplikasjoner_oblig.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SearchResultsStocks",
+                name: "StockOccurances",
                 columns: table => new
                 {
                     SearchResultsSearchKeyword = table.Column<string>(type: "TEXT", nullable: false),
@@ -62,15 +62,15 @@ namespace Webapplikasjoner_oblig.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SearchResultsStocks", x => new { x.SearchResultsSearchKeyword, x.StocksSymbol });
+                    table.PrimaryKey("PK_StockOccurances", x => new { x.SearchResultsSearchKeyword, x.StocksSymbol });
                     table.ForeignKey(
-                        name: "FK_SearchResultsStocks_SearchResults_SearchResultsSearchKeyword",
+                        name: "FK_StockOccurances_SearchResults_SearchResultsSearchKeyword",
                         column: x => x.SearchResultsSearchKeyword,
                         principalTable: "SearchResults",
                         principalColumn: "SearchKeyword",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_SearchResultsStocks_Stocks_StocksSymbol",
+                        name: "FK_StockOccurances_Stocks_StocksSymbol",
                         column: x => x.StocksSymbol,
                         principalTable: "Stocks",
                         principalColumn: "Symbol",
@@ -81,47 +81,48 @@ namespace Webapplikasjoner_oblig.Migrations
                 name: "StockQuotes",
                 columns: table => new
                 {
-                    StockQuotesId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                    StocksId = table.Column<string>(type: "TEXT", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Symbol = table.Column<string>(type: "TEXT", nullable: true),
                     Open = table.Column<double>(type: "REAL", nullable: false),
                     High = table.Column<double>(type: "REAL", nullable: false),
                     Low = table.Column<double>(type: "REAL", nullable: false),
                     Price = table.Column<double>(type: "REAL", nullable: false),
                     Volume = table.Column<int>(type: "INTEGER", nullable: false),
-                    LatestTradingDay = table.Column<string>(type: "TEXT", nullable: true),
+                    LatestTradingDay = table.Column<DateTime>(type: "TEXT", nullable: true),
                     PreviousClose = table.Column<double>(type: "REAL", nullable: false),
                     Change = table.Column<double>(type: "REAL", nullable: false),
-                    ChangePercent = table.Column<string>(type: "TEXT", nullable: true),
-                    StocksSymbol = table.Column<string>(type: "TEXT", nullable: false)
+                    ChangePercent = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockQuotes", x => x.StockQuotesId);
+                    table.PrimaryKey("PK_StockQuotes", x => new { x.StocksId, x.Timestamp });
                     table.ForeignKey(
-                        name: "FK_StockQuotes_Stocks_StocksSymbol",
-                        column: x => x.StocksSymbol,
+                        name: "FK_StockQuotes_Stocks_StocksId",
+                        column: x => x.StocksId,
                         principalTable: "Stocks",
                         principalColumn: "Symbol",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Favorites",
+                name: "FavoriteLists",
                 columns: table => new
                 {
-                    FavoritesId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    UsersId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StocksId = table.Column<int>(type: "INTEGER", nullable: false)
+                    FavoriteUsersUsersId = table.Column<int>(type: "INTEGER", nullable: false),
+                    FavoritesSymbol = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Favorites", x => x.FavoritesId);
+                    table.PrimaryKey("PK_FavoriteLists", x => new { x.FavoriteUsersUsersId, x.FavoritesSymbol });
                     table.ForeignKey(
-                        name: "FK_Favorites_Users_UsersId",
-                        column: x => x.UsersId,
+                        name: "FK_FavoriteLists_Stocks_FavoritesSymbol",
+                        column: x => x.FavoritesSymbol,
+                        principalTable: "Stocks",
+                        principalColumn: "Symbol",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FavoriteLists_Users_FavoriteUsersUsersId",
+                        column: x => x.FavoriteUsersUsersId,
                         principalTable: "Users",
                         principalColumn: "UsersId",
                         onDelete: ReferentialAction.Cascade);
@@ -131,18 +132,16 @@ namespace Webapplikasjoner_oblig.Migrations
                 name: "StockOwnerships",
                 columns: table => new
                 {
-                    StockOwnershipsId = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
                     UsersId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StocksSymbol = table.Column<string>(type: "TEXT", nullable: false),
-                    StockCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    StocksId = table.Column<string>(type: "TEXT", nullable: false),
+                    StockCounter = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockOwnerships", x => x.StockOwnershipsId);
+                    table.PrimaryKey("PK_StockOwnerships", x => new { x.UsersId, x.StocksId });
                     table.ForeignKey(
-                        name: "FK_StockOwnerships_Stocks_StocksSymbol",
-                        column: x => x.StocksSymbol,
+                        name: "FK_StockOwnerships_Stocks_StocksId",
+                        column: x => x.StocksId,
                         principalTable: "Stocks",
                         principalColumn: "Symbol",
                         onDelete: ReferentialAction.Cascade);
@@ -160,22 +159,21 @@ namespace Webapplikasjoner_oblig.Migrations
                 {
                     TradesId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Count = table.Column<int>(type: "INTEGER", nullable: false),
-                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    StockCount = table.Column<int>(type: "INTEGER", nullable: false),
+                    TradeTime = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UserIsBying = table.Column<bool>(type: "INTEGER", nullable: false),
                     Saldo = table.Column<decimal>(type: "TEXT", nullable: false),
-                    StockId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StocksSymbol = table.Column<string>(type: "TEXT", nullable: false),
+                    StocksId = table.Column<string>(type: "TEXT", nullable: true),
                     UsersId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Trades", x => x.TradesId);
                     table.ForeignKey(
-                        name: "FK_Trades_Stocks_StocksSymbol",
-                        column: x => x.StocksSymbol,
+                        name: "FK_Trades_Stocks_StocksId",
+                        column: x => x.StocksId,
                         principalTable: "Stocks",
-                        principalColumn: "Symbol",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Symbol");
                     table.ForeignKey(
                         name: "FK_Trades_Users_UsersId",
                         column: x => x.UsersId,
@@ -184,65 +182,65 @@ namespace Webapplikasjoner_oblig.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "FavoritesStocks",
-                columns: table => new
-                {
-                    FavoritesId = table.Column<int>(type: "INTEGER", nullable: false),
-                    StocksSymbol = table.Column<string>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FavoritesStocks", x => new { x.FavoritesId, x.StocksSymbol });
-                    table.ForeignKey(
-                        name: "FK_FavoritesStocks_Favorites_FavoritesId",
-                        column: x => x.FavoritesId,
-                        principalTable: "Favorites",
-                        principalColumn: "FavoritesId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_FavoritesStocks_Stocks_StocksSymbol",
-                        column: x => x.StocksSymbol,
-                        principalTable: "Stocks",
-                        principalColumn: "Symbol",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.InsertData(
+                table: "SearchResults",
+                columns: new[] { "SearchKeyword", "SearchTimestamp" },
+                values: new object[] { "Microsoft", new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(978) });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Favorites_UsersId",
-                table: "Favorites",
-                column: "UsersId",
-                unique: true);
+            migrationBuilder.InsertData(
+                table: "Stocks",
+                columns: new[] { "Symbol", "Description", "LastUpdated", "StockName" },
+                values: new object[] { "MSFT", "Tech company", new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(941), "Microsoft" });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_FavoritesStocks_StocksSymbol",
-                table: "FavoritesStocks",
-                column: "StocksSymbol");
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UsersId", "Email", "FirstName", "FundsAvailable", "FundsSpent", "LastName", "Password" },
+                values: new object[] { 1, "DevUser@test.com", "Dev", 1000m, 0m, "User", "testpwd" });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_SearchResultsStocks_StocksSymbol",
-                table: "SearchResultsStocks",
-                column: "StocksSymbol");
+            migrationBuilder.InsertData(
+                table: "FavoriteLists",
+                columns: new[] { "FavoriteUsersUsersId", "FavoritesSymbol" },
+                values: new object[] { 1, "MSFT" });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_StockOwnerships_StocksSymbol",
+            migrationBuilder.InsertData(
+                table: "StockOccurances",
+                columns: new[] { "SearchResultsSearchKeyword", "StocksSymbol" },
+                values: new object[] { "Microsoft", "MSFT" });
+
+            migrationBuilder.InsertData(
                 table: "StockOwnerships",
-                column: "StocksSymbol");
+                columns: new[] { "StocksId", "UsersId", "StockCounter" },
+                values: new object[] { "MSFT", 1, 10 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_StockOwnerships_UsersId",
-                table: "StockOwnerships",
-                column: "UsersId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_StockQuotes_StocksSymbol",
+            migrationBuilder.InsertData(
                 table: "StockQuotes",
+                columns: new[] { "StocksId", "Timestamp", "Change", "ChangePercent", "High", "LatestTradingDay", "Low", "Open", "PreviousClose", "Price", "Volume" },
+                values: new object[] { "MSFT", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0.35999999999999999, "0.2373%", 153.41999999999999, new DateTime(2019, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), 151.02000000000001, 151.65000000000001, 151.69999999999999, 152.06, 9425575 });
+
+            migrationBuilder.InsertData(
+                table: "Trades",
+                columns: new[] { "TradesId", "Saldo", "StockCount", "StocksId", "TradeTime", "UserIsBying", "UsersId" },
+                values: new object[] { 1, 100m, 10, "MSFT", new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(1744), false, 1 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FavoriteLists_FavoritesSymbol",
+                table: "FavoriteLists",
+                column: "FavoritesSymbol");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_StockOccurances_StocksSymbol",
+                table: "StockOccurances",
                 column: "StocksSymbol");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trades_StocksSymbol",
+                name: "IX_StockOwnerships_StocksId",
+                table: "StockOwnerships",
+                column: "StocksId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Trades_StocksId",
                 table: "Trades",
-                column: "StocksSymbol");
+                column: "StocksId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Trades_UsersId",
@@ -253,10 +251,10 @@ namespace Webapplikasjoner_oblig.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "FavoritesStocks");
+                name: "FavoriteLists");
 
             migrationBuilder.DropTable(
-                name: "SearchResultsStocks");
+                name: "StockOccurances");
 
             migrationBuilder.DropTable(
                 name: "StockOwnerships");
@@ -266,9 +264,6 @@ namespace Webapplikasjoner_oblig.Migrations
 
             migrationBuilder.DropTable(
                 name: "Trades");
-
-            migrationBuilder.DropTable(
-                name: "Favorites");
 
             migrationBuilder.DropTable(
                 name: "SearchResults");
