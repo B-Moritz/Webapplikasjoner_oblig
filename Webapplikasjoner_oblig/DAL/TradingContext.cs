@@ -165,6 +165,16 @@ namespace Webapplikasjoner_oblig.DAL
             }
 
         }
+
+        internal Task GetHistoricalAsync(string symbol, DateTime startDate, DateTime endDate)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal object Symbols(object symbol)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class Stocks

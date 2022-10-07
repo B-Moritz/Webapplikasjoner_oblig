@@ -3,6 +3,7 @@ using Webapplikasjoner_oblig.DAL;
 using Webapplikasjoner_oblig.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -34,10 +35,46 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();   
         }
 
-        public async Task<FavoriteList> GetFavoriteList(int userId) 
+        // okab ... fra
+        [HttpGet]
+        public async Task<List<Portfolio>> GetPortfolio(string symbol, DateTime startDate, DateTime endDate)
+        {
+            return await _db.GetPortfolio(symbol, startDate, endDate);
+        
+        }
+
+        /*public async Task<Portfolio> GetPortfolio(int userId)
+        {
+            try
+            {
+                foreach (var portfolio in _db.GetAllTradesAsync)
+                {
+                    var filename = portfolio.UsersId;
+                    var lastChanged = System.IO.File.GetLastWriteTime(filename);
+
+                    if (lastChanged != portfolio.LastChanged)
+                    {
+                        portfolio.LastChanged = lastChanged;
+                    }
+
+                }
+                DbContext.saveChanges();
+            }
+            catch
+            {
+                var books = await _db.GetAllTradesAsync();
+                return Ok(books);
+
+            }
+            // OKAB... TIL
+        }*/
+
+        public async Task<FavoriteList> GetFavoriteList(int userId)
         {
             throw new NotImplementedException();
         }
+
+
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
