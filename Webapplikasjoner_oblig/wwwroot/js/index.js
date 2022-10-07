@@ -3,7 +3,6 @@ $(function () {
     hentAlleAksjer();
 });
 
-
 function hentAlleAksjer() {
     $.get("Trading/GetPortfolio", function (stocks) {
         formaterPortfolio(stocks);
