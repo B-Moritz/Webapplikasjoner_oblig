@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
+using System.Linq;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -11,6 +12,40 @@ namespace Webapplikasjoner_oblig.DAL
         {
             _db = db;
         }
+
+        //okab ... fra
+        public async Task<List<Portfolio>> GetPortfolio(string symbol, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                foreach(var history in _db.Stocks)
+                {
+                    var historic_data = await GetPortfolio(symbol, startDate, endDate);
+                    var lastUpdated = System.IO.File.GetLastWriteTime(historic_data);
+                    if(lastUpdated != history.LastUpdated)
+                    {
+                        history.LastUpdated = lastUpdated;
+                    }
+
+                    return historic_data;
+                }
+                //DbContext.saveChanges();
+            }
+            catch
+            {
+                return null;
+            }
+            return null;
+        }
+        // okab ...til
+
+
+
+
+
+
+
+
         public async Task<bool> SaveTradeAsync(Trade innTrading)
         {
             /**{
