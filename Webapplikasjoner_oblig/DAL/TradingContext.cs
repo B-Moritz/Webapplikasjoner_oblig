@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AlphaVantageInterface.Models;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -10,179 +11,278 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class TradingContext : DbContext
     {
-        protected readonly IConfiguration Configuration;
+        protected readonly IConfiguration _configuration;
+        protected readonly IHostEnvironment _environment;
 
 
-        public TradingContext(IConfiguration configuration)
+        public TradingContext(IConfiguration configuration, 
+                              DbContextOptions<TradingContext> options, 
+                              IHostEnvironment env) : base(options)
         {
-           Configuration = configuration;
+           _configuration = configuration;
+            _environment = env;
         }
-
 
         //Migrations microsoft tutorial 
         //https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli
 
         //.net core web api microsoft tutorial
         //https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-6.0&tabs=visual-studio
-
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sqlite database
-
-            options.UseSqlite(Configuration.GetConnectionString("WebApiDatabase")).UseLazyLoadingProxies();
-
-
+            options.UseSqlite(_configuration.GetConnectionString("WebApiDatabase"))
+                   .UseLazyLoadingProxies();
         }
 
-        // https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations#configuring-a-primary-key
+        public DbSet<Stocks>? Stocks { get; set; }
+        public DbSet<Users>? Users { get; set; }
+        public DbSet<Trades>? Trades { get; set; }
+        public DbSet<SearchResults>? SearchResults { get; set; }
+
+        // Custom join table
+        public DbSet<StockOwnerships>? StockOwnerships { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Stocks>().HasMany(c => c.StockQuotes).WithOne(c => c.Stocks);//.HasMany().WithOne(c => c.Stocks );
-            modelBuilder.Entity<Stocks>().HasMany(c => c.StockOwnerships).WithOne(c => c.Stocks);
-       
-            modelBuilder.Entity<Users>().HasMany(c => c.StockOwnerships).WithOne(c => c.Users);//.HasMany(c => c.Trades).WithOne(c => c.Users );
-            modelBuilder.Entity<Users>().HasOne(c => c.Favorites).WithOne(c => c.Users);
-            modelBuilder.Entity<Trades>().HasOne(d => d.Stocks).WithMany(c => c.Trades);
-            modelBuilder.Entity<Trades>().HasOne(d => d.Users).WithMany(c => c.Trades);
+            if (_environment.IsDevelopment())
+            {
+                // Definition of composite primary keys
+                // Documentation used: https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations
+                modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UsersId, c.StocksId });
 
-            modelBuilder.Entity<SearchResults>().HasMany(d => d.Stocks).WithMany(d => d.SearchResults);
+                modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StocksId, c.Timestamp });
 
-            //modelBuilder.Entity<StockOccurances>().HasKey(c => new { c.SearchResultsId, c.StocksId });
-            //modelBuilder.Entity<StockOccurances>().HasOne(d =>  d.Stocks ).HasOne(d => d.SearchResults).WithMany();
 
-            modelBuilder.Entity<StockOwnerships>();
-            modelBuilder.Entity<StockQuotes>();//.HasKey(c => new { c.Stocks, c.Timestamp });
-            modelBuilder.Entity<Favorites>().HasOne(c => c.Users).WithOne(c => c.Favorites);
-            modelBuilder.Entity<Favorites>().HasMany(c => c.Stocks).WithMany(c => c.Favorites);
+                // Seed database if the app is running in development mode
+                // Resource used: https://code-maze.com/migrations-and-seed-data-efcore/
+
+                // Defining Stock Quotes:
+                var stockQuote1 = new StockQuotes
+                {
+                    StocksId = "MSFT",
+                    Open = 151.6500,
+                    High = 153.4200,
+                    Low = 151.0200,
+                    Price = 152.0600,
+                    Volume = 9425575,
+                    LatestTradingDay = new DateTime(2019, 12, 12),
+                    PreviousClose = 151.7000,
+                    Change = 0.3600,
+                    ChangePercent = "0.2373%",
+                };
+
+                // Defining users:
+                var user1 = new Users
+                {
+                    UsersId = 1,
+                    FirstName = "Dev",
+                    LastName = "User",
+                    Email = "DevUser@test.com",
+                    Password = "testpwd",
+                    FundsAvailable = 1000M,
+                    FundsSpent = 0M,
+                };
+
+                var newStock1 = new Stocks
+                {
+                    Symbol = "MSFT",
+                    StockName = "Microsoft",
+                    Description = "Tech company",
+                    LastUpdated = DateTime.Now,
+                };
+
+                var searchResult1 = new SearchResults
+                {
+                    SearchKeyword = "Microsoft",
+                    SearchTimestamp = DateTime.Now,
+                };
+
+                var own1 = new StockOwnerships
+                {
+                    UsersId = 1,
+                    StocksId = "MSFT",
+                    StockCounter = 10
+                };
+
+                // Configure favoriteLists table
+                // https://learn.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key#join-entity-type-configuration
+                // We  specify a many to many relationship between Users 
+                // and Stocks and define the FavoriteLists table as join table
+                modelBuilder.Entity<Users>()
+                        .HasMany(favStocks => favStocks.Favorites)
+                        .WithMany(u => u.FavoriteUsers)
+                        .UsingEntity(j => j.ToTable("FavoriteLists").HasData(new { FavoritesSymbol = "MSFT", FavoriteUsersUsersId = 1 }));
+
+                // Configuration of the StockOccurances join table used to store the many to many relationship between 
+                // Search results and stocks
+                modelBuilder.Entity<SearchResults>()
+                        .HasMany(d => d.Stocks)
+                        .WithMany(d => d.SearchResults)
+                        .UsingEntity(t => t.ToTable("StockOccurances").HasData(new { SearchResultsSearchKeyword = "Microsoft", StocksSymbol = "MSFT" }));
+
+                modelBuilder.Entity<StockQuotes>().HasData(stockQuote1);
+
+                modelBuilder.Entity<Stocks>().HasData(newStock1);
+
+                modelBuilder.Entity<Users>().HasData(user1);
+
+                modelBuilder.Entity<Trades>().HasData(
+                    new Trades
+                    {
+                        TradesId = 1,
+                        StockCount = 10,
+                        TradeTime = DateTime.Now,
+                        Saldo = 100M,
+                        StocksId = "MSFT",
+                        UsersId = 1
+                    });
+
+                modelBuilder.Entity<SearchResults>().HasData(searchResult1);
+                modelBuilder.Entity<StockOwnerships>().HasData(own1);
+            }
+            else {
+                // Definition of composite primary keys
+                // Documentation used: https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations
+                modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UsersId, c.StocksId });
+
+                modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StocksId, c.Timestamp });
+
+                // Configure favoriteLists table
+                // https://learn.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key#join-entity-type-configuration
+                // We  specify a many to many relationship between Users 
+                // and Stocks and define the FavoriteLists table as join table
+                modelBuilder.Entity<Users>()
+                        .HasMany(favStocks => favStocks.Favorites)
+                        .WithMany(u => u.FavoriteUsers)
+                        .UsingEntity(j => j.ToTable("FavoriteLists"));
+
+                // Configuration of the StockOccurances join table used to store the many to many relationship between 
+                // Search results and stocks
+                modelBuilder.Entity<SearchResults>()
+                        .HasMany(d => d.Stocks)
+                        .WithMany(d => d.SearchResults)
+                        .UsingEntity(t => t.ToTable("StockOccurances"));
+            }
+
         }
-
-        // det er det som kobler til databasen
-
-        public DbSet<Stocks> Stocks { get; set; }
-        public DbSet<Users> Users { get; set; }
-
-        public DbSet<Trades> Trades { get; set; }
-
-        public DbSet<SearchResults> SearchResults { get; set; }
-
-        public DbSet<Favorites> Favorites { get; set; }
-
-        public DbSet<StockOwnerships> StockOwnerships { get; set; }
-
-     }
+    }
 
     public class Stocks
     {
         [Key]
-        public string Symbol { get; set; }
-
-        public string StockName { get; set; }
-
-        public string Description { get; set; }
-
+        public string? Symbol { get; set; }
+        public string? StockName { get; set; }
+        public string? Description { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        virtual public List<Trades> Trades { get; set; }
-
-        virtual public List<StockQuotes> StockQuotes { get; set; }
-
-        virtual public List<StockOwnerships> StockOwnerships { get; set; }
-
-        virtual public List<Favorites> Favorites { get; set; }
-
-        virtual public List<SearchResults> SearchResults { get; set; }
-
-    }
-
-    /*public class StockOccurances
-    {
-        virtual public SearchResults SearchResultsId { get; set; }
-        virtual public SearchResults SearchResults { get; set; }
-
-        public int StocksId { get; set; }
-        virtual public Stocks Stocks { get; set; }
-    }*/
-
-    public class SearchResults
-    {
-        [Key]
-        public string SearchKeyword { get; set; }
-
-        public DateTime SearchTimestamp {get; set;}
-
-        virtual public List<Stocks> Stocks { get; set; }
+        // Navigation properties:
+        // List of users that have stock in their favorite list
+        virtual public List<Users>? FavoriteUsers { get; set; }
+        // list of Trades about this stock
+        virtual public List<Trades>? TradeOccurances { get; set; }
+        // List of all stored stockQuotes for the stock (idealy only one record)
+        virtual public List<StockQuotes>? StockQuotes { get; set; }
+        // List of all searchresults that this stock is part of
+        virtual public List<SearchResults>? SearchResults { get; set; }
     }
 
     public class Users
     {
+        // Infered primary key because the property UsersId follows convention <Type name>Id
         public int UsersId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
         public decimal FundsAvailable { get; set; }
-        public decimal Fundsspent { get; set; }
+        public decimal FundsSpent { get; set; }
 
-        virtual public List<Trades> Trades { get; set; }
+        // Navigation properties
 
-        virtual public List<StockOwnerships> StockOwnerships { get; set; }
+        // List containing favorite stocks
+        virtual public List<Stocks>? Favorites { get; set; }
+        // List containing all trades associated to the user
+        virtual public List<Trades>? Trades { get; set; }
 
-        virtual public Favorites Favorites { get; set; }  
+        virtual public List<StockOwnerships>? Portfolio { get; set; }
     }
-
 
     public class Trades
     {
+        // Infered primary key
         public int TradesId { get; set; }
-        public int Count { get; set; }
-        public DateTime Date { get; set; }
+        // The amount of shares of the selected stock that is going to be traded
+        public int StockCount { get; set; }
+        // The timestamp of the trade
+        public DateTime TradeTime { get; set; }
+        // Property is true if stocks are bought by user, false if the user is selling
+        public bool UserIsBying { get; set; }
+        // Money saldo received or payed (sign is determined by UserIsBying property)
         public decimal Saldo { get; set; }
-        public int StockId { get; set; }
-        virtual public Stocks Stocks { get; set; }
+
+        // Expllicit foreign keys
+        public string? StocksId { get; set; }
         public int UsersId { get; set; }
-        virtual public Users Users { get; set; }
+
+        // Navigation properties
+
+        // Refference to stock that is associated to trade 
+        virtual public Stocks? Stock { get; set; }
+        // Refference to the user which is performing the trade
+        virtual public Users? User { get; set; }
     }
 
     public class StockOwnerships
     {
-        public int StockOwnershipsId { get; set; }
-        virtual public Users Users { get; set; }
-        virtual public Stocks Stocks { get; set; }
-
-        public int StockCount { get; set; }
-
-    }
-
-    public class Favorites
-    {
-        public int FavoritesId { get; set; }
+        // Important: Note how the primary keys UserId and StocksId follows a convention. 
+        // EF detects the keys as foreign keys for User and Stock navigation properties
+        // Those keys are also added as primary key in the OnModelCreating method.
+        // The result is a custom join table with UsersId and StocksId as primary keys and a 
+        // property StockCounter.    
         public int UsersId { get; set; }
-        virtual public Users Users { get; set; }
+        public string? StocksId { get; set; }
 
-        public int StocksId { get; set; }
-        virtual public List<Stocks> Stocks { get; set; }
+        // Number of shares owned by the user of the stock refferenced
+        public int StockCounter { get; set; }
 
+        // Navigation Properties
+
+        // User that owns the stock shares
+        virtual public Users? User { get; set; }
+        // Stock that is owned by the user refferenced
+        virtual public Stocks? Stock { get; set; }
     }
 
     public class StockQuotes
     {
-        public int StockQuotesId { get; set; }
+        [Key] // Attribute sets StocksId as primarys key of the table
+        public string? StocksId { get; set; }
+        // Navigation property to the stock that this quote is for
+        virtual public Stocks? Stock { get; set; }
         public DateTime Timestamp { get; set; }
-        public string? Symbol { get; set; }
         public double Open { get; set; }
         public double High { get; set; }
         public double Low { get; set; }
         public double Price { get; set; }
         public int Volume { get; set; }
-        public string? LatestTradingDay { get; set; }
+        public DateTime? LatestTradingDay { get; set; }
         public double PreviousClose { get; set; }
         public double Change { get; set; }
         public string? ChangePercent { get; set; }
-        virtual public Stocks Stocks { get; set; }
-
     }
-    
 
+    public class SearchResults
+    {
+        [Key] // Used to specify that SearchKeyword is primary key.
+        // The kyword used to search with the Alpha Vantage api
+        public string? SearchKeyword { get; set; }
+        // Timestamp for when the search executed
+        public DateTime SearchTimestamp { get; set; }
+
+        // Navigation properties
+
+        // List of stocks in the search result
+        virtual public List<Stocks>? Stocks { get; set; }
+    }
 
 }
