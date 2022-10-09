@@ -30,16 +30,16 @@ namespace Webapplikasjoner_oblig.Controllers
         }
 
 
-        public async Task<Portfolio> GetPortfolio(int userId)
+       /* public async Task<Portfolio> GetPortfolio(int userId)
         {
             throw new NotImplementedException();   
-        }
+        }*/
 
         // okab ... fra
         [HttpGet]
-        public async Task<List<Portfolio>> GetPortfolio(string symbol, DateTime startDate, DateTime endDate)
+        public async Task<List<Portfolio>> GetPortfolioAsync(int userId)
         {
-            return await _db.GetPortfolio(symbol, startDate, endDate);
+            return await _db.GetPortfolioAsync(userId);
         
         }
 
