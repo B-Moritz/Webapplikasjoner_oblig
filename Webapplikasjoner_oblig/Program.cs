@@ -4,15 +4,15 @@ using Webapplikasjoner_oblig.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddDbContext<TradingContext>();
 builder.Services.AddScoped<ITradingRepository, TradingRepository>();
 
 var app = builder.Build();
 
-app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseStaticFiles();
 app.MapControllers();
 
 app.Run();

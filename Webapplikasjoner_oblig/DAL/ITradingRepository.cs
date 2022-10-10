@@ -12,6 +12,12 @@ namespace Webapplikasjoner_oblig.DAL
         Stocks GetStock(string symbol);
         StockQuotes GetStockQuote(string symbol);
 
-        Task<bool> RemoveStocks(int userId, StockQuote stock, int count)
+        Task<bool> RemoveStocks(int userId, StockQuote stock, int count);
+
+        Task AddStockQuoteAsync(StockQuote stockQuote, Stocks stock);
+
+        // okab...
+        Task<Portfolio> GetPortfolioAsync(int userId);
     }
+
 }

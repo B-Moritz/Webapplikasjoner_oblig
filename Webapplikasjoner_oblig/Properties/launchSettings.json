@@ -11,7 +11,8 @@
     "Webapplikasjoner_oblig": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:3321",
+      "applicationUrl": "http://localhost:1633",
+      "launchUrl": "index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

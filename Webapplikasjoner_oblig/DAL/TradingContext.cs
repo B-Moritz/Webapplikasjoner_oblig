@@ -40,6 +40,10 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Trades>? Trades { get; set; }
         public DbSet<SearchResults>? SearchResults { get; set; }
 
+        //
+        //public DbSet<Portfolio> Portfolio { get; set; }
+
+
         // Custom join table
         public DbSet<StockOwnerships>? StockOwnerships { get; set; }
 
@@ -91,6 +95,7 @@ namespace Webapplikasjoner_oblig.DAL
                     StockName = "Microsoft",
                     Description = "Tech company",
                     LastUpdated = DateTime.Now,
+                    Currency = "USD"
                 };
 
                 var searchResult1 = new SearchResults
@@ -167,6 +172,8 @@ namespace Webapplikasjoner_oblig.DAL
             }
 
         }
+
+   
     }
 
     public class Stocks
@@ -176,6 +183,8 @@ namespace Webapplikasjoner_oblig.DAL
         public string? StockName { get; set; }
         public string? Description { get; set; }
         public DateTime LastUpdated { get; set; }
+
+        public string? Currency { get; set; }
 
         // Navigation properties:
         // List of users that have stock in their favorite list
@@ -211,6 +220,8 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class Trades
     {
+        internal List<Portfolio> minPortfolioValue;
+
         // Infered primary key
         public int TradesId { get; set; }
         // The amount of shares of the selected stock that is going to be traded

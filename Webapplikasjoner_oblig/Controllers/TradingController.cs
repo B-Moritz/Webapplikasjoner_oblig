@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using AlphaVantageInterface;
 using AlphaVantageInterface.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -26,21 +27,57 @@ namespace Webapplikasjoner_oblig.Controllers
             string apiKey = _config["AlphaVantageApi:ApiKey"];
         }
 
-        public async Task<SearchResult> FindStock(string keyword) 
+        public async Task<Model.SearchResult> FindStock(string keyword) 
         {
             // Denne metoden skal lage et søkeresultat 
             throw new NotImplementedException();
         }
 
-        public async Task<Portfolio> GetPortfolio(int userId)
+       /* public async Task<Portfolio> GetPortfolio(int userId)
         {
             throw new NotImplementedException();   
+        }*/
+
+        // okab ... fra
+        //[HttpGet]
+        public async Task<Portfolio> GetPortfolio(int userId)
+        {
+            return await _db.GetPortfolioAsync(userId);
+        
         }
 
-        public async Task<FavoriteList> GetFavoriteList(int userId) 
+        /*public async Task<Portfolio> GetPortfolio(int userId)
+        {
+            try
+            {
+                foreach (var portfolio in _db.GetAllTradesAsync)
+                {
+                    var filename = portfolio.UsersId;
+                    var lastChanged = System.IO.File.GetLastWriteTime(filename);
+
+                    if (lastChanged != portfolio.LastChanged)
+                    {
+                        portfolio.LastChanged = lastChanged;
+                    }
+
+                }
+                DbContext.saveChanges();
+            }
+            catch
+            {
+                var books = await _db.GetAllTradesAsync();
+                return Ok(books);
+
+            }
+            // OKAB... TIL
+        }*/
+
+        public async Task<FavoriteList> GetFavoriteList(int userId)
         {
             throw new NotImplementedException();
         }
+
+
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
@@ -59,13 +96,20 @@ namespace Webapplikasjoner_oblig.Controllers
                 throw new NullReferenceException("The stock was not found in the database");
             }
 
+
+
             // Check if there are stock quotes
             StockQuotes curStockQuote = _db.GetStockQuote(symbol);
             double timeSinceLastUpdate = (DateTime.Now - curStockQuote.Timestamp).TotalHours;
-            if (curStockQuote is null || timeSinceLastUpdate > 2);
+            if (curStockQuote is null || timeSinceLastUpdate > 2)
             {
-                StockQuote newQuote = await AlphaV.GetStockQuoteAsync(curStock.Symbol);
+                StockQuote newQuote = await AlphaV.getStockQuoteAsync(curStock.Symbol);
+                await _db.AddStockQuoteAsync(newQuote, curStock);
+
             }
+            // We now have a stock quote - find the total that needs to be added to the users funds
+            // We need to handle currency
+
 
 
             // Call repository 

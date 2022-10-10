@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
+using System.Linq;
+using System.Text;
 
 using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
@@ -40,13 +42,11 @@ namespace Webapplikasjoner_oblig.DAL
                     // Find the stock quote
 
             }
-
-
         }
 
         public StockQuotes GetStockQuote(string symbol)
         {
-            StockQuotes stockQuote = new StockQuotes();
+            StockQuotes stockQuote = null;
             // Check if the stock quote exists
             try
             {
@@ -76,8 +76,11 @@ namespace Webapplikasjoner_oblig.DAL
             return curStock;
         }
 
-        public async Task AddStockQuote(StockQuote stockQuote, Stocks stock) 
+        public async Task AddStockQuoteAsync(StockQuote stockQuote, Stocks stock)
         {
+            // This method converts an AlphaVantageInterface.Model.StockQuote object to
+            // DAL.StockQuotes.
+            // Then the new quote is added to the database.
 
             // Parse the LatestTradingDay to datetime object
             Regex LatestTradingdayPattern = new Regex("([0-9]*)-([0-9]*)-([0-9]*)");
@@ -103,6 +106,88 @@ namespace Webapplikasjoner_oblig.DAL
                 Change = stockQuote.Change,
                 ChangePercent = stockQuote.ChangePercent,
             };
+
+            // Add the new object to the database (asuming that stock already is in database)
+            await _db.StockQuotes.AddAsync(newTableRow);
+            _db.SaveChanges();
+        }
+
+        public async Task<Portfolio> GetPortfolioAsync(int userId)
+        {
+            try
+            {
+                var user = _db.Users.Single(u => u.UsersId == userId);
+                //user.Portfolio.<StockOwnerships>(s => s.UsersId, use)
+                List<StockOwnerships> stockList = user.Portfolio;
+                List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
+
+
+                foreach (var min_stock in stockList)
+                {
+                    // var stock_name = min_stock.UsersId;
+                    var stock = min_stock.Stock;
+
+                    var current_Portfolio_stock = new PortfolioStock
+                    {
+                        StockCounter = min_stock.StockCounter,
+                        TotalValue = 0,
+                        TotalFundsSpent = 0,
+                        Symbol = stock.Symbol,
+                        StockName = stock.StockName,
+                        Description = stock.Description
+
+                    };
+
+                    portfolio_list.Add(current_Portfolio_stock);
+
+                    //var s = DateTime.Now.Date.AddYears(stock_name);
+                   /* var minPortfolioValue = await GetPortfolioAsync(stock_name);
+
+
+                    if (minPortfolioValue != min_stock.minPortfolioValue)
+                    {
+                        min_stock.minPortfolioValue = minPortfolioValue;
+                        //return minPortfolioValue;
+                    }               
+                    List<Portfolio> my_portfolio = await _db.Portfolio.Select(userId => new Portfolio
+                    {
+                        LastUpdate = userId.LastUpdate,
+                        TotalValueSpent = userId.TotalValueSpent,
+                        TotalPortfolioValue = userId.TotalPortfolioValue,
+                        Stocks = userId.Stocks
+                    }).ToListAsync();
+                    return my_portfolio;
+
+                    //return minPortfolioValue;
+                    
+
+                    /* Portfolio enPortfolioValue = await _db.Portfolio.FindAsync(userId);
+                     var portfolioValue = new Portfolio()
+                     {
+
+                         LastUpdate = enPortfolioValue.LastUpdate,
+                         TotalValueSpent = enPortfolioValue.TotalValueSpent,
+                         TotalPortfolioValue = enPortfolioValue.TotalPortfolioValue,
+                         Stocks = enPortfolioValue.Stocks                    
+
+                     };*/
+                }
+
+                var OutPortfolio = new Portfolio
+                {
+                    LastUpdate = DateTime.Now,
+                    TotalValueSpent = 0,
+                    TotalPortfolioValue = 0,
+                    Stocks = portfolio_list
+                };
+                return OutPortfolio;
+
+            }
+            catch
+            {
+                return null;
+            }
+            return null;        
         }
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
