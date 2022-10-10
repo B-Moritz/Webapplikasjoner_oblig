@@ -9,10 +9,11 @@ namespace Webapplikasjoner_oblig.DAL
         Task<List<Trade>> GetAllTradesAsync();
         Task<Trade> GetOneTradeAsync(int id);
 
-        // okab...
-        Task<List<Portfolio>> GetPortfolio(string symbol, DateTime startDate, DateTime endDate);
 
         Task<List<FavoriteList>> GetFavoriteList(int userId);
+
+
+        Task<Portfolio> GetPortfolioAsync(int userId);
 
     }
 
