@@ -40,8 +40,8 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Trades>? Trades { get; set; }
         public DbSet<SearchResults>? SearchResults { get; set; }
 
-
-        public DbSet<Portfolio> Portfolio { get; set; }
+        //
+        //public DbSet<Portfolio> Portfolio { get; set; }
 
 
         // Custom join table

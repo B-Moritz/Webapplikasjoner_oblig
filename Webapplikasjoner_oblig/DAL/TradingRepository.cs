@@ -15,15 +15,37 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
 
-        public async Task<List<Portfolio>> GetPortfolioAsync(int userId)
+        public async Task<Portfolio> GetPortfolioAsync(int userId)
         {
             try
             {
-                foreach (var min_stock in _db.Trades)
+                var user = _db.Users.Single(u => u.UsersId == userId);
+                //user.Portfolio.<StockOwnerships>(s => s.UsersId, use)
+                List<StockOwnerships> stockList = user.Portfolio;
+                List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
+
+
+                foreach (var min_stock in stockList)
                 {
-                    var stock_name = min_stock.UsersId;
+                    // var stock_name = min_stock.UsersId;
+                    var stock = min_stock.Stock;
+
+                    var current_Portfolio_stock = new PortfolioStock
+                    {
+                        StockCounter = min_stock.StockCounter,
+                        TotalValue = 0,
+                        TotalFundsSpent = 0,
+                        Symbol = stock.Symbol,
+                        StockName = stock.StockName,
+                        Description = stock.Description
+
+                    };
+
+                    portfolio_list.Add(current_Portfolio_stock);
+
                     //var s = DateTime.Now.Date.AddYears(stock_name);
-                    var minPortfolioValue = await GetPortfolioAsync(stock_name);
+                   /* var minPortfolioValue = await GetPortfolioAsync(stock_name);
+
 
                     if (minPortfolioValue != min_stock.minPortfolioValue)
                     {
@@ -53,6 +75,16 @@ namespace Webapplikasjoner_oblig.DAL
 
                      };*/
                 }
+
+                var OutPortfolio = new Portfolio
+                {
+                    LastUpdate = DateTime.Now,
+                    TotalValueSpent = 0,
+                    TotalPortfolioValue = 0,
+                    Stocks = portfolio_list
+                };
+                return OutPortfolio;
+
             }
             catch
             {
