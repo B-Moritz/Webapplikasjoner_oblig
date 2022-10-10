@@ -71,10 +71,9 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
-            throw new NotImplementedException();
+            return await _db.GetFavoriteList(userId);
         }
-
-
+        
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
