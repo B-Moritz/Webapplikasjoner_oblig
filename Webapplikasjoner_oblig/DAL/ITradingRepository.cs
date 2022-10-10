@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AlphaVantageInterface.Models;
 using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.DAL
@@ -8,5 +9,9 @@ namespace Webapplikasjoner_oblig.DAL
         Task<bool> SaveTradeAsync(Trade innTrading);
         Task<List<Trade>> GetAllTradesAsync();
         Task<Trade> GetOneTradeAsync(int id);
+        Stocks GetStock(string symbol);
+        StockQuotes GetStockQuote(string symbol);
+
+        Task<bool> RemoveStocks(int userId, StockQuote stock, int count)
     }
 }

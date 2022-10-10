@@ -42,6 +42,8 @@ namespace Webapplikasjoner_oblig.DAL
 
         // Custom join table
         public DbSet<StockOwnerships>? StockOwnerships { get; set; }
+
+        public DbSet<StockQuotes>? StockQuotes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (_environment.IsDevelopment())
@@ -256,7 +258,7 @@ namespace Webapplikasjoner_oblig.DAL
     public class StockQuotes
     {
         [Key] // Attribute sets StocksId as primarys key of the table
-        public string? StocksId { get; set; }
+        public string StocksId { get; set; }
         // Navigation property to the stock that this quote is for
         virtual public Stocks? Stock { get; set; }
         public DateTime Timestamp { get; set; }
