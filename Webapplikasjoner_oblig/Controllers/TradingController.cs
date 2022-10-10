@@ -74,10 +74,9 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
-            throw new NotImplementedException();
+            return await _db.GetFavoriteList(userId);
         }
-
-
+        
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
@@ -86,7 +85,8 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> SellStock(int userId, string symbol, int count)
         {
-            // Create the api object
+            throw new NotImplementedException();
+            /*// Create the api object
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(apiKey, true);
 
             // Check if the stock exists in the database
@@ -115,7 +115,7 @@ namespace Webapplikasjoner_oblig.Controllers
             // Call repository 
             // remove stock from user
             // Update total funds and other stats
-            // Add Trade
+            // Add Trade*/
         }
 
         public async Task<UserProfile> GetUserProfile(int userId)

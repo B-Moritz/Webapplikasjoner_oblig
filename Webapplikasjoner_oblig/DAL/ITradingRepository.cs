@@ -15,9 +15,9 @@ namespace Webapplikasjoner_oblig.DAL
         Task<bool> RemoveStocks(int userId, StockQuote stock, int count);
 
         Task AddStockQuoteAsync(StockQuote stockQuote, Stocks stock);
-
-        // okab...
+        Task<FavoriteList> GetFavoriteList(int userId);
         Task<Portfolio> GetPortfolioAsync(int userId);
+
     }
 
 }

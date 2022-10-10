@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
 using System.Linq;
+using System.Reflection;
 using System.Text;
-
 using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
 
@@ -19,7 +19,8 @@ namespace Webapplikasjoner_oblig.DAL
 
         public async Task<bool> RemoveStocks(int userId, StockQuote stock, int count) 
         {
-            Users user = new Users();
+            throw new NotImplementedException();
+            /*Users user = new Users();
             // This method decrements or removes a stock linked to the userId
             try
             {
@@ -41,7 +42,7 @@ namespace Webapplikasjoner_oblig.DAL
                 // Add the value that the user receives from the trade
                     // Find the stock quote
 
-            }
+            }*/
         }
 
         public StockQuotes GetStockQuote(string symbol)
@@ -189,6 +190,43 @@ namespace Webapplikasjoner_oblig.DAL
             }
             return null;        
         }
+
+        
+        public async Task<FavoriteList> GetFavoriteList(int userId)
+        { 
+            try
+            {
+                Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+                List<Stocks>? favorites = enUser.Favorites;
+                List<StockDetail>? stockFavorite = new List<StockDetail>();
+                StockDetail currentStockDetail;
+
+                foreach (Stocks currentStock in favorites)
+                {
+                    currentStockDetail = new StockDetail
+                    {
+                        StockName = currentStock.StockName,
+                        StockSymbol = currentStock.Symbol,
+                        Description = currentStock.Description,
+                        LastUpdated = currentStock.LastUpdated
+                    };
+                    stockFavorite.Add(currentStockDetail);
+                }
+                var currentFavorite = new FavoriteList
+                {
+                    LastUpdated = DateTime.Now,
+                    StockList = stockFavorite
+                };
+                return currentFavorite;
+            }
+            catch
+            {
+                return null;
+            }   
+            
+        }
+        
+
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
         {

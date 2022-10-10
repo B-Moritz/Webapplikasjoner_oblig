@@ -7,7 +7,7 @@ using AlphaVantageInterface.Models;
 
 namespace Webapplikasjoner_oblig.DAL
 {
-   
+
 
     public class TradingContext : DbContext
     {
@@ -15,11 +15,11 @@ namespace Webapplikasjoner_oblig.DAL
         protected readonly IHostEnvironment _environment;
 
 
-        public TradingContext(IConfiguration configuration, 
-                              DbContextOptions<TradingContext> options, 
+        public TradingContext(IConfiguration configuration,
+                              DbContextOptions<TradingContext> options,
                               IHostEnvironment env) : base(options)
         {
-           _configuration = configuration;
+            _configuration = configuration;
             _environment = env;
         }
 
@@ -147,7 +147,8 @@ namespace Webapplikasjoner_oblig.DAL
                 modelBuilder.Entity<SearchResults>().HasData(searchResult1);
                 modelBuilder.Entity<StockOwnerships>().HasData(own1);
             }
-            else {
+            else
+            {
                 // Definition of composite primary keys
                 // Documentation used: https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations
                 modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UsersId, c.StocksId });
@@ -170,11 +171,7 @@ namespace Webapplikasjoner_oblig.DAL
                         .WithMany(d => d.SearchResults)
                         .UsingEntity(t => t.ToTable("StockOccurances"));
             }
-
         }
-
-   
-    }
 
     public class Stocks
     {
