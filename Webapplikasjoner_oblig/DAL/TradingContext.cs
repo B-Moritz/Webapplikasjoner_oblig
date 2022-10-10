@@ -172,7 +172,7 @@ namespace Webapplikasjoner_oblig.DAL
                         .UsingEntity(t => t.ToTable("StockOccurances"));
             }
         }
-
+    }
     public class Stocks
     {
         [Key]
