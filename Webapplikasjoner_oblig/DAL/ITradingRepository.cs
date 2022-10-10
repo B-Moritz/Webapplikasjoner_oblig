@@ -12,6 +12,8 @@ namespace Webapplikasjoner_oblig.DAL
         // okab...
         Task<List<Portfolio>> GetPortfolio(string symbol, DateTime startDate, DateTime endDate);
 
+        Task<List<FavoriteList>> GetFavoriteList(int userId);
+
     }
 
 }

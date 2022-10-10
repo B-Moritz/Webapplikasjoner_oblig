@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
 using System.Linq;
+using System.Reflection;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -36,6 +37,25 @@ namespace Webapplikasjoner_oblig.DAL
                 return null;
             }
             return null;
+        }
+        // okab ...til
+
+        public async Task<List<FavoriteList>> GetFavoriteList(int userId)
+        {
+
+          
+            try
+            {
+                Users enUser = await _db.Users.FindAsync(userId);
+                List<Stocks>? favorites = enUser.Favorites.ToList();
+                
+                return favorites;
+                
+            }
+            catch
+            {
+                return null;
+            }
         }
         // okab ...til
 
