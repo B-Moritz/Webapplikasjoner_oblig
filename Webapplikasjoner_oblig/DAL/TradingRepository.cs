@@ -97,26 +97,41 @@ namespace Webapplikasjoner_oblig.DAL
             return null;        
         }
 
-
-        public async Task<List<FavoriteList>> GetFavoriteList(int userId)
-        {
-
-          
+        
+        public async Task<FavoriteList> GetFavoriteList(int userId)
+        { 
             try
             {
-                Users enUser = await _db.Users.FindAsync(userId);
-                List<Stocks>? favorites = enUser.Favorites.ToList();
-                
-                return favorites;
-                
+                Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+                List<Stocks>? favorites = enUser.Favorites;
+                List<StockDetail>? stockFavorite = new List<StockDetail>();
+                StockDetail currentStockDetail;
+
+                foreach (Stocks currentStock in favorites)
+                {
+                    currentStockDetail = new StockDetail
+                    {
+                        StockName = currentStock.StockName,
+                        StockSymbol = currentStock.Symbol,
+                        Description = currentStock.Description,
+                        LastUpdated = currentStock.LastUpdated
+                    };
+                    stockFavorite.Add(currentStockDetail);
+                }
+                var currentFavorite = new FavoriteList
+                {
+                    LastUpdated = DateTime.Now,
+                    StockList = stockFavorite
+                };
+                return currentFavorite;
             }
             catch
             {
                 return null;
-            }
+            }   
+            
         }
         
-
 
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)

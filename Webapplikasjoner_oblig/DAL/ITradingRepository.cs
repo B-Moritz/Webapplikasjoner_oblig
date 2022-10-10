@@ -8,11 +8,7 @@ namespace Webapplikasjoner_oblig.DAL
         Task<bool> SaveTradeAsync(Trade innTrading);
         Task<List<Trade>> GetAllTradesAsync();
         Task<Trade> GetOneTradeAsync(int id);
-
-
-        Task<List<FavoriteList>> GetFavoriteList(int userId);
-
-
+        Task<FavoriteList> GetFavoriteList(int userId);
         Task<Portfolio> GetPortfolioAsync(int userId);
 
     }
