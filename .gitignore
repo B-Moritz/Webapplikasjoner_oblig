@@ -8,6 +8,9 @@
 
 .vs
 
+# Cusom ignores
+node_modules
+
 # Build results
 
 [Dd]ebug/
