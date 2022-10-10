@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
 using System.Linq;
+using System.Text;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -13,38 +14,84 @@ namespace Webapplikasjoner_oblig.DAL
             _db = db;
         }
 
-        //okab ... fra
-        public async Task<List<Portfolio>> GetPortfolio(string symbol, DateTime startDate, DateTime endDate)
+
+        public async Task<Portfolio> GetPortfolioAsync(int userId)
         {
             try
             {
-                foreach(var history in _db.Stocks)
-                {
-                    var historic_data = await GetPortfolio(symbol, startDate, endDate);
-                    var lastUpdated = System.IO.File.GetLastWriteTime(historic_data);
-                    if(lastUpdated != history.LastUpdated)
-                    {
-                        history.LastUpdated = lastUpdated;
-                    }
+                var user = _db.Users.Single(u => u.UsersId == userId);
+                //user.Portfolio.<StockOwnerships>(s => s.UsersId, use)
+                List<StockOwnerships> stockList = user.Portfolio;
+                List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
 
-                    return historic_data;
+
+                foreach (var min_stock in stockList)
+                {
+                    // var stock_name = min_stock.UsersId;
+                    var stock = min_stock.Stock;
+
+                    var current_Portfolio_stock = new PortfolioStock
+                    {
+                        StockCounter = min_stock.StockCounter,
+                        TotalValue = 0,
+                        TotalFundsSpent = 0,
+                        Symbol = stock.Symbol,
+                        StockName = stock.StockName,
+                        Description = stock.Description
+
+                    };
+
+                    portfolio_list.Add(current_Portfolio_stock);
+
+                    //var s = DateTime.Now.Date.AddYears(stock_name);
+                   /* var minPortfolioValue = await GetPortfolioAsync(stock_name);
+
+
+                    if (minPortfolioValue != min_stock.minPortfolioValue)
+                    {
+                        min_stock.minPortfolioValue = minPortfolioValue;
+                        //return minPortfolioValue;
+                    }               
+                    List<Portfolio> my_portfolio = await _db.Portfolio.Select(userId => new Portfolio
+                    {
+                        LastUpdate = userId.LastUpdate,
+                        TotalValueSpent = userId.TotalValueSpent,
+                        TotalPortfolioValue = userId.TotalPortfolioValue,
+                        Stocks = userId.Stocks
+                    }).ToListAsync();
+                    return my_portfolio;
+
+                    //return minPortfolioValue;
+                    
+
+                    /* Portfolio enPortfolioValue = await _db.Portfolio.FindAsync(userId);
+                     var portfolioValue = new Portfolio()
+                     {
+
+                         LastUpdate = enPortfolioValue.LastUpdate,
+                         TotalValueSpent = enPortfolioValue.TotalValueSpent,
+                         TotalPortfolioValue = enPortfolioValue.TotalPortfolioValue,
+                         Stocks = enPortfolioValue.Stocks                    
+
+                     };*/
                 }
-                //DbContext.saveChanges();
+
+                var OutPortfolio = new Portfolio
+                {
+                    LastUpdate = DateTime.Now,
+                    TotalValueSpent = 0,
+                    TotalPortfolioValue = 0,
+                    Stocks = portfolio_list
+                };
+                return OutPortfolio;
+
             }
             catch
             {
                 return null;
             }
-            return null;
+            return null;        
         }
-        // okab ...til
-
-
-
-
-
-
-
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
         {

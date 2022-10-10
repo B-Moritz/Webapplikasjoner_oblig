@@ -40,6 +40,10 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Trades>? Trades { get; set; }
         public DbSet<SearchResults>? SearchResults { get; set; }
 
+        //
+        //public DbSet<Portfolio> Portfolio { get; set; }
+
+
         // Custom join table
         public DbSet<StockOwnerships>? StockOwnerships { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -166,15 +170,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         }
 
-        internal Task GetHistoricalAsync(string symbol, DateTime startDate, DateTime endDate)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal object Symbols(object symbol)
-        {
-            throw new NotImplementedException();
-        }
+   
     }
 
     public class Stocks
@@ -219,6 +215,8 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class Trades
     {
+        internal List<Portfolio> minPortfolioValue;
+
         // Infered primary key
         public int TradesId { get; set; }
         // The amount of shares of the selected stock that is going to be traded
