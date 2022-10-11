@@ -38,6 +38,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AlphaVantageInterface\AlphaVantageInterface.csproj" />
+    <ProjectReference Include="..\EcbCurrencyInterface\EcbCurrencyInterface.csproj" />
   </ItemGroup>
 
   <ItemGroup>

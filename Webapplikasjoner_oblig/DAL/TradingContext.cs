@@ -113,7 +113,7 @@ namespace Webapplikasjoner_oblig.DAL
 
                 // Configure favoriteLists table
                 // https://learn.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key#join-entity-type-configuration
-                // We  specify a many to many relationship between Users 
+                // We  specify a many to many relationship between Users
                 // and Stocks and define the FavoriteLists table as join table
                 modelBuilder.Entity<Users>()
                         .HasMany(favStocks => favStocks.Favorites)
@@ -172,7 +172,7 @@ namespace Webapplikasjoner_oblig.DAL
                         .UsingEntity(t => t.ToTable("StockOccurances"));
             }
         }
-
+    }
     public class Stocks
     {
         [Key]
