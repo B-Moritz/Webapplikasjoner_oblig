@@ -37,7 +37,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
         // okab ... fra
         [HttpGet]
-        public async Task<Portfolio> GetPortfolioAsync(int userId)
+        public async Task<Portfolio> GetPortfolio(int userId)
         {
             return await _db.GetPortfolioAsync(userId);
         

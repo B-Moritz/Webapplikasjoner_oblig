@@ -30,6 +30,7 @@ namespace Webapplikasjoner_oblig.DAL
                     // var stock_name = min_stock.UsersId;
                     var stock = min_stock.Stock;
 
+                   
                     var current_Portfolio_stock = new PortfolioStock
                     {
                         StockCounter = min_stock.StockCounter,
@@ -38,7 +39,7 @@ namespace Webapplikasjoner_oblig.DAL
                         Symbol = stock.Symbol,
                         StockName = stock.StockName,
                         Description = stock.Description
-
+                        
                     };
 
                     portfolio_list.Add(current_Portfolio_stock);
@@ -84,6 +85,9 @@ namespace Webapplikasjoner_oblig.DAL
                     Stocks = portfolio_list
                 };
                 return OutPortfolio;
+
+
+
 
             }
             catch
