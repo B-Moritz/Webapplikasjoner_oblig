@@ -1,3 +1,7 @@
+// The currency calculator was created using the following resources:
+// https://www.codementor.io/@dewetvanthomas/tutorial-currency-converter-application-for-c-121yicb1es
+
+
 using System.Text.RegularExpressions;
 using System.Globalization;
 
