@@ -6,7 +6,13 @@
 *.user
 *.sln.docstates
 
+# Custom ignores
+node_modules
+
 .vs
+
+# Cusom ignores
+node_modules
 
 # Build results
 

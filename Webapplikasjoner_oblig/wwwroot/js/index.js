@@ -1,4 +1,5 @@
 // Må sende via URL "Trade/Sell"    Trade er controller?? og sell er function i controller?
+
 $(function () {
     hentAlleAksjer();
 });

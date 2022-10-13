@@ -7,7 +7,7 @@ using AlphaVantageInterface.Models;
 
 namespace Webapplikasjoner_oblig.DAL
 {
-   
+
 
     public class TradingContext : DbContext
     {
@@ -15,11 +15,11 @@ namespace Webapplikasjoner_oblig.DAL
         protected readonly IHostEnvironment _environment;
 
 
-        public TradingContext(IConfiguration configuration, 
-                              DbContextOptions<TradingContext> options, 
+        public TradingContext(IConfiguration configuration,
+                              DbContextOptions<TradingContext> options,
                               IHostEnvironment env) : base(options)
         {
-           _configuration = configuration;
+            _configuration = configuration;
             _environment = env;
         }
 
@@ -40,8 +40,14 @@ namespace Webapplikasjoner_oblig.DAL
         public DbSet<Trades>? Trades { get; set; }
         public DbSet<SearchResults>? SearchResults { get; set; }
 
+        //
+        //public DbSet<Portfolio> Portfolio { get; set; }
+
+
         // Custom join table
         public DbSet<StockOwnerships>? StockOwnerships { get; set; }
+
+        public DbSet<StockQuotes>? StockQuotes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (_environment.IsDevelopment())
@@ -88,7 +94,7 @@ namespace Webapplikasjoner_oblig.DAL
                     Symbol = "MSFT",
                     StockName = "Microsoft",
                     Description = "Tech company",
-                    LastUpdated = DateTime.Now,
+                    LastUpdated = DateTime.Now
                 };
 
                 var searchResult1 = new SearchResults
@@ -140,7 +146,8 @@ namespace Webapplikasjoner_oblig.DAL
                 modelBuilder.Entity<SearchResults>().HasData(searchResult1);
                 modelBuilder.Entity<StockOwnerships>().HasData(own1);
             }
-            else {
+            else
+            {
                 // Definition of composite primary keys
                 // Documentation used: https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations
                 modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UsersId, c.StocksId });
@@ -163,10 +170,8 @@ namespace Webapplikasjoner_oblig.DAL
                         .WithMany(d => d.SearchResults)
                         .UsingEntity(t => t.ToTable("StockOccurances"));
             }
-
         }
     }
-
     public class Stocks
     {
         [Key]
@@ -174,6 +179,8 @@ namespace Webapplikasjoner_oblig.DAL
         public string? StockName { get; set; }
         public string? Description { get; set; }
         public DateTime LastUpdated { get; set; }
+
+        //public string? Currency { get; set; }
 
         // Navigation properties:
         // List of users that have stock in their favorite list
@@ -209,6 +216,8 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class Trades
     {
+        internal List<Portfolio> minPortfolioValue;
+
         // Infered primary key
         public int TradesId { get; set; }
         // The amount of shares of the selected stock that is going to be traded
@@ -256,7 +265,7 @@ namespace Webapplikasjoner_oblig.DAL
     public class StockQuotes
     {
         [Key] // Attribute sets StocksId as primarys key of the table
-        public string? StocksId { get; set; }
+        public string StocksId { get; set; }
         // Navigation property to the stock that this quote is for
         virtual public Stocks? Stock { get; set; }
         public DateTime Timestamp { get; set; }
