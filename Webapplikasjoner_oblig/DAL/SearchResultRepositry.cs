@@ -19,10 +19,8 @@ namespace Webapplikasjoner_oblig.DAL
                 throw new ArgumentNullException();
             }
 
-
-
-            try
-            {
+            try { 
+            
                 SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
                 var stockDList = new List<StockDetail>();
 
@@ -31,7 +29,7 @@ namespace Webapplikasjoner_oblig.DAL
 
                     var stockDetail = new StockDetail()
                     {
-                        Id = searchRes.Symbol,
+                        StockSymbol = searchRes.Symbol,
                         StockName = searchRes.StockName,
                     };
 
@@ -48,20 +46,16 @@ namespace Webapplikasjoner_oblig.DAL
 
                 };
 
-
                 return dbSearchResult;
-            
-            
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
                 return null;
             }
-            
-
-            
         }
+
+
 
         public Task<bool> SaveKeyWordAsync(string keyWord)
         {
