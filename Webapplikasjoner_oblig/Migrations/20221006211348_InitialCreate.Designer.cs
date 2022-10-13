@@ -11,11 +11,7 @@ using Webapplikasjoner_oblig.DAL;
 namespace Webapplikasjoner_oblig.Migrations
 {
     [DbContext(typeof(TradingContext))]
-<<<<<<<< HEAD:Webapplikasjoner_oblig/Migrations/20221005132310_InitialCreate.Designer.cs
-    [Migration("20221005132310_InitialCreate")]
-========
     [Migration("20221006211348_InitialCreate")]
->>>>>>>> f91e116a59a9a58592c8c656724becb5ef7a22e5:Webapplikasjoner_oblig/Migrations/20221006211348_InitialCreate.Designer.cs
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
