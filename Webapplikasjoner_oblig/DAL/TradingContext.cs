@@ -292,6 +292,11 @@ namespace Webapplikasjoner_oblig.DAL
 
         // List of stocks in the search result
         virtual public List<Stocks>? Stocks { get; set; }
+
+        public static implicit operator string?(SearchResults? v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

@@ -16,7 +16,10 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly IConfiguration _config;
 
+        private readonly SearchResultRepositry SearchResultRepositry;
+
         private readonly string apiKey;
+
 
         public TradingController(ITradingRepository db, IConfiguration config)
         {
@@ -29,8 +32,15 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Model.SearchResult> FindStock(string keyword) 
         {
-            // Denne metoden skal lage et søkeresultat 
-            throw new NotImplementedException();
+            try
+            {
+               
+                return SearchResultRepositry.GetOneKeyWordAsync(keyword);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
        /* public async Task<Portfolio> GetPortfolio(int userId)
