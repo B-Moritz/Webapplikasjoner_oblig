@@ -94,8 +94,7 @@ namespace Webapplikasjoner_oblig.DAL
                     Symbol = "MSFT",
                     StockName = "Microsoft",
                     Description = "Tech company",
-                    LastUpdated = DateTime.Now,
-                    Currency = "USD"
+                    LastUpdated = DateTime.Now
                 };
 
                 var searchResult1 = new SearchResults
@@ -181,7 +180,7 @@ namespace Webapplikasjoner_oblig.DAL
         public string? Description { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        public string? Currency { get; set; }
+        //public string? Currency { get; set; }
 
         // Navigation properties:
         // List of users that have stock in their favorite list
