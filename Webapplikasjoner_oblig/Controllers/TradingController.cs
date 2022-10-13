@@ -35,7 +35,7 @@ namespace Webapplikasjoner_oblig.Controllers
             try
             {
                
-                return SearchResultRepositry.GetOneKeyWordAsync(keyword);
+                return await SearchResultRepositry.GetOneKeyWordAsync(keyword);
             }
             catch
             {
