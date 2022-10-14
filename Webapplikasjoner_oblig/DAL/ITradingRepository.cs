@@ -12,9 +12,11 @@ namespace Webapplikasjoner_oblig.DAL
         Stocks GetStock(string symbol);
         StockQuotes GetStockQuote(string symbol);
 
-        Task<bool> RemoveStocks(int userId, StockQuote stock, int count);
+        Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count);
+        void RemoveStockQuotes(string symbol);
 
-        Task AddStockQuoteAsync(StockQuote stockQuote, Stocks stock);
+        Task<User> GetUser(int userId);
+        Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote);
         Task<FavoriteList> GetFavoriteList(int userId);
         Task<Portfolio> GetPortfolioAsync(int userId);
 

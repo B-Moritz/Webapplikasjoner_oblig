@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
+using PeanutButter.Utils;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -17,41 +18,20 @@ namespace Webapplikasjoner_oblig.DAL
             _db = db;
         }
 
-        public async Task<bool> RemoveStocks(int userId, StockQuote stock, int count) 
+        public void RemoveStockQuotes(string symbol)
         {
-            throw new NotImplementedException();
-            /*Users user = new Users();
-            // This method decrements or removes a stock linked to the userId
-            try
-            {
-                user = await _db.Users.SingleAsync<Users>(u => u.UsersId == userId);
-            }
-            catch (Exception e) {
-                Console.WriteLine(e.ToString());
-            }
-
-            StockOwnerships ownedStock = user.Portfolio.Single<StockOwnerships>(s => string.Compare(s.StocksId, stock.Symbol) == 0);
-
-            if (ownedStock.StockCounter == 1)
-            {
-                // If the user has only one stock -> remove relation to this stock
-                _db.StockOwnerships.Remove(ownedStock);
-
-                // Call a clean method to make sure that the saved stock has relations
-
-                // Add the value that the user receives from the trade
-                    // Find the stock quote
-
-            }*/
+            // This method removes all quotes of the specified stock. There should only be one quote stored for each stock
+            var removeQuotes = _db.StockQuotes.Where<StockQuotes>(t => t.StocksId == symbol);
+            _db.StockQuotes.RemoveRange(removeQuotes);
         }
 
-        public StockQuotes GetStockQuote(string symbol)
+        public StockQuotes? GetStockQuote(string symbol)
         {
-            StockQuotes stockQuote = null;
+            StockQuotes? stockQuote = null;
             // Check if the stock quote exists
             try
             {
-                stockQuote = _db.StockQuotes.Single(sq => string.Compare(sq.StocksId, symbol) == 0);
+                stockQuote = _db.StockQuotes?.Single(sq => string.Compare(sq.StocksId, symbol) == 0);
             }
             catch (Exception e)
             { 
@@ -77,7 +57,7 @@ namespace Webapplikasjoner_oblig.DAL
             return curStock;
         }
 
-        public async Task AddStockQuoteAsync(StockQuote stockQuote, Stocks stock)
+        public async Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote)
         {
             // This method converts an AlphaVantageInterface.Model.StockQuote object to
             // DAL.StockQuotes.
@@ -91,7 +71,6 @@ namespace Webapplikasjoner_oblig.DAL
             StockQuotes newTableRow = new StockQuotes
             {
                 StocksId = stockQuote.Symbol,
-                Stock = stock,
                 Timestamp = DateTime.Now,
                 LatestTradingDay = new DateTime(
                                                 int.Parse(gc[1].ToString()),
@@ -111,6 +90,8 @@ namespace Webapplikasjoner_oblig.DAL
             // Add the new object to the database (asuming that stock already is in database)
             await _db.StockQuotes.AddAsync(newTableRow);
             _db.SaveChanges();
+
+            return newTableRow;
         }
 
         public async Task<Portfolio> GetPortfolioAsync(int userId)
@@ -229,7 +210,59 @@ namespace Webapplikasjoner_oblig.DAL
             }   
             
         }
-        
+
+        public async Task<User> GetUser(int userId)
+        {
+            // This method return the user object containing information about the user
+            Users curUser = _db.Users.Single(t => t.UsersId == userId);
+            
+            User convertedUser = new User
+            {
+                Id = curUser.UsersId,
+                FirstName = curUser.FirstName,
+                LastName = curUser.LastName,
+                Email = curUser.Email,
+                Password = curUser.Password,
+                FundsSpent = curUser.FundsSpent,
+                FundsAvailable = curUser.FundsAvailable,
+                Currency = curUser.PortfolioCurrency
+            };
+            return convertedUser;
+        }
+
+        public async Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count) 
+        {
+            // This method adds to the total funds available
+            // Removes the stocks
+            // Adds a trade object
+            Users curUser = _db.Users.Single<Users>(t => t.UsersId == userId);
+            curUser.FundsAvailable += saldo;
+
+            // Remove stock 
+            StockOwnerships curOwnership = curUser.Portfolio.Single<StockOwnerships>(t => t.StocksId == symbol);
+            curOwnership.StockCounter -= count;
+            if (curOwnership.StockCounter <= 0)
+            {
+                // The user has no more ownership of this stock type
+                curUser.Portfolio.Remove(curOwnership);
+            }
+
+            // Create new trade object
+            Trades tradeLog = new Trades {
+                StockCount = count,
+                TradeTime = DateTime.Now,
+                UserIsBying = false,
+                Saldo = saldo,
+                Currency = curUser.PortfolioCurrency,
+                Stock = curOwnership.Stock,
+                User = curOwnership.User
+            };
+
+            await _db.Trades.AddAsync(tradeLog);
+
+            _db.SaveChanges();
+
+        }
 
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
