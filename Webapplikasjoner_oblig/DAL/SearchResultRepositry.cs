@@ -12,6 +12,9 @@ namespace Webapplikasjoner_oblig.DAL
             throw new NotImplementedException();
         }
 
+
+
+
         public async Task<SearchResult>? GetOneKeyWordAsync(string keyWord)
         {
             if (keyWord == null)
@@ -19,8 +22,9 @@ namespace Webapplikasjoner_oblig.DAL
                 throw new ArgumentNullException();
             }
 
-            try { 
-            // get a search result that has primary key og keyword
+            try
+            {
+                // get a search result that has primary key og keyword
                 SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
                 var stockDList = new List<StockDetail>();
 
@@ -61,14 +65,10 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-        public Task<bool> SaveKeyWordAsync(string keyWord)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<string> ISearchResultRepositry.GetOneKeyWordAsync(string keyWord)
+        Task<bool> ISearchResultRepositry.SaveKeyWordAsync(string keyWord)
         {
             throw new NotImplementedException();
         }
     }
+
 }
