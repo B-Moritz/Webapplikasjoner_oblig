@@ -1,13 +1,15 @@
 ﻿$(function () {
     printAllMyPortfolio();
 });
+
 function printAllMyPortfolio() {
     $.get("trading/getPortfolio", function (minStocks){
         formatPortfolio(minStocks);
     });
 }
 
-function formatPortfolio(minStocks){
+function formatPortfolio(minStocks) {
+
     let ut = "<table class='table table-striped'>" +
         "<tr>" +
         "<th>Stock_Name</th><th>Discriptions</th><th>value</th><th>Values</th><th></th>" +
