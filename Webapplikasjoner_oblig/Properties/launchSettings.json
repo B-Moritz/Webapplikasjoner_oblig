@@ -11,8 +11,8 @@
     "Webapplikasjoner_oblig": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:1633",
       "launchUrl": "index.html",
+      "applicationUrl": "http://localhost:1634",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,6 +20,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

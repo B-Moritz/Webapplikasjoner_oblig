@@ -34,6 +34,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.AutoHistory" Version="5.0.8" />
     <PackageReference Include="PeanutButter.Utils.Entity" Version="2.0.96" />
     <PackageReference Include="Serenity.Data.Entity" Version="3.14.5" />
+    <PackageReference Include="Venflow.NewtonsoftJson" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,5 +50,6 @@
     <None Remove="Microsoft.EntityFrameworkCore.AutoHistory" />
     <None Remove="PeanutButter.Utils.Entity" />
     <None Remove="Serenity.Data.Entity" />
+    <None Remove="Venflow.NewtonsoftJson" />
   </ItemGroup>
 </Project>
