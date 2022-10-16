@@ -106,11 +106,12 @@ namespace Webapplikasjoner_oblig.DAL
                     SearchTimestamp = DateTime.Now,
                 };
 
-                var own1 = new StockOwnerships
+                var own2 = new StockOwnerships
                 {
                     UsersId = 1,
                     StocksId = "MSFT",
-                    StockCounter = 20
+                    StockCounter = 20,
+                    SpentValue = 100M
                 };
 
                 // Configure favoriteLists table
@@ -149,7 +150,7 @@ namespace Webapplikasjoner_oblig.DAL
                     });
 
                 modelBuilder.Entity<SearchResults>().HasData(searchResult1);
-                modelBuilder.Entity<StockOwnerships>().HasData(own1);
+                modelBuilder.Entity<StockOwnerships>().HasData(own2);
             }
             else
             {
@@ -255,12 +256,12 @@ namespace Webapplikasjoner_oblig.DAL
         // EF detects the keys as foreign keys for User and Stock navigation properties
         // Those keys are also added as primary key in the OnModelCreating method.
         // The result is a custom join table with UsersId and StocksId as primary keys and a 
-        // property StockCounter.    
+        // property StockCounter.
         public int UsersId { get; set; }
         public string? StocksId { get; set; }
-
         // Number of shares owned by the user of the stock refferenced
         public int StockCounter { get; set; }
+        public decimal SpentValue { get; set; }
 
         // Navigation Properties
 

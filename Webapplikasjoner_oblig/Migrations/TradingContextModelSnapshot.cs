@@ -77,7 +77,7 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             SearchKeyword = "Microsoft",
-                            SearchTimestamp = new DateTime(2022, 10, 14, 13, 21, 32, 187, DateTimeKind.Local).AddTicks(3481)
+                            SearchTimestamp = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4352)
                         });
                 });
 
@@ -87,6 +87,9 @@ namespace Webapplikasjoner_oblig.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("StocksId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("SpentValue")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("StockCounter")
@@ -103,6 +106,7 @@ namespace Webapplikasjoner_oblig.Migrations
                         {
                             UsersId = 1,
                             StocksId = "MSFT",
+                            SpentValue = 100m,
                             StockCounter = 20
                         });
                 });
@@ -191,7 +195,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Symbol = "MSFT",
                             Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 14, 13, 21, 32, 187, DateTimeKind.Local).AddTicks(3428),
+                            LastUpdated = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4319),
                             StockName = "Microsoft"
                         });
                 });
@@ -240,7 +244,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 14, 13, 21, 32, 187, DateTimeKind.Local).AddTicks(5008),
+                            TradeTime = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(5142),
                             UserIsBying = true,
                             UsersId = 1
                         });

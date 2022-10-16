@@ -8,6 +8,8 @@ using AlphaVantageInterface.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using EcbCurrencyInterface;
+using System.Diagnostics;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -37,44 +39,32 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();
         }
 
-       /* public async Task<Portfolio> GetPortfolio(int userId)
-        {
-            throw new NotImplementedException();   
-        }*/
-
-        // okab ... fra
         [HttpGet]
         public async Task<Portfolio> GetPortfolio(int userId)
         {
-            return await _db.GetPortfolioAsync(userId);
-        
-        }
-
-        /*public async Task<Portfolio> GetPortfolio(int userId)
-        {
-            try
+            Portfolio outPortfolio =  await _db.GetPortfolioAsync(userId);
+            // Add the total funds spent value:
+            // Get the quote:
+            StockQuotes curQuote;         
+            decimal PortfolioTotalValue = 0;
+            decimal totalValueSpent = 0;
+            decimal exchangeRate = 1;
+            foreach (PortfolioStock stock in outPortfolio.Stocks)
             {
-                foreach (var portfolio in _db.GetAllTradesAsync)
+                curQuote = await getUpdatedQuote(stock.Symbol);
+                // Check the currency
+                if (outPortfolio.PortfolioCurrency != stock.StockCurrency)
                 {
-                    var filename = portfolio.UsersId;
-                    var lastChanged = System.IO.File.GetLastWriteTime(filename);
-
-                    if (lastChanged != portfolio.LastChanged)
-                    {
-                        portfolio.LastChanged = lastChanged;
-                    }
-
+                    exchangeRate = await EcbCurrencyHandler.getExchangeRate(stock.StockCurrency, outPortfolio.PortfolioCurrency);
                 }
-                DbContext.saveChanges();
+                stock.TotalValue = (decimal) curQuote.Price * stock.StockCounter * exchangeRate;
+                PortfolioTotalValue += stock.TotalValue;
+                totalValueSpent += stock.TotalFundsSpent;
             }
-            catch
-            {
-                var books = await _db.GetAllTradesAsync();
-                return Ok(books);
-
-            }
-            // OKAB... TIL
-        }*/
+            outPortfolio.TotalPortfolioValue = PortfolioTotalValue;
+            outPortfolio.TotalValueSpent = totalValueSpent;
+            return outPortfolio;        
+        }
 
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
@@ -108,14 +98,20 @@ namespace Webapplikasjoner_oblig.Controllers
             if (identifiedUser.Currency != curStock.Currency)
             {
                 // Get the exchange rate from Ecb
-                exchangeRate = await EcbCurrencyHandler.getExchangeRate(identifiedUser.Currency, curStock.Currency);
+                exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, identifiedUser.Currency);
+                // Likning
+                // n curStock_cur = exchange * n user_cur
             }
+            // Calculating the total saldo with the amount of stocks and correct currency
             decimal saldo = (decimal) curQuote.Price * count * exchangeRate;
+
+            Debug.WriteLine($"\n*******\nStock Price: {curQuote.Price}\nStock Currency: {curStock.Currency}\n" +
+                              $"User currency: {identifiedUser.Currency}\nResult: {saldo}\n*******\n");
 
             // One transaction to sell the stocks
             await _db.SellStockTransactionAsync(userId, symbol, saldo, count);
 
-            return await _db.GetPortfolioAsync(userId);
+            return await GetPortfolio(userId);
         }
 
         private async Task<StockQuotes> getUpdatedQuote(string symbol)
@@ -172,6 +168,11 @@ namespace Webapplikasjoner_oblig.Controllers
         public async Task<Trade> GetOneTrade(int id)
         {
             return await _db.GetOneTradeAsync(id);
+        }
+
+        public async Task ClearTradeHistory(int userId)
+        {
+            throw new NotImplementedException();
         }
 
     }
