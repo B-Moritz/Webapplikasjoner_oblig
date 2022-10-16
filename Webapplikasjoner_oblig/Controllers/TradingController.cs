@@ -24,6 +24,9 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly int _quoteCacheTime = 24;
 
+        private readonly SearchResultRepositry SearchResultRepositry;
+
+
         public TradingController(ITradingRepository db, IConfiguration config)
         {
             _db = db;
@@ -35,8 +38,15 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Model.SearchResult> FindStock(string keyword) 
         {
-            // Denne metoden skal lage et søkeresultat 
-            throw new NotImplementedException();
+            try
+            {
+               
+                return await SearchResultRepositry.GetOneKeyWordAsync(keyword);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         [HttpGet]
