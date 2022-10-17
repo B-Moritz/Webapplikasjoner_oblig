@@ -57,7 +57,7 @@ function sellStock() {
 }
 
 function hentFavorite() {
-    $.get("Trading/GetFavoriteList", function (favorites) {
+    $.get("Trading/GetFavoriteList?userId=1", function (favorites) {
         formaterFavorite(favorites);
     });
 }
@@ -65,15 +65,14 @@ function hentFavorite() {
 function formaterFavorite(favorites) {
     let ut = "<table class='table table-striped'>" +
         "<tr>" +
-        "<th>Date</th><th>Stock name</th><th>Stock symbol</th><th>Description</th><th>Last updated</th>" +
+        "<th>Stock name</th><th>Stock symbol</th><th>Description</th><th>Last updated</th>" +
         "</tr>";
-    for (let enfavorite of favorites) {
+    for (let enfavorite of favorites.stockList) {
         ut += "<tr>" +
-            "<td>" + enfavorite.lastupdated + "</td>" +
-            "<td>" + enfavorite.stockList.StockName + "</td>" +
-            "<td>" + enfavorite.stockList.StockSymbol + "</td>" +
-            "<td>" + enfavorite.stockList.Description + "</td>" +
-            "<td>" + enfavorite.stockList.LastUpdated + "</td>" +
+            "<td>" + enfavorite.StockName + "</td>" +
+            "<td>" + enfavorite.StockSymbol + "</td>" +
+            "<td>" + enfavorite.Description + "</td>" +
+            "<td>" + enfavorite.LastUpdated + "</td>" +
             "</tr>";
     }
     ut += "</table>";
