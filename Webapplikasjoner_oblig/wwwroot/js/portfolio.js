@@ -56,10 +56,13 @@ function printAllMyPortfolio() {
         });
 };
 
-
 function formatPortfolio(portfolio) {
     return formatPortfolio(portfolio);
-   
+}
+
+
+
+
 
     /*let ut = "<table><tr></tr>";
     for (const minStock of portfolio) {
@@ -68,7 +71,7 @@ function formatPortfolio(portfolio) {
     }
     ut += "</table>";
     $("#portfolios").html(ut);*/
-}
+
 
 
 /*$(document).ready(function () {
