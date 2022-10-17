@@ -92,7 +92,7 @@ function printAllMyPortfolio() {
         $.get(url, function (data) {
             updatePortfolioList(data);
         }).fail(function (response) {
-            alert(response.responseText);e
+            alert(response.responseText);
 
         });
 };
