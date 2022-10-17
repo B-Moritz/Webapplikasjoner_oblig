@@ -6,6 +6,10 @@ using System.Text;
 using AlphaVantageInterface;
 using AlphaVantageInterface.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using EcbCurrencyInterface;
+using System.Diagnostics;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -18,10 +22,18 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly IConfiguration _config;
 
+
         private readonly ISearchResultRepositry _searchResultRepositry;
 
         private readonly string _apiKey;
 
+
+
+       
+
+        
+
+        private readonly SearchResultRepositry SearchResultRepositry;
 
 
 
@@ -33,7 +45,10 @@ namespace Webapplikasjoner_oblig.Controllers
             // We can now access the AlphaVantage api key:
             _apiKey = _config["AlphaVantageApi:ApiKey"];
 
+
             _searchResultRepositry = searchResultRepositry;
+
+
         }
 
         public async Task<Model.SearchResult> FindStock(string keyword) 
@@ -119,44 +134,32 @@ namespace Webapplikasjoner_oblig.Controllers
             
         }
 
-       /* public async Task<Portfolio> GetPortfolio(int userId)
-        {
-            throw new NotImplementedException();   
-        }*/
-
-        // okab ... fra
         [HttpGet]
         public async Task<Portfolio> GetPortfolio(int userId)
         {
-            return await _db.GetPortfolioAsync(userId);
-        
-        }
-
-        /*public async Task<Portfolio> GetPortfolio(int userId)
-        {
-            try
+            Portfolio outPortfolio =  await _db.GetPortfolioAsync(userId);
+            // Add the total funds spent value:
+            // Get the quote:
+            StockQuotes curQuote;         
+            decimal PortfolioTotalValue = 0;
+            decimal totalValueSpent = 0;
+            decimal exchangeRate = 1;
+            foreach (PortfolioStock stock in outPortfolio.Stocks)
             {
-                foreach (var portfolio in _db.GetAllTradesAsync)
+                curQuote = await getUpdatedQuote(stock.Symbol);
+                // Check the currency
+                if (outPortfolio.PortfolioCurrency != stock.StockCurrency)
                 {
-                    var filename = portfolio.UsersId;
-                    var lastChanged = System.IO.File.GetLastWriteTime(filename);
-
-                    if (lastChanged != portfolio.LastChanged)
-                    {
-                        portfolio.LastChanged = lastChanged;
-                    }
-
+                    exchangeRate = await EcbCurrencyHandler.getExchangeRate(stock.StockCurrency, outPortfolio.PortfolioCurrency);
                 }
-                DbContext.saveChanges();
+                stock.TotalValue = (decimal) curQuote.Price * stock.StockCounter * exchangeRate;
+                PortfolioTotalValue += stock.TotalValue;
+                totalValueSpent += stock.TotalFundsSpent;
             }
-            catch
-            {
-                var books = await _db.GetAllTradesAsync();
-                return Ok(books);
-
-            }
-            // OKAB... TIL
-        }*/
+            outPortfolio.TotalPortfolioValue = PortfolioTotalValue;
+            outPortfolio.TotalValueSpent = totalValueSpent;
+            return outPortfolio;        
+        }
 
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
@@ -166,42 +169,79 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
-            throw new NotImplementedException();  
+            return await GetPortfolio(userId);
+
         }
 
         public async Task<Portfolio> SellStock(int userId, string symbol, int count)
         {
-            throw new NotImplementedException();
-            /*// Create the api object
-            AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(apiKey, true);
-
+            // Test http request: localhost:1633/trading/sellStock?userId=1&symbol=MSFT&count=5
             // Check if the stock exists in the database
             Stocks curStock = _db.GetStock(symbol);
             if (curStock is null) 
             {
                 throw new NullReferenceException("The stock was not found in the database");
             }
+            // Get the updated quote for the stock
+            StockQuotes curQuote = await getUpdatedQuote(symbol);
 
+            // Get user
+            User identifiedUser = await _db.GetUser(userId);
 
-
-            // Check if there are stock quotes
-            StockQuotes curStockQuote = _db.GetStockQuote(symbol);
-            double timeSinceLastUpdate = (DateTime.Now - curStockQuote.Timestamp).TotalHours;
-            if (curStockQuote is null || timeSinceLastUpdate > 2)
-            {
-                StockQuote newQuote = await AlphaV.getStockQuoteAsync(curStock.Symbol);
-                await _db.AddStockQuoteAsync(newQuote, curStock);
-
-            }
             // We now have a stock quote - find the total that needs to be added to the users funds
             // We need to handle currency
+            decimal exchangeRate = 1;
+            if (identifiedUser.Currency != curStock.Currency)
+            {
+                // Get the exchange rate from Ecb
+                exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, identifiedUser.Currency);
+                // Likning
+                // n curStock_cur = exchange * n user_cur
+            }
+            // Calculating the total saldo with the amount of stocks and correct currency
+            decimal saldo = (decimal) curQuote.Price * count * exchangeRate;
 
+            Debug.WriteLine($"\n*******\nStock Price: {curQuote.Price}\nStock Currency: {curStock.Currency}\n" +
+                              $"User currency: {identifiedUser.Currency}\nResult: {saldo}\n*******\n");
 
+            // One transaction to sell the stocks
+            await _db.SellStockTransactionAsync(userId, symbol, saldo, count);
 
-            // Call repository 
-            // remove stock from user
-            // Update total funds and other stats
-            // Add Trade*/
+            return await GetPortfolio(userId);
+        }
+
+        private async Task<StockQuotes> getUpdatedQuote(string symbol)
+        {
+            // Create the api object
+            AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+            // Check if there are stock quotes
+            StockQuotes curStockQuote = _db.GetStockQuote(symbol);
+            if (curStockQuote is null)
+            {
+                // get a new quote from Alpha vantage api
+                StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
+                // Adding stock quote to db and get the StockQuotes object 
+                StockQuotes newConvertedQuote = await _db.AddStockQuoteAsync(newQuote);
+                // Set the new StockQuotes object as current quote
+                curStockQuote = newConvertedQuote;
+            }
+            else
+            {
+                // Check that the stored quote is not outdated
+                double timeSinceLastUpdate = (DateTime.Now - curStockQuote.Timestamp).TotalHours;
+
+                if (timeSinceLastUpdate >= _quoteCacheTime)
+                {
+                    // If the quote was not updated within the specified _quoteCachedTime, then a new quote is obtained from api
+                    // Remove the existing stock quotes from db
+                    _db.RemoveStockQuotes(symbol);
+                    StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
+                    // Adding stock quote to db
+                    StockQuotes newConvertedQuote = await _db.AddStockQuoteAsync(newQuote);
+                    curStockQuote = newConvertedQuote;
+                }
+            }
+            return curStockQuote;
         }
 
         public async Task<UserProfile> GetUserProfile(int userId)
@@ -224,6 +264,11 @@ namespace Webapplikasjoner_oblig.Controllers
         public async Task<Trade> GetOneTrade(int id)
         {
             return await _db.GetOneTradeAsync(id);
+        }
+
+        public async Task ClearTradeHistory(int userId)
+        {
+            throw new NotImplementedException();
         }
 
     }

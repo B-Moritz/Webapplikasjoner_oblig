@@ -4,6 +4,7 @@ using Webapplikasjoner_oblig.Model;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AlphaVantageInterface.Models;
+using Microsoft.EntityFrameworkCore.Update;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -36,8 +37,8 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
         public DbSet<Stocks>? Stocks { get; set; }
-        public DbSet<Users>? Users { get; set; }
-        public DbSet<Trades>? Trades { get; set; }
+        public DbSet<Users> Users { get; set; }
+        public DbSet<Trades> Trades { get; set; }
         public DbSet<SearchResults>? SearchResults { get; set; }
 
         //
@@ -47,7 +48,7 @@ namespace Webapplikasjoner_oblig.DAL
         // Custom join table
         public DbSet<StockOwnerships>? StockOwnerships { get; set; }
 
-        public DbSet<StockQuotes>? StockQuotes { get; set; }
+        public DbSet<StockQuotes> StockQuotes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             if (_environment.IsDevelopment())
@@ -87,6 +88,7 @@ namespace Webapplikasjoner_oblig.DAL
                     Password = "testpwd",
                     FundsAvailable = 1000M,
                     FundsSpent = 0M,
+                    PortfolioCurrency = "NOK"
                 };
 
                 var newStock1 = new Stocks
@@ -94,7 +96,8 @@ namespace Webapplikasjoner_oblig.DAL
                     Symbol = "MSFT",
                     StockName = "Microsoft",
                     Description = "Tech company",
-                    LastUpdated = DateTime.Now
+                    LastUpdated = DateTime.Now,
+                    Currency = "USD"
                 };
 
                 var searchResult1 = new SearchResults
@@ -103,16 +106,17 @@ namespace Webapplikasjoner_oblig.DAL
                     SearchTimestamp = DateTime.Now,
                 };
 
-                var own1 = new StockOwnerships
+                var own2 = new StockOwnerships
                 {
                     UsersId = 1,
                     StocksId = "MSFT",
-                    StockCounter = 10
+                    StockCounter = 20,
+                    SpentValue = 100M
                 };
 
                 // Configure favoriteLists table
                 // https://learn.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key#join-entity-type-configuration
-                // We  specify a many to many relationship between Users 
+                // We  specify a many to many relationship between Users
                 // and Stocks and define the FavoriteLists table as join table
                 modelBuilder.Entity<Users>()
                         .HasMany(favStocks => favStocks.Favorites)
@@ -138,20 +142,21 @@ namespace Webapplikasjoner_oblig.DAL
                         TradesId = 1,
                         StockCount = 10,
                         TradeTime = DateTime.Now,
+                        UserIsBying = true,
                         Saldo = 100M,
                         StocksId = "MSFT",
-                        UsersId = 1
+                        UsersId = 1,
+                        Currency = "NOK"
                     });
 
                 modelBuilder.Entity<SearchResults>().HasData(searchResult1);
-                modelBuilder.Entity<StockOwnerships>().HasData(own1);
+                modelBuilder.Entity<StockOwnerships>().HasData(own2);
             }
             else
             {
                 // Definition of composite primary keys
                 // Documentation used: https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations
                 modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UsersId, c.StocksId });
-
                 modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StocksId, c.Timestamp });
 
                 // Configure favoriteLists table
@@ -180,7 +185,7 @@ namespace Webapplikasjoner_oblig.DAL
         public string? Description { get; set; }
         public DateTime LastUpdated { get; set; }
 
-        //public string? Currency { get; set; }
+        public string Currency { get; set; }
 
         // Navigation properties:
         // List of users that have stock in their favorite list
@@ -204,6 +209,7 @@ namespace Webapplikasjoner_oblig.DAL
         public decimal FundsAvailable { get; set; }
         public decimal FundsSpent { get; set; }
 
+        public string PortfolioCurrency { get; set; }
         // Navigation properties
 
         // List containing favorite stocks
@@ -211,7 +217,7 @@ namespace Webapplikasjoner_oblig.DAL
         // List containing all trades associated to the user
         virtual public List<Trades>? Trades { get; set; }
 
-        virtual public List<StockOwnerships>? Portfolio { get; set; }
+        virtual public List<StockOwnerships> Portfolio { get; set; }
     }
 
     public class Trades
@@ -228,6 +234,8 @@ namespace Webapplikasjoner_oblig.DAL
         public bool UserIsBying { get; set; }
         // Money saldo received or payed (sign is determined by UserIsBying property)
         public decimal Saldo { get; set; }
+
+        public string Currency { get; set; }
 
         // Expllicit foreign keys
         public string? StocksId { get; set; }
@@ -247,12 +255,12 @@ namespace Webapplikasjoner_oblig.DAL
         // EF detects the keys as foreign keys for User and Stock navigation properties
         // Those keys are also added as primary key in the OnModelCreating method.
         // The result is a custom join table with UsersId and StocksId as primary keys and a 
-        // property StockCounter.    
+        // property StockCounter.
         public int UsersId { get; set; }
         public string? StocksId { get; set; }
-
         // Number of shares owned by the user of the stock refferenced
         public int StockCounter { get; set; }
+        public decimal SpentValue { get; set; }
 
         // Navigation Properties
 
@@ -264,7 +272,7 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class StockQuotes
     {
-        [Key] // Attribute sets StocksId as primarys key of the table
+        [Key] // Attribute sets StocksId as primary key of the table
         public string StocksId { get; set; }
         // Navigation property to the stock that this quote is for
         virtual public Stocks? Stock { get; set; }

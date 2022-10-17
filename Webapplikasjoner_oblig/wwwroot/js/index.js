@@ -2,6 +2,10 @@
 
 $(function () {
     hentAlleAksjer();
+    hentFavorite();
+    $("#update").click(function () {
+        hentFavorite();
+    });
 });
 
 function hentAlleAksjer() {
@@ -56,4 +60,26 @@ function sellStock() {
     });
 }
 
+function hentFavorite() {
+    $.get("Trading/GetFavoriteList?userId=1", function (favorites) {
+        formaterFavorite(favorites);
 
+    });
+}
+
+function formaterFavorite(favorites) {
+    let ut = "<table class='table table-striped'>" +
+        "<tr>" +
+        "<th>Stock name</th><th>Stock symbol</th><th>Description</th><th>Last updated</th>" +
+        "</tr>";
+    for (let enfavorite of favorites.stockList) {
+        ut += "<tr>" +
+            "<td>" + enfavorite.stockName + "</td>" +
+            "<td>" + enfavorite.stockSymbol + "</td>" +
+            "<td>" + enfavorite.description + "</td>" +
+            "<td>" + enfavorite.lastUpdated + "</td>" +
+            "</tr>";
+    }
+    ut += "</table>";
+    $("#skrivfavorite").html(ut);
+}

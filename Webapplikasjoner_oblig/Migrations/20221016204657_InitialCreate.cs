@@ -28,7 +28,8 @@ namespace Webapplikasjoner_oblig.Migrations
                     Symbol = table.Column<string>(type: "TEXT", nullable: false),
                     StockName = table.Column<string>(type: "TEXT", nullable: true),
                     Description = table.Column<string>(type: "TEXT", nullable: true),
-                    LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Currency = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,7 +47,8 @@ namespace Webapplikasjoner_oblig.Migrations
                     Email = table.Column<string>(type: "TEXT", nullable: true),
                     Password = table.Column<string>(type: "TEXT", nullable: true),
                     FundsAvailable = table.Column<decimal>(type: "TEXT", nullable: false),
-                    FundsSpent = table.Column<decimal>(type: "TEXT", nullable: false)
+                    FundsSpent = table.Column<decimal>(type: "TEXT", nullable: false),
+                    PortfolioCurrency = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -134,7 +136,8 @@ namespace Webapplikasjoner_oblig.Migrations
                 {
                     UsersId = table.Column<int>(type: "INTEGER", nullable: false),
                     StocksId = table.Column<string>(type: "TEXT", nullable: false),
-                    StockCounter = table.Column<int>(type: "INTEGER", nullable: false)
+                    StockCounter = table.Column<int>(type: "INTEGER", nullable: false),
+                    SpentValue = table.Column<decimal>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -163,6 +166,7 @@ namespace Webapplikasjoner_oblig.Migrations
                     TradeTime = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UserIsBying = table.Column<bool>(type: "INTEGER", nullable: false),
                     Saldo = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Currency = table.Column<string>(type: "TEXT", nullable: false),
                     StocksId = table.Column<string>(type: "TEXT", nullable: true),
                     UsersId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
@@ -185,17 +189,17 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "SearchResults",
                 columns: new[] { "SearchKeyword", "SearchTimestamp" },
-                values: new object[] { "Microsoft", new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(978) });
+                values: new object[] { "Microsoft", new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4352) });
 
             migrationBuilder.InsertData(
                 table: "Stocks",
-                columns: new[] { "Symbol", "Description", "LastUpdated", "StockName" },
-                values: new object[] { "MSFT", "Tech company", new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(941), "Microsoft" });
+                columns: new[] { "Symbol", "Currency", "Description", "LastUpdated", "StockName" },
+                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4319), "Microsoft" });
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "UsersId", "Email", "FirstName", "FundsAvailable", "FundsSpent", "LastName", "Password" },
-                values: new object[] { 1, "DevUser@test.com", "Dev", 1000m, 0m, "User", "testpwd" });
+                columns: new[] { "UsersId", "Email", "FirstName", "FundsAvailable", "FundsSpent", "LastName", "Password", "PortfolioCurrency" },
+                values: new object[] { 1, "DevUser@test.com", "Dev", 1000m, 0m, "User", "testpwd", "NOK" });
 
             migrationBuilder.InsertData(
                 table: "FavoriteLists",
@@ -209,8 +213,8 @@ namespace Webapplikasjoner_oblig.Migrations
 
             migrationBuilder.InsertData(
                 table: "StockOwnerships",
-                columns: new[] { "StocksId", "UsersId", "StockCounter" },
-                values: new object[] { "MSFT", 1, 10 });
+                columns: new[] { "StocksId", "UsersId", "SpentValue", "StockCounter" },
+                values: new object[] { "MSFT", 1, 100m, 20 });
 
             migrationBuilder.InsertData(
                 table: "StockQuotes",
@@ -219,8 +223,8 @@ namespace Webapplikasjoner_oblig.Migrations
 
             migrationBuilder.InsertData(
                 table: "Trades",
-                columns: new[] { "TradesId", "Saldo", "StockCount", "StocksId", "TradeTime", "UserIsBying", "UsersId" },
-                values: new object[] { 1, 100m, 10, "MSFT", new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(1744), false, 1 });
+                columns: new[] { "TradesId", "Currency", "Saldo", "StockCount", "StocksId", "TradeTime", "UserIsBying", "UsersId" },
+                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(5142), true, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteLists_FavoritesSymbol",

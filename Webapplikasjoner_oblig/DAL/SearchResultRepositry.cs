@@ -23,7 +23,7 @@ namespace Webapplikasjoner_oblig.DAL
         {   
             try
             {
-                //list of all search results 
+                //list of all search results
                 var keywords = await _db.SearchResults.ToListAsync();
 
                 //list to hold search result objects
@@ -56,11 +56,9 @@ namespace Webapplikasjoner_oblig.DAL
                    searchRusltObject.SearchTime = keyword.SearchTimestamp;
                    searchRusltObject.StockList = stockDList;
 
-                    result.Add(searchRusltObject);
+                   result.Add(searchRusltObject);
                 }
-
-                    return result;
-
+                return result;
             }
             catch (Exception e)
             {
