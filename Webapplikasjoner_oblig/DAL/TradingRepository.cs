@@ -222,7 +222,6 @@ namespace Webapplikasjoner_oblig.DAL
 
         }
 
-
         public async Task<bool> SaveTradeAsync(Trade innTrading)
         {
             /**{

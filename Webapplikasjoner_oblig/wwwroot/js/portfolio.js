@@ -16,6 +16,8 @@ function printAllMyPortfolio() {
         $.get(url, function (data) {
             if (data != null) {
 
+                const regex = /([0-9])/
+
                 $("#lastupdate").html(data.lastUpdate);
                 $("#totalvaluespent").html(data.totalValueSpent);
                 $("#totalportfoliovalue").html(data.totalPortfolioValue);
