@@ -68,7 +68,7 @@ function hentFavorite() {
     $.get(url, function (favorites) {
         if (favorites != null) {
             const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
-            let machResult = regex.exec(data.lastUpdate);
+            let machResult = regex.exec(favorites.lastUpdated);
             const updateString = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
             $("#lastupdates").html(updateString);
 

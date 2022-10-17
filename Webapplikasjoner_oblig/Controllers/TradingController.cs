@@ -184,15 +184,49 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
-            return await GetPortfolio(userId);
 
+            // Test endpoint: localhost:1635/trading/buyStock?userId=1&symbol=MSFT&count=5
+            // Validate count input value
+            if (count < 1) {
+                throw new ArgumentException("The provided count value is not valid. It must be an integer greater than 0.");
+            }
+            // Get the user object
+            User curUser = await _db.GetUserAsync(userId);
+            if (curUser is null)
+            {
+                throw new ArgumentException("The provided userId did not match any user in the database!");
+            }
+            // Get the stock
+            Stocks curStock = await _db.GetStockAsync(symbol);
+            if (curStock is null)
+            {
+                throw new ArgumentException("The specified stock was not found in the database");
+            }
+            // Calculate the saldo required to by the amount of stocks
+            StockQuotes curQuote = await getUpdatedQuote(symbol);
+            decimal exchangeRate = 1;
+            if (curUser.Currency != curStock.Currency)
+            {
+                exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, curUser.Currency);
+            }
+            decimal saldo = exchangeRate * (decimal)curQuote.Price * count;
+
+            // Check that the user has the funds needed to perform the transaction
+            if (curUser.FundsAvailable - saldo < 0)
+            {
+                throw new Exception("The user has not enough funds to perform this transaction!");
+            }
+
+            await _db.BuyStockTransactionAsync(curUser, curStock, saldo, count);
+
+            return await GetPortfolio(userId);
         }
 
         public async Task<Portfolio> SellStock(int userId, string symbol, int count)
         {
             // Test http request: localhost:1633/trading/sellStock?userId=1&symbol=MSFT&count=5
             // Check if the stock exists in the database
-            Stocks curStock = _db.GetStock(symbol);
+            Stocks curStock = await _db.GetStockAsync(symbol);
             if (curStock is null) 
             {
                 throw new NullReferenceException("The stock was not found in the database");
@@ -201,7 +235,7 @@ namespace Webapplikasjoner_oblig.Controllers
             StockQuotes curQuote = await getUpdatedQuote(symbol);
 
             // Get user
-            User identifiedUser = await _db.GetUser(userId);
+            User identifiedUser = await _db.GetUserAsync(userId);
 
             // We now have a stock quote - find the total that needs to be added to the users funds
             // We need to handle currency

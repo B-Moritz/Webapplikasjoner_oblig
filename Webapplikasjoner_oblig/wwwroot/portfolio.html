@@ -16,9 +16,12 @@
 <body>
     <div id="SellDialog" class="hideDialog">
         <div id="innerDialog">
-            <label>Number of stocks to be sold</label>
-            <input id="StockCouterInput" type="number" name="StockCounter" value="1">
-            <button id="confirmSell">Confirm Transaction</button>
+            <div class="input-group">
+                <label class="input-group-addon">Number of stocks to be sold</label>
+                <input id="StockCouterInput" class="form-control" type="number" name="StockCounter" value="1">
+            </div>
+            <button id="confirmSell" class="btn-outline-success">Confirm Transaction</button>
+            <button id="CancelSellDialog" class="btn-outline-secondary">Cancel Transaction</button>
         </div>
     </div>
     <div class="bringBack">
@@ -59,20 +62,28 @@
         </div>
         <br /><br /><br />
         <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
-        <label>Lastupdated: </label>
-        <span id="lastupdate"></span><br />
-        <label>Total value: </label>
-        <span id="totalvaluespent"></span><br />
-        <label>TotalportfolioValue: </label>
-        <span id="totalportfoliovalue"></span><br />
-        <label>Currency: </label>
-        <span id="portfoliocurrency"></span><br />
+        <div>
+            <div id="PortfolioSpinner" class="hideDialog">
+                <!--https://getbootstrap.com/docs/4.3/components/spinners/-->
+                <div class="spinner-border text-info" role="status">
+                    <span class="sr-only">...Loading</span>
+                </div>
+            </div>
+            <label>Lastupdated: </label>
+            <span id="lastupdate"></span><br />
+            <label>Total value: </label>
+            <span id="totalvaluespent"></span><br />
+            <label>TotalportfolioValue: </label>
+            <span id="totalportfoliovalue"></span><br />
+            <label>Currency: </label>
+            <span id="portfoliocurrency"></span><br />
 
-        <div class="btn-group" style="width:100%; z-index: 0">
-            <table id="PortfolioStockList" class="table table-striped"></table>
-            <button type="button" id="get" style="width:50%" class="btn btn-primary btn-lg">Update</button>
-            <div id="portfolios"></div>
-            <button type="button" id="sell" style="width:50%" class="btn btn-danger btn-lg">Sell</button>
+            <div class="btn-group" style="width:100%; z-index: 0">
+                <table id="PortfolioStockList" class="table table-striped"></table>
+                <button type="button" id="get" style="width:50%" class="btn btn-primary btn-lg">Update</button>
+                <div id="portfolios"></div>
+                <button type="button" id="sell" style="width:50%" class="btn btn-danger btn-lg">Sell</button>
+            </div>
         </div>
      </div>
 

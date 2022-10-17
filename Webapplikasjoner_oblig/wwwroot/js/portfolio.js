@@ -10,16 +10,21 @@ $(function () {
 
     $("#sell").click(function () {
         if (selectedStock == null) {
-            alert("No sotkc was selected. Please select a stock");
+            alert("No stock was selected. Please select a stock");
             return;
         }
         $("#SellDialog").removeClass("hideDialog");
         $("#SellDialog").addClass("showDialog");
+        const receiptHtml = `
+            <label class="control-label">Stock Symbol</label>
+            <div>
+                <p class="form-control-static"></p>
+            </div>`
     });
 
     $("#confirmSell").click(function () {
         const count = $("#StockCouterInput").val();
-        $.get(`trading/sellStock?userId=1&symbol=MSFT&count=${count}`, (data) => {
+        $.post(`trading/sellStock?userId=1&symbol=MSFT&count=${count}`, (data) => {
             updatePortfolioList(data);
         });
         $("#SellDialog").removeClass("showDialog");
@@ -50,7 +55,7 @@ function updatePortfolioList(data) {
 
         for (let stock of data.stocks) {
             portfolioListHtml += `<tr id="${stock.symbol}" class="PortfolioRow">
-                    <td>${stock.symbol}</td >
+                    <td>${stock.symbol}</td>
                     <td>${stock.stockCounter}</td>
                     <td>${stock.stockName}</td>
                     <td>${stock.description}</td>
@@ -66,16 +71,16 @@ function updatePortfolioList(data) {
             if (selectedStock == null) {
                 $(this).toggleClass("bg-info");
                 selectedStock = $(this).attr('id');
-                console.log(`Stock ${selectedStock} is selected! From null`);
+                //console.log(`Stock ${selectedStock} is selected! From null`);
             } else if (selectedStock == $(this).attr('id')) {
                 $(this).toggleClass("bg-info");
                 selectedStock = null;
-                console.log("No stock is selected.");
+                //console.log("No stock is selected.");
             } else {
                 $(".PortfolioRow").removeClass("bg-info");
                 $(this).addClass("bg-info");
                 selectedStock = $(this).attr('id');
-                console.log(`Stock ${selectedStock} is selected! different stock is selected`);
+                //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
             }
 
         });
@@ -88,12 +93,14 @@ function updatePortfolioList(data) {
 function printAllMyPortfolio() {
 
         url = "trading/getPortfolio?userId=1";
-
+        $("#PortfolioSpinner").removeClass("hideDialog").addClass("showDialog");
+        
         $.get(url, function (data) {
             updatePortfolioList(data);
+            $("#PortfolioSpinner").removeClass("showDialog").addClass("hideDialog");
         }).fail(function (response) {
-            alert(response.responseText);e
-
+            alert(response.responseText);
+            $("#PortfolioSpinner").removeClass("showDialog").addClass("hideDialog");
         });
 };
 

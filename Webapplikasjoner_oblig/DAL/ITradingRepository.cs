@@ -9,13 +9,14 @@ namespace Webapplikasjoner_oblig.DAL
         Task<bool> SaveTradeAsync(Trade innTrading);
         Task<List<Trade>> GetAllTradesAsync();
         Task<Trade> GetOneTradeAsync(int id);
-        Stocks GetStock(string symbol);
+        Task<Stocks> GetStockAsync(string symbol);
         StockQuotes GetStockQuote(string symbol);
 
         Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count);
+        Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count);
         void RemoveStockQuotes(string symbol);
 
-        Task<User> GetUser(int userId);
+        Task<User> GetUserAsync(int userId);
         Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote);
         Task<FavoriteList> GetFavoriteList(int userId);
         Task<Portfolio> GetPortfolioAsync(int userId);

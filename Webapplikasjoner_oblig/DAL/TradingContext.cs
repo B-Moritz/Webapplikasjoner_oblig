@@ -36,17 +36,17 @@ namespace Webapplikasjoner_oblig.DAL
                    .UseLazyLoadingProxies();
         }
 
-        public DbSet<Stocks>? Stocks { get; set; }
+        public DbSet<Stocks> Stocks { get; set; }
         public DbSet<Users> Users { get; set; }
         public DbSet<Trades> Trades { get; set; }
-        public DbSet<SearchResults>? SearchResults { get; set; }
+        public DbSet<SearchResults> SearchResults { get; set; }
 
         //
         //public DbSet<Portfolio> Portfolio { get; set; }
 
 
         // Custom join table
-        public DbSet<StockOwnerships>? StockOwnerships { get; set; }
+        public DbSet<StockOwnerships> StockOwnerships { get; set; }
 
         public DbSet<StockQuotes> StockQuotes { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
