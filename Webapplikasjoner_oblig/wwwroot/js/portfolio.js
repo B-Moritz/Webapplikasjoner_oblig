@@ -1,6 +1,9 @@
 ﻿$(function () {
     printAllMyPortfolio();
 });
+$("#button#get").click(function () {
+    printAllMyPortfolio();
+});
 
 
 function printAllMyPortfolio() {
@@ -26,14 +29,23 @@ function printAllMyPortfolio() {
                 </tr>`;
 
                 for (let stock of data.stocks) {
-                     portfolioListHtml += ``.format()
+                    portfolioListHtml += `<tr>
+                    <td>${stock.symbol}</td >
+                    <td>${stock.stockCounter}</td>
+                    <td>${stock.stockName}</td>
+                    <td>${stock.description}</td>
+                    <td>${stock.stockCurrency}</td>
+                    <td>${stock.totalFundsSpent}</td>
+                    <td>${stock.totalValue}</td>
+                </tr >`
                 }
+                $("#PortfolioStockList").html(portfolioListHtml);
             }
             else {
                 alert("something went wrong!");
             }
         }).fail(function (response) {
-            alert(response.responseText);
+            alert(response.responseText);e
 
         });
 };
