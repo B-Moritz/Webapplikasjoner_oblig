@@ -1,0 +1,15 @@
+﻿.hideDialog {
+    display: none;    
+}
+
+#SellDialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-style: solid;
+    border-color: black;
+    padding: 5rem;
+    display: block;
+}
+
+
