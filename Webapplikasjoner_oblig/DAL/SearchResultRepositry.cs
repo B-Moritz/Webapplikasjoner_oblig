@@ -118,8 +118,9 @@ namespace Webapplikasjoner_oblig.DAL
             }
         }
 
-
-
+       /**
+       * This method saves SearchResult object by mapping to SearchResults table
+       */
        public async Task<bool> SaveSearchResultAsync(SearchResult result)
         {
             try
@@ -151,57 +152,13 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return false;
             }
-
-            
-
-
-            //searchresult object
-            /**
-            try
-            {
-                var stocks = await _db.Stocks.ToListAsync();
-
-                var stockList = new List<Stocks>();
-
-                if(stocks != null)
-                {
-                    foreach (var stockDB in stocks)
-                    {
-                        if (stockDB.StockName == keyWord)
-                         {
-                             stockList.Add(stockDB);
-                          }
-                    }
-
-               }
-                else
-                {
-                    Debug.WriteLine("****Not  Saved****");
-                    return false;
-                }
-               
-
-                var dbSearchResult = new SearchResults();
-                dbSearchResult.SearchKeyword = keyWord;
-                dbSearchResult.SearchTimestamp = DateTime.Now;
-                dbSearchResult.Stocks = stockList;
-
-                _db.SearchResults.Add(dbSearchResult);
-                await _db.SaveChangesAsync();
-
-                return true;
-
-            }
-            catch
-            {
-                return false;
-            }
-
-            */
         }
 
+    /**
+    * This method finds matching searchResult using keyword
+    */
     public async Task<bool> FindMatchAsync(string? word)
-        {
+     {
             try
             {
                var match = await _db.SearchResults.FindAsync(word);
@@ -221,16 +178,12 @@ namespace Webapplikasjoner_oblig.DAL
             }
         } 
 
-         public void DeleteSearchResult(string symbol)
-         {
-        // This method removes all quotes of the specified stock. There should only be one quote stored for each stock
-        var remove = _db.SearchResults.Where<SearchResults>(t => t.SearchKeyword == symbol);
+    public void DeleteSearchResult(string keyword)
+    {
+        // This method removes all searchResults of the specified keyword. There should only be one quote stored for each stock
+        var remove = _db.SearchResults.Where<SearchResults>(t => t.SearchKeyword == keyword);
         _db.SearchResults.RemoveRange(remove);
-          }
+      }
 
     }
-
-   
-    
-
 }

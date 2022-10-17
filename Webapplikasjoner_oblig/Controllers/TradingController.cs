@@ -11,6 +11,7 @@ using EcbCurrencyInterface;
 using System.Diagnostics;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
+
 namespace Webapplikasjoner_oblig.Controllers
 {
     [Route("[controller]/[action]")]
@@ -27,13 +28,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly string _apiKey;
 
-
-
        
-
-        
-
-        private readonly SearchResultRepositry SearchResultRepositry;
 
 
 
@@ -44,45 +39,60 @@ namespace Webapplikasjoner_oblig.Controllers
             _config = config;
             // We can now access the AlphaVantage api key:
             _apiKey = _config["AlphaVantageApi:ApiKey"];
-
-
+            // Accessing search results 
             _searchResultRepositry = searchResultRepositry;
-
 
         }
 
+        /**
+         * This method finds a search result that is stored in the database using a method from 
+         * the search result repository. Null is returned if no match is found
+         */
         public async Task<Model.SearchResult> FindStock(string keyword) 
         {
-            
-           
                 Model.SearchResult? searchResult = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
 
-                if(searchResult == null)
+                if(searchResult is null)
                 {
                     return null;
                 }
 
                 return searchResult;
-            
         }
+
+
+        /**
+         * A function to add a search result using a received word from client 
+         * and checking if record matching exixst in database. 
+         * If it exist already it checks its last update, if last update is greater than 24 
+         * then removes exixting record and add new one by creating a new object of search result and passing it to  saveSearchResult in repository.
+         * If there is no such record, it fetches data from api using the keyword and save it by passing it to saveSearchResult function
+         */
         public async Task<bool> SaveSearchResult(string keyword)
         {
             try
             {
+                // Search result object from Model 
                 var modelSearchResult = new Model.SearchResult();
+
+                // Try and find a search result with given keyword in searchresults table 
                 var res = _searchResultRepositry.GetOneKeyWordAsync(keyword);
 
+                // If there is no such search result stored in the database, then go a head and fetch it from 
+                // Alpha vantage api
                 if (res is null)
                 {
+                    // Connection to alpha vantage api
                     AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
 
+                    // Fetch stocks from api using the given name 
                     var alphaObject = await AlphaV.findStockAsync(keyword);
-
-
-
+                    
+                    // Initiate a new searchResult object
                     modelSearchResult.SearchKeyword = keyword.ToUpper();
                     modelSearchResult.SearchTime = DateTime.Now;
 
+                    // List of stocks received from api call are set to be stock objects and added to a lsit
                     var StockList = new List<Stock>();
                     foreach (var alphaStock in alphaObject.BestMatches)
                     {
@@ -92,6 +102,7 @@ namespace Webapplikasjoner_oblig.Controllers
                         StockList.Add(ApiStock);
                     }
 
+                    // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
                     var StockDetailsList = new List<StockDetail>();
                     foreach (var stock in StockList)
                     {
@@ -102,17 +113,20 @@ namespace Webapplikasjoner_oblig.Controllers
                         StockDetailsList.Add(stockDetails);
                     }
 
+                    // SearchResults list properties is assigned a list holding stockDetail objects.
                     modelSearchResult.StockList = StockDetailsList;
 
+                    // SearchResult is passed to a function in searchResultRepositry to be added to the database
                     _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
                     return true;
                 }
                 else
                 {
-
+                    // If there exist a search result match then check when it was added.
                     double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
 
+                    // if it has passed over 24 hours since it was added to table then remove it from table and add a new record
                     if (timeSinceLastUpdate >= _quoteCacheTime)
                     {
                         _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
@@ -128,6 +142,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 
             } catch(Exception e)
             {
+                Debug.WriteLine(e + "****Error saving search result*****");
                 return false;
             }
 
