@@ -60,14 +60,53 @@ function sellStock() {
     });
 }
 
+
+
 function hentFavorite() {
-    $.get("Trading/GetFavoriteList?userId=1", function (favorites) {
-        formaterFavorite(favorites);
+    url = "Trading/GetFavoriteList?userId=1";
+
+    $.get(url, function (favorites) {
+        if (favorites != null) {
+            const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
+            let machResult = regex.exec(data.lastUpdate);
+            const updateString = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
+            $("#lastupdates").html(updateString);
+
+            portfolioListHtml = ` <table class='table table-striped'>
+                <tr>
+                    <th>Stock symbol</th >
+                    <th>Stock Name</th>
+                    <th>Stock Symbol</th>
+                    <th>Description</th>
+                    <th>Last updated</th>
+                </tr>`;
+
+            for (let enfavorite of favorites.stockList) {
+                portfolioListHtml += `<tr>
+                    <td>${enfavorite.stockName}</td>
+                    <td>${enfavorite.stockSymbol}</td>
+                    <td>${enfavorite.description}</td>
+                    <td>${enfavorite.lastUpdated}</td>
+                    </tr>`;
+            }
+            portfolioListHtml += "</table>";
+            $("#skrivfavorite").html(portfolioListHtml);
+
+
+        }
+        else {
+            alert("something went wrong!");
+        }
+
+        /*formaterFavorite(favorites);*/
 
     });
 }
 
-function formaterFavorite(favorites) {
+
+
+
+/*function formaterFavorite(favorites) {
     let ut = "<table class='table table-striped'>" +
         "<tr>" +
         "<th>Stock name</th><th>Stock symbol</th><th>Description</th><th>Last updated</th>" +
@@ -82,4 +121,4 @@ function formaterFavorite(favorites) {
     }
     ut += "</table>";
     $("#skrivfavorite").html(ut);
-}
+}*/
