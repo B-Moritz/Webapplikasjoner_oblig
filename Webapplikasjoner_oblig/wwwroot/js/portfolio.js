@@ -1,11 +1,11 @@
-﻿
-$(function () {
+﻿$(function () {
     printAllMyPortfolio();
 });
 
+
 function printAllMyPortfolio() {
-    $('#button#portfolios').click(function () {
-        url: "trading/getPortfolio";
+
+        url = "trading/getPortfolio?userId=1";
         $.get(url, function (data) {
             if (data != null) {
                 $("#lastupdate").val(data.url);
@@ -15,23 +15,17 @@ function printAllMyPortfolio() {
             }
             else {
                 alert("something went wrong!");
-            },
-           
-        });
-        failure: function(response) {
+            }
+        }).fail(function (response) {
             alert(response.responseText);
-        },
-        Error: function(response) {
-            alert(response.responseText)
-        }
 
-    });
-   
+        });
 };
 
 
 function formatPortfolio(portfolio) {
     return formatPortfolio(portfolio);
+   
 
     /*let ut = "<table><tr></tr>";
     for (const minStock of portfolio) {
