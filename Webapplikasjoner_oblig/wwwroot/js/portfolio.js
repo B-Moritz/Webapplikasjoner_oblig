@@ -23,7 +23,7 @@ function printAllMyPortfolio() {
                 $("#totalportfoliovalue").html(data.totalPortfolioValue);
                 $("#portfoliocurrency").html(data.portfolioCurrency);
 
-                portfolioListHtml = `
+                portfolioListHtml = ` <table class='table table-striped'>
                 <tr>
                     <th>Stock symbol</th >
                     <th>Number of shares</th>
@@ -35,7 +35,7 @@ function printAllMyPortfolio() {
                 </tr>`;
 
                 for (let stock of data.stocks) {
-                    portfolioListHtml += `<tr>
+                    portfolioListHtml += `<tr class="">
                     <td>${stock.symbol}</td >
                     <td>${stock.stockCounter}</td>
                     <td>${stock.stockName}</td>
@@ -45,6 +45,7 @@ function printAllMyPortfolio() {
                     <td>${stock.totalValue}</td>
                 </tr >`
                 }
+                portfolioListHtml += "</table>";
                 $("#PortfolioStockList").html(portfolioListHtml);
             }
             else {

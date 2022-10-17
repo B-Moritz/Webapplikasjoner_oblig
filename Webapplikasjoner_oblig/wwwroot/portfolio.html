@@ -10,7 +10,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="js/portfolio.js"></script>
-   
+
 </head>
 <body>
     <div class="navbar navbar-default navbar-fixed-top">
@@ -58,16 +58,12 @@
     <span id="totalportfoliovalue"></span><br />
     <label>Currency: </label>
     <span id="portfoliocurrency"></span><br />
-
-
-    <table id="PortfolioStockList" class="table table-striped">
-    </table>
-    <button id="get">Click to get yorPortfolio</button>
-    <div id="portfolios"></div>
-
-
-
-
+    <div class="btn-group" style="width:100%">
+        <table id="PortfolioStockList" class="table table-striped"></table>
+        <button type="button" id="get" style="width:50%" class="btn btn-primary btn-lg">Update</button>
+        <div id="portfolios"></div>
+        <button type="button" id="sell" style="width:50%" class="btn btn-danger btn-lg">Sell</button>
+    </div>
 
 
     <!--<div class="container">
