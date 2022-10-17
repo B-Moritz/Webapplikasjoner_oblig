@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -113,6 +114,7 @@ namespace Webapplikasjoner_oblig.DAL
             _db.SaveChanges();
         }
 
+        [HttpGet]
         public async Task<Portfolio> GetPortfolioAsync(int userId)
         {
             try
