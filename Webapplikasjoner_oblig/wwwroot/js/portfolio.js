@@ -6,12 +6,28 @@
 function printAllMyPortfolio() {
 
         url = "trading/getPortfolio?userId=1";
+
+
         $.get(url, function (data) {
             if (data != null) {
-                $("#lastupdate").val(data.url);
-                $("#totalvaluespent").val(data.url);
-                $("#totalportfoliovalue").val(data.url);
-                $("#stockks").val(data.url);
+                $("#lastupdate").html(data.lastUpdate);
+                $("#totalvaluespent").html(data.totalValueSpent);
+                $("#totalportfoliovalue").html(data.totalPortfolioValue);
+
+                portfolioListHtml = `
+                <tr>
+                    <th>Stock symbol</th >
+                    <th>Number of shares</th>
+                    <th>Stock Name</th>
+                    <th>Description</th>
+                    <th>Currency</th>
+                    <th>Funds spent on stock</th>
+                    <th>Total value</th>
+                </tr>`;
+
+                for (let stock of data.stocks) {
+                     portfolioListHtml += ``.format()
+                }
             }
             else {
                 alert("something went wrong!");
