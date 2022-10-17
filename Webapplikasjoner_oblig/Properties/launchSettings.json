@@ -11,8 +11,8 @@
     "Webapplikasjoner_oblig": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "index.html",
-      "applicationUrl": "http://localhost:1634",
+      "launchUrl": "portfolio.html",
+      "applicationUrl": "http://localhost:1635",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "index.html",
+      "launchUrl": "portfolio.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
