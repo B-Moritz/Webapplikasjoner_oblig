@@ -1,14 +1,14 @@
 // Må sende via URL "Trade/Sell"    Trade er controller?? og sell er function i controller?
 
 $(function () {
-    hentAlleAksjer();
+    //hentAlleAksjer();
     hentFavorite();
     $("#update").click(function () {
         hentFavorite();
     });
 });
 
-function hentAlleAksjer() {
+/*function hentAlleAksjer() {
     $.get("Trading/GetPortfolio", function (stocks) {
         formaterPortfolio(stocks);
     });
@@ -58,23 +58,20 @@ function sellStock() {
             $("#feilSell").html("Feil i db - prøv igjen senere");
         }
     });
-}
+}*/
 
 
-
-function hentFavorite() {
-    url = "Trading/GetFavoriteList?userId=1";
-
-    $.get(url, function (favorites) {
+function formatFavorite(favorites) {
         if (favorites != null) {
             const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
             let machResult = regex.exec(favorites.lastUpdated);
-            const updateString = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
-            $("#lastupdates").html(updateString);
 
-            portfolioListHtml = ` <table class='table table-striped'>
+            const updateFavorite = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
+            $("#lastupdate").html(updateFavorite);
+
+
+            favoritListHtml = ` <table class='table table-striped'>
                 <tr>
-                    <th>Stock symbol</th >
                     <th>Stock Name</th>
                     <th>Stock Symbol</th>
                     <th>Description</th>
@@ -82,26 +79,36 @@ function hentFavorite() {
                 </tr>`;
 
             for (let enfavorite of favorites.stockList) {
-                portfolioListHtml += `<tr>
-                    <td>${enfavorite.stockName}</td>
+                favoritListHtml += `<tr>
+                    <td>${enfavorite.stockName}</td >
                     <td>${enfavorite.stockSymbol}</td>
                     <td>${enfavorite.description}</td>
                     <td>${enfavorite.lastUpdated}</td>
-                    </tr>`;
+                    </tr >`
             }
-            portfolioListHtml += "</table>";
-            $("#skrivfavorite").html(portfolioListHtml);
-
-
+            favoritListHtml += "</table>";
+            $("#skrivfavorite").html(favoritListHtml);
         }
         else {
             alert("something went wrong!");
         }
 
-        /*formaterFavorite(favorites);*/
+}
 
+function hentFavorite() {
+    url = "trading/getFavoriteList?userId=1";
+    $.get(url, function (favorites) {
+        formatFavorite(favorites);
+    }).fail(function (response) {
+        alert(response.responseText);
     });
 }
+
+
+
+
+
+
 
 
 
