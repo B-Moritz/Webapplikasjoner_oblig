@@ -8,8 +8,8 @@
 
 # Custom ignores
 node_modules
-.db-shm
-.db-wal
+*.db-shm
+*.db-wal
 .vs
 
 # Cusom ignores
