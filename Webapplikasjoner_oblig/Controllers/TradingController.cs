@@ -12,13 +12,15 @@ namespace Webapplikasjoner_oblig.Controllers
     [Route("[controller]/[action]")]
     public class TradingController : ControllerBase
     {
+        private readonly int _quoteCacheTime = 24;
+
         private readonly ITradingRepository _db;
 
         private readonly IConfiguration _config;
 
         private readonly ISearchResultRepositry _searchResultRepositry;
 
-        private readonly string apiKey;
+        private readonly string _apiKey;
 
 
 
@@ -29,7 +31,7 @@ namespace Webapplikasjoner_oblig.Controllers
             // Adding configuration object that contains the appsettings.json content
             _config = config;
             // We can now access the AlphaVantage api key:
-            string apiKey = _config["AlphaVantageApi:ApiKey"];
+            _apiKey = _config["AlphaVantageApi:ApiKey"];
 
             _searchResultRepositry = searchResultRepositry;
         }
@@ -49,9 +51,72 @@ namespace Webapplikasjoner_oblig.Controllers
             
         }
         public async Task<bool> SaveSearchResult(string keyword)
-
         {
-            return await _searchResultRepositry.SaveKeyWordAsync(keyword);
+            try
+            {
+                var modelSearchResult = new Model.SearchResult();
+                var res = _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+                if (res is null)
+                {
+                    AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+
+                    var alphaObject = await AlphaV.findStockAsync(keyword);
+
+
+
+                    modelSearchResult.SearchKeyword = keyword.ToUpper();
+                    modelSearchResult.SearchTime = DateTime.Now;
+
+                    var StockList = new List<Stock>();
+                    foreach (var alphaStock in alphaObject.BestMatches)
+                    {
+                        var ApiStock = new Stock();
+                        ApiStock = alphaStock;
+
+                        StockList.Add(ApiStock);
+                    }
+
+                    var StockDetailsList = new List<StockDetail>();
+                    foreach (var stock in StockList)
+                    {
+                        var stockDetails = new Model.StockDetail();
+                        stockDetails.StockName = stock.Name;
+                        stockDetails.StockSymbol = stock.Symbol;
+
+                        StockDetailsList.Add(stockDetails);
+                    }
+
+                    modelSearchResult.StockList = StockDetailsList;
+
+                    _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                    return true;
+                }
+                else
+                {
+
+                    double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
+
+                    if (timeSinceLastUpdate >= _quoteCacheTime)
+                    {
+                        _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
+
+                        await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                        return true;
+                    }
+
+                    return false;
+
+                }
+                
+            } catch(Exception e)
+            {
+                return false;
+            }
+
+            
         }
 
        /* public async Task<Portfolio> GetPortfolio(int userId)

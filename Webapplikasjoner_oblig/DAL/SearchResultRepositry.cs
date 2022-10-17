@@ -122,7 +122,7 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-       public async Task<bool> SaveKeyWordAsync(SearchResult result)
+       public async Task<bool> SaveSearchResultAsync(SearchResult result)
         {
             try
             {
@@ -142,6 +142,10 @@ namespace Webapplikasjoner_oblig.DAL
                 dbSearchResult.SearchTimestamp = DateTime.Now;
                 dbSearchResult.Stocks = stocksList;
 
+                 _db.SearchResults.Add(dbSearchResult);
+                await _db.SaveChangesAsync();
+
+
                 return true;
 
             }
@@ -149,6 +153,8 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 return false;
             }
+
+            
 
 
             //searchresult object
@@ -195,6 +201,38 @@ namespace Webapplikasjoner_oblig.DAL
 
             */
         }
+
+    public async Task<bool> FindMatchAsync(string? word)
+        {
+            try
+            {
+               var match = await _db.SearchResults.FindAsync(word);
+
+                if(match != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch(Exception e)
+            {
+                
+                Debug.WriteLine(e.ToString());
+                return false;
+
+            }
+        } 
+
+         public void DeleteSearchResult(string symbol)
+         {
+        // This method removes all quotes of the specified stock. There should only be one quote stored for each stock
+        var remove = _db.SearchResults.Where<SearchResults>(t => t.SearchKeyword == symbol);
+        _db.SearchResults.RemoveRange(remove);
+          }
+
     }
+
+   
+    
 
 }
