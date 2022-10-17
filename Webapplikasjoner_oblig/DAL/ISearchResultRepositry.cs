@@ -4,7 +4,7 @@ namespace Webapplikasjoner_oblig.DAL
 {
     public interface ISearchResultRepositry
     {
-        Task<bool> SaveKeyWordAsync(string keyWord);
+        public Task<bool> SaveKeyWordAsync(string keyWord);
         Task<List<SearchResult>> GetAllKeyWordsAsync();
         public Task<SearchResult>? GetOneKeyWordAsync(string keyWord);
     }

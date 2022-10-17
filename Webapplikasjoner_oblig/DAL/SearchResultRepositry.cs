@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using PeanutButter.Utils;
+using System.Diagnostics;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -121,9 +122,78 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-        Task<bool> ISearchResultRepositry.SaveKeyWordAsync(string keyWord)
+       public async Task<bool> SaveKeyWordAsync(SearchResult result)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var stocksList = new List<Stocks>();
+
+                foreach (var stock in result.StockList)
+                {
+                    var newStock = new Stocks();
+                    newStock.StockName = stock.StockName;
+                    newStock.Symbol = stock.StockSymbol;
+
+                    stocksList.Add(newStock);
+                }
+
+                var dbSearchResult = new SearchResults();
+                dbSearchResult.SearchKeyword = result.SearchKeyword;
+                dbSearchResult.SearchTimestamp = DateTime.Now;
+                dbSearchResult.Stocks = stocksList;
+
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
+
+
+            //searchresult object
+            /**
+            try
+            {
+                var stocks = await _db.Stocks.ToListAsync();
+
+                var stockList = new List<Stocks>();
+
+                if(stocks != null)
+                {
+                    foreach (var stockDB in stocks)
+                    {
+                        if (stockDB.StockName == keyWord)
+                         {
+                             stockList.Add(stockDB);
+                          }
+                    }
+
+               }
+                else
+                {
+                    Debug.WriteLine("****Not  Saved****");
+                    return false;
+                }
+               
+
+                var dbSearchResult = new SearchResults();
+                dbSearchResult.SearchKeyword = keyWord;
+                dbSearchResult.SearchTimestamp = DateTime.Now;
+                dbSearchResult.Stocks = stockList;
+
+                _db.SearchResults.Add(dbSearchResult);
+                await _db.SaveChangesAsync();
+
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
+
+            */
         }
     }
 

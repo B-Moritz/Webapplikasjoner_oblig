@@ -16,31 +16,42 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly IConfiguration _config;
 
-        private readonly SearchResultRepositry SearchResultRepositry;
+        private readonly ISearchResultRepositry _searchResultRepositry;
 
         private readonly string apiKey;
 
 
-        public TradingController(ITradingRepository db, IConfiguration config)
+
+
+        public TradingController(ITradingRepository db,ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
             _db = db;
             // Adding configuration object that contains the appsettings.json content
             _config = config;
             // We can now access the AlphaVantage api key:
             string apiKey = _config["AlphaVantageApi:ApiKey"];
+
+            _searchResultRepositry = searchResultRepositry;
         }
 
         public async Task<Model.SearchResult> FindStock(string keyword) 
         {
-            try
-            {
-               
-                return await SearchResultRepositry.GetOneKeyWordAsync(keyword);
-            }
-            catch
-            {
-                return null;
-            }
+            
+           
+                Model.SearchResult? searchResult = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+                if(searchResult == null)
+                {
+                    return null;
+                }
+
+                return searchResult;
+            
+        }
+        public async Task<bool> SaveSearchResult(string keyword)
+
+        {
+            return await _searchResultRepositry.SaveKeyWordAsync(keyword);
         }
 
        /* public async Task<Portfolio> GetPortfolio(int userId)
