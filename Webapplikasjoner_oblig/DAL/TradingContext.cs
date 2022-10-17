@@ -157,7 +157,6 @@ namespace Webapplikasjoner_oblig.DAL
                 // Definition of composite primary keys
                 // Documentation used: https://learn.microsoft.com/en-us/ef/core/modeling/keys?tabs=data-annotations
                 modelBuilder.Entity<StockOwnerships>().HasKey(c => new { c.UsersId, c.StocksId });
-
                 modelBuilder.Entity<StockQuotes>().HasKey(c => new { c.StocksId, c.Timestamp });
 
                 // Configure favoriteLists table

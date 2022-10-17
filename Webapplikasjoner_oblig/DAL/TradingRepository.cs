@@ -222,6 +222,11 @@ namespace Webapplikasjoner_oblig.DAL
 
         }
 
+        public async Task BuyStockTransaction(int userId, string symbol, int count) {
+            // Get the stock and check if the user already has an ownerhsip
+            //Stocks curStock = _db.Stocks.Single<Stocks>(s => s.Symbol == symbol);
+            //var curentOwnership = _db.StockOwnerships.Select(o => new { o.StocksId == symbol, o.UsersId});
+        }
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
         {
