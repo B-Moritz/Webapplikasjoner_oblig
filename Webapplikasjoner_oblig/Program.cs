@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 builder.Services.AddDbContext<TradingContext>();
 builder.Services.AddScoped<ITradingRepository, TradingRepository>();
+builder.Services.AddScoped<ISearchResultRepositry, SearchResultRepositry>();
 
 var app = builder.Build();
 

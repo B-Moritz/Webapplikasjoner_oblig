@@ -11,42 +11,142 @@ using EcbCurrencyInterface;
 using System.Diagnostics;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
+
 namespace Webapplikasjoner_oblig.Controllers
 {
     [Route("[controller]/[action]")]
     public class TradingController : ControllerBase
     {
+        private readonly int _quoteCacheTime = 24;
+
         private readonly ITradingRepository _db;
 
         private readonly IConfiguration _config;
 
+
+        private readonly ISearchResultRepositry _searchResultRepositry;
+
         private readonly string _apiKey;
 
-        private readonly int _quoteCacheTime = 24;
-
-        private readonly SearchResultRepositry SearchResultRepositry;
+       
 
 
-        public TradingController(ITradingRepository db, IConfiguration config)
+
+        public TradingController(ITradingRepository db,ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
             _db = db;
             // Adding configuration object that contains the appsettings.json content
             _config = config;
             // We can now access the AlphaVantage api key:
             _apiKey = _config["AlphaVantageApi:ApiKey"];
+            // Accessing search results 
+            _searchResultRepositry = searchResultRepositry;
+
         }
 
+        /**
+         * This method finds a search result that is stored in the database using a method from 
+         * the search result repository. Null is returned if no match is found
+         */
         public async Task<Model.SearchResult> FindStock(string keyword) 
+        {
+                Model.SearchResult? searchResult = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+                if(searchResult is null)
+                {
+                    return null;
+                }
+
+                return searchResult;
+        }
+
+
+        /**
+         * A function to add a search result using a received word from client 
+         * and checking if record matching exixst in database. 
+         * If it exist already it checks its last update, if last update is greater than 24 
+         * then removes exixting record and add new one by creating a new object of search result and passing it to  saveSearchResult in repository.
+         * If there is no such record, it fetches data from api using the keyword and save it by passing it to saveSearchResult function
+         */
+        public async Task<bool> SaveSearchResult(string keyword)
         {
             try
             {
-               
-                return await SearchResultRepositry.GetOneKeyWordAsync(keyword);
-            }
-            catch
+                // Search result object from Model 
+                var modelSearchResult = new Model.SearchResult();
+
+                // Try and find a search result with given keyword in searchresults table 
+                var res = _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+                // If there is no such search result stored in the database, then go a head and fetch it from 
+                // Alpha vantage api
+                if (res is null)
+                {
+                    // Connection to alpha vantage api
+                    AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+
+                    // Fetch stocks from api using the given name 
+                    var alphaObject = await AlphaV.findStockAsync(keyword);
+                    
+                    // Initiate a new searchResult object
+                    modelSearchResult.SearchKeyword = keyword.ToUpper();
+                    modelSearchResult.SearchTime = DateTime.Now;
+
+                    // List of stocks received from api call are set to be stock objects and added to a lsit
+                    var StockList = new List<Stock>();
+                    foreach (var alphaStock in alphaObject.BestMatches)
+                    {
+                        var ApiStock = new Stock();
+                        ApiStock = alphaStock;
+
+                        StockList.Add(ApiStock);
+                    }
+
+                    // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
+                    var StockDetailsList = new List<StockDetail>();
+                    foreach (var stock in StockList)
+                    {
+                        var stockDetails = new Model.StockDetail();
+                        stockDetails.StockName = stock.Name;
+                        stockDetails.StockSymbol = stock.Symbol;
+
+                        StockDetailsList.Add(stockDetails);
+                    }
+
+                    // SearchResults list properties is assigned a list holding stockDetail objects.
+                    modelSearchResult.StockList = StockDetailsList;
+
+                    // SearchResult is passed to a function in searchResultRepositry to be added to the database
+                    _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                    return true;
+                }
+                else
+                {
+                    // If there exist a search result match then check when it was added.
+                    double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
+
+                    // if it has passed over 24 hours since it was added to table then remove it from table and add a new record
+                    if (timeSinceLastUpdate >= _quoteCacheTime)
+                    {
+                        _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
+
+                        await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                        return true;
+                    }
+
+                    return false;
+
+                }
+                
+            } catch(Exception e)
             {
-                return null;
+                Debug.WriteLine(e + "****Error saving search result*****");
+                return false;
             }
+
+            
         }
 
         [HttpGet]
