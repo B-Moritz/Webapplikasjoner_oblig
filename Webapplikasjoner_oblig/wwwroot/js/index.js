@@ -56,4 +56,25 @@ function sellStock() {
     });
 }
 
+function hentFavorite() {
+    $.get("Trading/GetFavoriteList?userId=1", function (favorites) {
+        formaterFavorite(favorites);
+    });
+}
 
+function formaterFavorite(favorites) {
+    let ut = "<table class='table table-striped'>" +
+        "<tr>" +
+        "<th>Stock name</th><th>Stock symbol</th><th>Description</th><th>Last updated</th>" +
+        "</tr>";
+    for (let enfavorite of favorites.stockList) {
+        ut += "<tr>" +
+            "<td>" + enfavorite.StockName + "</td>" +
+            "<td>" + enfavorite.StockSymbol + "</td>" +
+            "<td>" + enfavorite.Description + "</td>" +
+            "<td>" + enfavorite.LastUpdated + "</td>" +
+            "</tr>";
+    }
+    ut += "</table>";
+    $("#skrivfavorite").html(ut);
+}
