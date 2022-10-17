@@ -14,64 +14,67 @@
 
 </head>
 <body>
-    <div class="navbar navbar-default navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <a href="portfolio.html" class="navbar-brand">Trading</a>
-                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-            </div>
-            <div class="navbar-collapse collapse" id="navbar-main">
-                <ul class="nav navbar-nav">
-                    <li>
-                        <a href="portfolio.html">portfolio</a>
-                    </li>
-                    <li>
-                        <a href="tradeSøk.html">market</a>
-                    </li>
-                    <li>
-                        <a href="">Transaksjoner</a>
-                    </li>
-                    <li>
-                        <a href="userinfo.html">user-info</a>
-                    </li>
-                    <li>
-                        <a href="tradsøk.html">søk</a>
-                    </li>
-                </ul>
-
-                <!--<ul class="nav navbar-nav navbar-right">
-                  <li><a href="loggUt.html">Logg ut</a></li>
-                </ul> -->
-            </div>
+    <div id="SellDialog" class="hideDialog">
+        <div id="innerDialog">
+            <label>Number of stocks to be sold</label>
+            <input id="StockCouterInput" type="number" name="StockCounter" value="1">
+            <button id="confirmSell">Confirm Transaction</button>
         </div>
     </div>
-    <br /><br /><br />
-    <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
-    <label>Lastupdated: </label>
-    <span id="lastupdate"></span><br />
-    <label>Total value: </label>
-    <span id="totalvaluespent"></span><br />
-    <label>TotalportfolioValue: </label>
-    <span id="totalportfoliovalue"></span><br />
-    <label>Currency: </label>
-    <span id="portfoliocurrency"></span><br />
-    <div id="SellDialog" class="hideDialog bg-info">
-        <label>Number of stocks to be sold</label>
-        <input id="StockCouterInput" type="number" name="StockCounter" value="1">
-        <button id="confirmSell">Confirm Transaction</button>
-    </div>
+    <div class="bringBack">
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="portfolio.html" class="navbar-brand">Trading</a>
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-main">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="portfolio.html">portfolio</a>
+                        </li>
+                        <li>
+                            <a href="tradeSøk.html">market</a>
+                        </li>
+                        <li>
+                            <a href="">Transaksjoner</a>
+                        </li>
+                        <li>
+                            <a href="userinfo.html">user-info</a>
+                        </li>
+                        <li>
+                            <a href="tradsøk.html">søk</a>
+                        </li>
+                    </ul>
 
-    <div class="btn-group" style="width:100%">
-        <table id="PortfolioStockList" class="table table-striped"></table>
-        <button type="button" id="get" style="width:50%" class="btn btn-primary btn-lg">Update</button>
-        <div id="portfolios"></div>
-        <button type="button" id="sell" style="width:50%" class="btn btn-danger btn-lg">Sell</button>
-    </div>
+                    <!--<ul class="nav navbar-nav navbar-right">
+                      <li><a href="loggUt.html">Logg ut</a></li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+        <br /><br /><br />
+        <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
+        <label>Lastupdated: </label>
+        <span id="lastupdate"></span><br />
+        <label>Total value: </label>
+        <span id="totalvaluespent"></span><br />
+        <label>TotalportfolioValue: </label>
+        <span id="totalportfoliovalue"></span><br />
+        <label>Currency: </label>
+        <span id="portfoliocurrency"></span><br />
 
+        <div class="btn-group" style="width:100%; z-index: 0">
+            <table id="PortfolioStockList" class="table table-striped"></table>
+            <button type="button" id="get" style="width:50%" class="btn btn-primary btn-lg">Update</button>
+            <div id="portfolios"></div>
+            <button type="button" id="sell" style="width:50%" class="btn btn-danger btn-lg">Sell</button>
+        </div>
+     </div>
 
     <!--<div class="container">
         <br /><br />
