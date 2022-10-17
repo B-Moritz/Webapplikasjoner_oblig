@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
 using PeanutButter.Utils;
 
 namespace Webapplikasjoner_oblig.DAL
@@ -94,6 +95,7 @@ namespace Webapplikasjoner_oblig.DAL
             return newTableRow;
         }
 
+        [HttpGet]
         public async Task<Portfolio> GetPortfolioAsync(int userId)
         {
             var user = _db.Users.Single(u => u.UsersId == userId);

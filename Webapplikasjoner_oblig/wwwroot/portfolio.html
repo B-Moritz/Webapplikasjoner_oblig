@@ -13,52 +13,71 @@
    
 </head>
 <body>
-<div class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-    <div class="navbar-header">
-      <a href="index.html" class="navbar-brand">Trading</a>
-      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="navbar-collapse collapse" id="navbar-main">
-      <ul class="nav navbar-nav">
-        <li>
-          <a href="portfolio.html">portfolio</a>
-        </li>
-        <li>
-          <a href="tradeSøk.html">market</a>
-        </li>
-        <li>
-          <a href="">Transaksjoner</a>
-        </li>
-        <li>
-          <a href="userinfo.html">user-info</a>
-        </li>
-        <li>
-          <a href="tradsøk.html">søk</a>
-        </li>
-      </ul>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="portfolio.html" class="navbar-brand">Trading</a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-main">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="portfolio.html">portfolio</a>
+                    </li>
+                    <li>
+                        <a href="tradeSøk.html">market</a>
+                    </li>
+                    <li>
+                        <a href="">Transaksjoner</a>
+                    </li>
+                    <li>
+                        <a href="userinfo.html">user-info</a>
+                    </li>
+                    <li>
+                        <a href="tradsøk.html">søk</a>
+                    </li>
+                </ul>
 
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="loggUt.html">Logg ut</a></li>
-      </ul>
-
+                <!--<ul class="nav navbar-nav navbar-right">
+                  <li><a href="loggUt.html">Logg ut</a></li>
+                </ul> -->
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-<br/><br/><br/>
-<!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
-<div class="container">
-  <br/><br/>
-  <div class="container">
-    <h3>here is my_profile:</h3>
+    <br /><br /><br />
+    <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
+    <span id="lastupdate"></span><br />
+    <span id="totalvaluespent"></span><br />
+    <span id="totalportfoliovalue"></span><br />
+    <table id="PortfolioStockList">
+
+    </table>
+    <button id="get">Click to get yorPortfolio</button>
     <div id="portfolios"></div>
-<!--    <a href="lagre.html" class="btn btn-primary">Lagre ny kunde</a>-->
-  </div>
-</div>
+
+
+
+
+
+
+    <!--<div class="container">
+        <br /><br />
+        <div class="container">
+            <h3>here is my_profile:</h3>
+            <div id="portfolios"></div>
+            <!--<a href="lagre.html" class="btn btn-primary">Lagre ny kunde</a>
+        </div>
+    </div>-->
 
 </body>
 </html>
+
+
+
+
+
+
