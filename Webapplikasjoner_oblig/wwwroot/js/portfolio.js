@@ -62,9 +62,6 @@ function formatPortfolio(portfolio) {
 }
 
 
-
-
-
     /*let ut = "<table><tr></tr>";
     for (const minStock of portfolio) {
         ut += "<tr><td>" + minStock.LastUpdate + "</td><td>" + minStock.TotalValueSpent +
@@ -116,10 +113,4 @@ function formatPortfolio(portfolio) {
 
     });
 };*/
-
-
-
-
-
-
 
