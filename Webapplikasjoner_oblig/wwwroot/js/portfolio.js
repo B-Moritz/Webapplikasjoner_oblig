@@ -1,16 +1,10 @@
 ﻿$(function () {
     printAllMyPortfolio();
-<<<<<<< Updated upstream
 
     $("#get").click(function () {
         printAllMyPortfolio();
     });
 
-=======
-    $("#get").click(function () {
-        printAllMyPortfolio();
-    });
->>>>>>> Stashed changes
 });
 
 
@@ -21,19 +15,14 @@ function printAllMyPortfolio() {
 
         $.get(url, function (data) {
             if (data != null) {
-<<<<<<< Updated upstream
-
-                $("#lastupdate").html(data.lastUpdate);
-=======
                 const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
                 let machResult = regex.exec(data.lastUpdate);
                 const updateString = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
                 $("#lastupdate").html(updateString);
->>>>>>> Stashed changes
                 $("#totalvaluespent").html(data.totalValueSpent);
                 $("#totalportfoliovalue").html(data.totalPortfolioValue);
                 $("#portfoliocurrency").html(data.portfolioCurrency);
-                
+
                 portfolioListHtml = `
                 <tr>
                     <th>Stock symbol</th >
