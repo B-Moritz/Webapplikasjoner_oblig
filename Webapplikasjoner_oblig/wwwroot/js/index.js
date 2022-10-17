@@ -2,6 +2,7 @@
 
 $(function () {
     hentAlleAksjer();
+    hentFavorite();
 });
 
 function hentAlleAksjer() {
