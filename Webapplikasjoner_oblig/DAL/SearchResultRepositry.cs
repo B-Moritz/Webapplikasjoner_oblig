@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using PeanutButter.Utils;
+using System.Diagnostics;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -119,10 +120,117 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-        Task<bool> ISearchResultRepositry.SaveKeyWordAsync(string keyWord)
+       public async Task<bool> SaveSearchResultAsync(SearchResult result)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var stocksList = new List<Stocks>();
+
+                foreach (var stock in result.StockList)
+                {
+                    var newStock = new Stocks();
+                    newStock.StockName = stock.StockName;
+                    newStock.Symbol = stock.StockSymbol;
+
+                    stocksList.Add(newStock);
+                }
+
+                var dbSearchResult = new SearchResults();
+                dbSearchResult.SearchKeyword = result.SearchKeyword;
+                dbSearchResult.SearchTimestamp = DateTime.Now;
+                dbSearchResult.Stocks = stocksList;
+
+                 _db.SearchResults.Add(dbSearchResult);
+                await _db.SaveChangesAsync();
+
+
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
+
+            
+
+
+            //searchresult object
+            /**
+            try
+            {
+                var stocks = await _db.Stocks.ToListAsync();
+
+                var stockList = new List<Stocks>();
+
+                if(stocks != null)
+                {
+                    foreach (var stockDB in stocks)
+                    {
+                        if (stockDB.StockName == keyWord)
+                         {
+                             stockList.Add(stockDB);
+                          }
+                    }
+
+               }
+                else
+                {
+                    Debug.WriteLine("****Not  Saved****");
+                    return false;
+                }
+               
+
+                var dbSearchResult = new SearchResults();
+                dbSearchResult.SearchKeyword = keyWord;
+                dbSearchResult.SearchTimestamp = DateTime.Now;
+                dbSearchResult.Stocks = stockList;
+
+                _db.SearchResults.Add(dbSearchResult);
+                await _db.SaveChangesAsync();
+
+                return true;
+
+            }
+            catch
+            {
+                return false;
+            }
+
+            */
         }
+
+    public async Task<bool> FindMatchAsync(string? word)
+        {
+            try
+            {
+               var match = await _db.SearchResults.FindAsync(word);
+
+                if(match != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch(Exception e)
+            {
+                
+                Debug.WriteLine(e.ToString());
+                return false;
+
+            }
+        } 
+
+         public void DeleteSearchResult(string symbol)
+         {
+        // This method removes all quotes of the specified stock. There should only be one quote stored for each stock
+        var remove = _db.SearchResults.Where<SearchResults>(t => t.SearchKeyword == symbol);
+        _db.SearchResults.RemoveRange(remove);
+          }
+
     }
+
+   
+    
 
 }

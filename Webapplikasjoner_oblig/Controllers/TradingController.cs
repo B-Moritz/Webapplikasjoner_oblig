@@ -16,37 +16,122 @@ namespace Webapplikasjoner_oblig.Controllers
     [Route("[controller]/[action]")]
     public class TradingController : ControllerBase
     {
+        private readonly int _quoteCacheTime = 24;
+
         private readonly ITradingRepository _db;
 
         private readonly IConfiguration _config;
 
+
+        private readonly ISearchResultRepositry _searchResultRepositry;
+
         private readonly string _apiKey;
 
-        private readonly int _quoteCacheTime = 24;
+
+
+       
+
+        
 
         private readonly SearchResultRepositry SearchResultRepositry;
 
 
-        public TradingController(ITradingRepository db, IConfiguration config)
+
+        public TradingController(ITradingRepository db,ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
             _db = db;
             // Adding configuration object that contains the appsettings.json content
             _config = config;
             // We can now access the AlphaVantage api key:
             _apiKey = _config["AlphaVantageApi:ApiKey"];
+
+
+            _searchResultRepositry = searchResultRepositry;
+
+
         }
 
         public async Task<Model.SearchResult> FindStock(string keyword) 
         {
+            
+           
+                Model.SearchResult? searchResult = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+                if(searchResult == null)
+                {
+                    return null;
+                }
+
+                return searchResult;
+            
+        }
+        public async Task<bool> SaveSearchResult(string keyword)
+        {
             try
             {
-               
-                return await SearchResultRepositry.GetOneKeyWordAsync(keyword);
-            }
-            catch
+                var modelSearchResult = new Model.SearchResult();
+                var res = _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+                if (res is null)
+                {
+                    AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+
+                    var alphaObject = await AlphaV.findStockAsync(keyword);
+
+
+
+                    modelSearchResult.SearchKeyword = keyword.ToUpper();
+                    modelSearchResult.SearchTime = DateTime.Now;
+
+                    var StockList = new List<Stock>();
+                    foreach (var alphaStock in alphaObject.BestMatches)
+                    {
+                        var ApiStock = new Stock();
+                        ApiStock = alphaStock;
+
+                        StockList.Add(ApiStock);
+                    }
+
+                    var StockDetailsList = new List<StockDetail>();
+                    foreach (var stock in StockList)
+                    {
+                        var stockDetails = new Model.StockDetail();
+                        stockDetails.StockName = stock.Name;
+                        stockDetails.StockSymbol = stock.Symbol;
+
+                        StockDetailsList.Add(stockDetails);
+                    }
+
+                    modelSearchResult.StockList = StockDetailsList;
+
+                    _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                    return true;
+                }
+                else
+                {
+
+                    double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
+
+                    if (timeSinceLastUpdate >= _quoteCacheTime)
+                    {
+                        _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
+
+                        await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                        return true;
+                    }
+
+                    return false;
+
+                }
+                
+            } catch(Exception e)
             {
-                return null;
+                return false;
             }
+
+            
         }
 
         [HttpGet]
