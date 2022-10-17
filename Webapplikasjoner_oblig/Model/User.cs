@@ -10,6 +10,8 @@
         public string Password { get; set; }
 
         public decimal FundsAvailable { get; set; }
-        public decimal Fundsspent { get; set; }
+        public decimal FundsSpent { get; set; }
+
+        public string Currency { get; set; }
     }
 }
