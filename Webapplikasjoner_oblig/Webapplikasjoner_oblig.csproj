@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AlphaVantageInterface\AlphaVantageInterface.csproj" />
+    <ProjectReference Include="..\EcbCurrencyInterface\EcbCurrencyInterface.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,5 +51,9 @@
     <None Remove="PeanutButter.Utils.Entity" />
     <None Remove="Serenity.Data.Entity" />
     <None Remove="Venflow.NewtonsoftJson" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>

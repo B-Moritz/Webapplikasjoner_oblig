@@ -77,7 +77,7 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             SearchKeyword = "Microsoft",
-                            SearchTimestamp = new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(978)
+                            SearchTimestamp = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4352)
                         });
                 });
 
@@ -87,6 +87,9 @@ namespace Webapplikasjoner_oblig.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("StocksId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("SpentValue")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("StockCounter")
@@ -103,7 +106,8 @@ namespace Webapplikasjoner_oblig.Migrations
                         {
                             UsersId = 1,
                             StocksId = "MSFT",
-                            StockCounter = 10
+                            SpentValue = 100m,
+                            StockCounter = 20
                         });
                 });
 
@@ -168,6 +172,10 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.Property<string>("Symbol")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
@@ -185,8 +193,9 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             Symbol = "MSFT",
+                            Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(941),
+                            LastUpdated = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4319),
                             StockName = "Microsoft"
                         });
                 });
@@ -196,6 +205,10 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.Property<int>("TradesId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<decimal>("Saldo")
                         .HasColumnType("TEXT");
@@ -227,11 +240,12 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             TradesId = 1,
+                            Currency = "NOK",
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 6, 23, 13, 47, 987, DateTimeKind.Local).AddTicks(1744),
-                            UserIsBying = false,
+                            TradeTime = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(5142),
+                            UserIsBying = true,
                             UsersId = 1
                         });
                 });
@@ -260,6 +274,10 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.Property<string>("Password")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("PortfolioCurrency")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.HasKey("UsersId");
 
                     b.ToTable("Users");
@@ -273,7 +291,8 @@ namespace Webapplikasjoner_oblig.Migrations
                             FundsAvailable = 1000m,
                             FundsSpent = 0m,
                             LastName = "User",
-                            Password = "testpwd"
+                            Password = "testpwd",
+                            PortfolioCurrency = "NOK"
                         });
                 });
 

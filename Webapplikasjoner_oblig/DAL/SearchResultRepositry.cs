@@ -1,4 +1,10 @@
 ﻿using Webapplikasjoner_oblig.Model;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using PeanutButter.Utils;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -6,10 +12,58 @@ namespace Webapplikasjoner_oblig.DAL
     {
         private readonly TradingContext _db;
 
-        
-        public Task<List<string>> GetAllKeyWordsAsync()
+        public SearchResultRepositry(TradingContext db)
         {
-            throw new NotImplementedException();
+            _db = db;
+        }
+
+        
+        public async Task<List<SearchResult>> GetAllKeyWordsAsync()
+        {   
+            try
+            {
+                //list of all search results
+                var keywords = await _db.SearchResults.ToListAsync();
+
+                //list to hold search result objects
+                var result = new List<SearchResult>();
+
+                //list to replace the list of stock retrived from searchResults table with stockDetails objects
+                var stockDList = new List<StockDetail>();
+
+                //search result object to be used when mapping from searchresults table
+                var searchRusltObject = new SearchResult();
+
+                //looping over anonymous type retived from database
+                foreach (var keyword in keywords)
+                {
+                    //looping over the list in keywords 
+                   foreach(var stock in keyword.Stocks)
+                    {
+                        //mapping stock to stockDetails
+                        var stockDetail = new StockDetail()
+                        {
+                            StockSymbol = stock.Symbol,
+                            StockName = stock.StockName,
+                        };
+
+                        stockDList.Add(stockDetail);
+                    }
+
+                   //mapping searchResults element to searchResult object
+                   searchRusltObject.SearchKeyword = keyword.SearchKeyword;
+                   searchRusltObject.SearchTime = keyword.SearchTimestamp;
+                   searchRusltObject.StockList = stockDList;
+
+                   result.Add(searchRusltObject);
+                }
+                return result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
         }
 
 

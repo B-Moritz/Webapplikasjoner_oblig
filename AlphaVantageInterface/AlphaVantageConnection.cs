@@ -76,7 +76,7 @@ namespace AlphaVantageInterface {
             StockQuoteTemp quoteTemp = await makeApiCallAsync<StockQuoteTemp>(requestUri);
 
             if (quoteTemp.GlobalQuote is null) {
-                throw new NullReferenceException("No global quote dictionary(property is null)");
+                throw new NullReferenceException("No global quote dictionary(property is null). Request string: " + requestUri);
             }
             
             // Create the StockQuote object:
