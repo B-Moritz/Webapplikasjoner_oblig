@@ -15,10 +15,13 @@ function printAllMyPortfolio() {
 
         $.get(url, function (data) {
             if (data != null) {
-
-                $("#lastupdate").html(data.lastUpdate);
+                const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
+                let machResult = regex.exec(data.lastUpdate);
+                const updateString = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
+                $("#lastupdate").html(updateString);
                 $("#totalvaluespent").html(data.totalValueSpent);
                 $("#totalportfoliovalue").html(data.totalPortfolioValue);
+                $("#portfoliocurrency").html(data.portfolioCurrency);
 
                 portfolioListHtml = `
                 <tr>
@@ -53,10 +56,13 @@ function printAllMyPortfolio() {
         });
 };
 
-
 function formatPortfolio(portfolio) {
     return formatPortfolio(portfolio);
-   
+}
+
+
+
+
 
     /*let ut = "<table><tr></tr>";
     for (const minStock of portfolio) {
@@ -65,7 +71,7 @@ function formatPortfolio(portfolio) {
     }
     ut += "</table>";
     $("#portfolios").html(ut);*/
-}
+
 
 
 /*$(document).ready(function () {
