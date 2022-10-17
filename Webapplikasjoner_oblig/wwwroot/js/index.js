@@ -3,6 +3,9 @@
 $(function () {
     hentAlleAksjer();
     hentFavorite();
+    $("#update").click(function () {
+        hentFavorite();
+    });
 });
 
 function hentAlleAksjer() {
@@ -60,6 +63,7 @@ function sellStock() {
 function hentFavorite() {
     $.get("Trading/GetFavoriteList?userId=1", function (favorites) {
         formaterFavorite(favorites);
+
     });
 }
 

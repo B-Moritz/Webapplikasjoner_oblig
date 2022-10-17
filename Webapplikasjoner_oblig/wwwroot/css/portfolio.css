@@ -9,6 +9,9 @@
     border-style: solid;
     border-color: black;
     padding: 5rem;
+}
+
+.showDialog {
     display: block;
 }
 
