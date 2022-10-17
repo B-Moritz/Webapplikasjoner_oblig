@@ -1,8 +1,10 @@
 ﻿$(function () {
     printAllMyPortfolio();
-});
-$("#button#get").click(function () {
-    printAllMyPortfolio();
+
+    $("#get").click(function () {
+        printAllMyPortfolio();
+    });
+
 });
 
 
@@ -13,6 +15,7 @@ function printAllMyPortfolio() {
 
         $.get(url, function (data) {
             if (data != null) {
+
                 $("#lastupdate").html(data.lastUpdate);
                 $("#totalvaluespent").html(data.totalValueSpent);
                 $("#totalportfoliovalue").html(data.totalPortfolioValue);

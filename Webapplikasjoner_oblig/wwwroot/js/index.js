@@ -69,10 +69,10 @@ function formaterFavorite(favorites) {
         "</tr>";
     for (let enfavorite of favorites.stockList) {
         ut += "<tr>" +
-            "<td>" + enfavorite.StockName + "</td>" +
-            "<td>" + enfavorite.StockSymbol + "</td>" +
-            "<td>" + enfavorite.Description + "</td>" +
-            "<td>" + enfavorite.LastUpdated + "</td>" +
+            "<td>" + enfavorite.stockName + "</td>" +
+            "<td>" + enfavorite.stockSymbol + "</td>" +
+            "<td>" + enfavorite.description + "</td>" +
+            "<td>" + enfavorite.lastUpdated + "</td>" +
             "</tr>";
     }
     ut += "</table>";
