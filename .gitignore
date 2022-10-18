@@ -11,6 +11,7 @@ node_modules
 *.db-shm
 *.db-wal
 .vs
+ConnectionStatusCache.json
 
 # Cusom ignores
 node_modules

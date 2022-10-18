@@ -60,6 +60,18 @@ namespace Webapplikasjoner_oblig.Controllers
                 return searchResult;
         }
 
+        public async Task<List<Model.SearchResult>> GetAllFromDB()
+        {
+            var list = _searchResultRepositry.GetAllKeyWordsAsync();
+
+            if(list is null)
+            {
+                return null;
+            }
+
+            return await list;
+        }
+
 
         /**
          * A function to add a search result using a received word from client 
@@ -91,16 +103,6 @@ namespace Webapplikasjoner_oblig.Controllers
                 // Initiate a new searchResult object
                 modelSearchResult.SearchKeyword = keyword.ToUpper();
                 modelSearchResult.SearchTime = DateTime.Now;
-
-                /*// List of stocks received from api call are set to be stock objects and added to a lsit
-                var StockList = new List<Stock>();
-                foreach (var alphaStock in alphaObject.BestMatches)
-                {
-                    var ApiStock = new Stock();
-                    ApiStock = alphaStock;
-
-                    StockList.Add(ApiStock);
-                }*/
 
                 // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
                 var StockDetailsList = new List<StockDetail>();
@@ -143,8 +145,6 @@ namespace Webapplikasjoner_oblig.Controllers
 
             }
                 
-
-            
         }
 
         [HttpGet]

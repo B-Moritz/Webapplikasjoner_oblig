@@ -21,11 +21,12 @@ namespace Webapplikasjoner_oblig.DAL
         
         public async Task<List<SearchResult>> GetAllKeyWordsAsync()
         {   
-            try
-            {
+          
                 //list of all search results
-                var keywords = await _db.SearchResults.ToListAsync();
+                List<SearchResults> keywords = await _db.SearchResults.ToListAsync();
 
+            if (!(keywords is null))
+            {
                 //list to hold search result objects
                 var result = new List<SearchResult>();
 
@@ -39,35 +40,33 @@ namespace Webapplikasjoner_oblig.DAL
                 foreach (var keyword in keywords)
                 {
                     //looping over the list in keywords 
-                   foreach(var stock in keyword.Stocks)
+                    foreach (var stock in keyword.Stocks)
                     {
                         //mapping stock to stockDetails
                         var stockDetail = new StockDetail()
                         {
                             StockSymbol = stock.Symbol,
                             StockName = stock.StockName,
+                            Description = stock.Description,
+                            Currency = stock.Currency,
+                            LastUpdated = stock.LastUpdated,
                         };
 
                         stockDList.Add(stockDetail);
                     }
 
-                   //mapping searchResults element to searchResult object
-                   searchRusltObject.SearchKeyword = keyword.SearchKeyword;
-                   searchRusltObject.SearchTime = keyword.SearchTimestamp;
-                   searchRusltObject.StockList = stockDList;
+                    //mapping searchResults element to searchResult object
+                    searchRusltObject.SearchKeyword = keyword.SearchKeyword;
+                    searchRusltObject.SearchTime = keyword.SearchTimestamp;
+                    searchRusltObject.StockList = stockDList;
 
-                   result.Add(searchRusltObject);
+                    result.Add(searchRusltObject);
                 }
                 return result;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return null;
-            }
+
+            return null;
         }
-
-
 
 
         public async Task<SearchResult>? GetOneKeyWordAsync(string keyWord)
@@ -75,13 +74,17 @@ namespace Webapplikasjoner_oblig.DAL
             if (keyWord == null)
             {
                 throw new ArgumentNullException();
+
             }            
+
+
+
 
             // get a search result that has primary key og keyword
             SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
             var stockDList = new List<StockDetail>();
 
-            if(searchResult is null)
+
             if (searchResult is null)
             {
                 return null;
