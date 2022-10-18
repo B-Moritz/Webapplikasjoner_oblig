@@ -189,12 +189,12 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "SearchResults",
                 columns: new[] { "SearchKeyword", "SearchTimestamp" },
-                values: new object[] { "Microsoft", new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4352) });
+                values: new object[] { "Microsoft", new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(3051) });
 
             migrationBuilder.InsertData(
                 table: "Stocks",
                 columns: new[] { "Symbol", "Currency", "Description", "LastUpdated", "StockName" },
-                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4319), "Microsoft" });
+                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(2996), "Microsoft" });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -224,7 +224,7 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "Trades",
                 columns: new[] { "TradesId", "Currency", "Saldo", "StockCount", "StocksId", "TradeTime", "UserIsBying", "UsersId" },
-                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(5142), true, 1 });
+                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(4982), true, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteLists_FavoritesSymbol",
