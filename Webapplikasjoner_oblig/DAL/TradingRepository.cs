@@ -169,6 +169,24 @@ namespace Webapplikasjoner_oblig.DAL
             
         }
 
+        public async Task AddToFavoriteListAsync(int userId, string symbol)
+        {
+            
+            Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            Stocks enStock = await _db.Stocks.SingleAsync(u => u.Symbol == symbol);           
+            enUser.Favorites.Add(enStock);
+            _db.SaveChanges();
+        }
+        public async Task DeleteFromFavoriteListAsync(int userId, string symbol)
+        {
+
+            Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            Stocks enStock = await _db.Stocks.SingleAsync(u => u.Symbol == symbol);
+            enUser.Favorites.Remove(enStock);
+            _db.SaveChanges();
+
+        }
+
         public async Task<User> GetUserAsync(int userId)
         {
             // This method return the user object containing information about the user

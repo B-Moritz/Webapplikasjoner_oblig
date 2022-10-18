@@ -19,6 +19,9 @@ namespace Webapplikasjoner_oblig.DAL
         Task<User> GetUserAsync(int userId);
         Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote);
         Task<FavoriteList> GetFavoriteList(int userId);
+        Task AddToFavoriteListAsync(int userId, string symbol);
+        Task DeleteFromFavoriteListAsync(int userId, string symbol);
+
         Task<Portfolio> GetPortfolioAsync(int userId);
 
     }

@@ -180,7 +180,20 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             return await _db.GetFavoriteList(userId);
         }
-        
+
+        public async Task<FavoriteList> DeleteFromFavoriteList(int userId, string symbol)
+        {
+            await _db.DeleteFromFavoriteListAsync(userId, symbol);
+
+            return await GetFavoriteList(userId);
+        }
+
+        public async Task<FavoriteList> AddToFavoriteList(int userId, string symbol)
+        {
+            await _db.AddToFavoriteListAsync(userId, symbol);
+
+            return await GetFavoriteList(userId);
+        }
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
