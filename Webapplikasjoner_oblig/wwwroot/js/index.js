@@ -97,7 +97,7 @@ function updatePortfolioList(data) {
                 $(this).toggleClass("bg-info");
                 selectedStock = $(this).data("StockData");
                 //console.log(`Stock ${selectedStock} is selected! From null`);
-            } else if (selectedStock == $(this).attr('id')) {
+            } else if (selectedStock.symbol == $(this).data("StockData").symbol) {
                 $(this).toggleClass("bg-info");
                 selectedStock = null;
                 //console.log("No stock is selected.");
