@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <script src="js/index.js"></script>
+
+</head>
+<body>
+    <!--<div class="container">
+
+         <h1>Buy stocks</h1>
+         <form class="form">
+             <div class="form-group">
+                 <label>innstock</label>
+                 <input type="text" id="stockBuy" />
+             </div>
+             <div class="form-group">
+                 <input type="button" id="kjope" value="Kjope" onClick="buyStock()" class="btn btn-primary" />
+             </div>
+             <div id="feil" style="color: red"></div>
+         </form>
+         <h1>Sell stocks</h1>
+         <form class="form">
+             <div class="form-group">
+                 <label>utstock</label>
+                 <input type="text" id="stockSell" />
+             </div>
+             <div class="form-group">
+                 <input type="button" id="selge" value="Sell" onClick="sellStock()" class="btn btn-primary" />
+             </div>
+             <div id="feil" style="color: red"></div>
+         </form>
+
+         <h1>Portfolio</h1>
+         <form class="form">
+             <div id="skrivportfolio"></div>
+             <div id="feil" style="color: red"></div>
+         </form>
+     </div>-->
+
+    <h1>My Watchlist</h1>
+    <br /><br />
+    <label>LastUpdated:  </label>
+    <span id="lastupdate"></span><br />
+    <div class="btn-group" style="width: 100%">
+        <div id="skrivfavorite"></div>
+        <div id="feil" style="color: red"></div>
+        <button type="button" id="update" style="width:50%" class="btn btn-primary btn-lg">Update</button>
+        <button type="button" id="buy" style="width:50%" class="btn btn-danger btn-lg">Buy</button>
+    </div>
+
+</body>
+
+</html>
+
+
+
