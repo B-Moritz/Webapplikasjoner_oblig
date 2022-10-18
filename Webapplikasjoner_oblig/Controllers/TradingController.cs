@@ -70,82 +70,79 @@ namespace Webapplikasjoner_oblig.Controllers
          */
         public async Task<bool> SaveSearchResult(string keyword)
         {
-            try
+            // Search result object from Model 
+            var modelSearchResult = new Model.SearchResult();
+
+
+            // Try and find a search result with given keyword in searchresults table 
+            Model.SearchResult res = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+            // If there is no such search result stored in the database, then go a head and fetch it from 
+            // Alpha vantage api
+            if (res is null)
             {
-                // Search result object from Model 
-                var modelSearchResult = new Model.SearchResult();
+                // Connection to alpha vantage api
+                AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
 
-                // Try and find a search result with given keyword in searchresults table 
-                Model.SearchResult res = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
 
-                
-                // If there is no such search result stored in the database, then go a head and fetch it from 
-                // Alpha vantage api
-                if (res is null)
-                {
-                    // Connection to alpha vantage api
-                    AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
-
-                    // Fetch stocks from api using the given name 
-                    var alphaObject = await AlphaV.findStockAsync(keyword);
+                // Fetch stocks from api using the given name 
+                var alphaObject = await AlphaV.findStockAsync(keyword);
                     
-                    // Initiate a new searchResult object
-                    modelSearchResult.SearchKeyword = keyword.ToUpper();
-                    modelSearchResult.SearchTime = DateTime.Now;
+                // Initiate a new searchResult object
+                modelSearchResult.SearchKeyword = keyword.ToUpper();
+                modelSearchResult.SearchTime = DateTime.Now;
 
-                    // List of stocks received from api call are set to be stock objects and added to a lsit
-                    var StockList = new List<Stock>();
-                    foreach (var alphaStock in alphaObject.BestMatches)
-                    {
-                        var ApiStock = new Stock();
-                        ApiStock = alphaStock;
+                /*// List of stocks received from api call are set to be stock objects and added to a lsit
+                var StockList = new List<Stock>();
+                foreach (var alphaStock in alphaObject.BestMatches)
+                {
+                    var ApiStock = new Stock();
+                    ApiStock = alphaStock;
 
-                        StockList.Add(ApiStock);
-                    }
+                    StockList.Add(ApiStock);
+                }*/
 
-                    // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
-                    var StockDetailsList = new List<StockDetail>();
-                    foreach (var stock in StockList)
-                    {
-                        var stockDetails = new Model.StockDetail();
-                        stockDetails.StockName = stock.Name;
-                        stockDetails.StockSymbol = stock.Symbol;
+                // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
+                var StockDetailsList = new List<StockDetail>();
+                foreach (Stock stock in alphaObject.BestMatches)
+                {
+                    var stockDetails = new Model.StockDetail();
+                    stockDetails.StockName = stock.Name;
+                    stockDetails.StockSymbol = stock.Symbol;
+                    stockDetails.Description = stock.Type;
+                    stockDetails.Currency = stock.Currency;
+                    stockDetails.LastUpdated = DateTime.Now;
 
-                        StockDetailsList.Add(stockDetails);
-                    }
+                    StockDetailsList.Add(stockDetails);
+                }
 
-                    // SearchResults list properties is assigned a list holding stockDetail objects.
-                    modelSearchResult.StockList = StockDetailsList;
+                // SearchResults list properties is assigned a list holding stockDetail objects.
+                modelSearchResult.StockList = StockDetailsList;
 
-                    // SearchResult is passed to a function in searchResultRepositry to be added to the database
-                    _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+                // SearchResult is passed to a function in searchResultRepositry to be added to the database
+                await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                return true;
+            }
+            else
+            {
+                // If there exist a search result match then check when it was added.
+                double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
+
+                // if it has passed over 24 hours since it was added to table then remove it from table and add a new record
+                if (timeSinceLastUpdate >= _quoteCacheTime)
+                {
+                    _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
+
+                    await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
                     return true;
                 }
-                else
-                {
-                    // If there exist a search result match then check when it was added.
-                    double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
 
-                    // if it has passed over 24 hours since it was added to table then remove it from table and add a new record
-                    if (timeSinceLastUpdate >= _quoteCacheTime)
-                    {
-                        _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
-
-                        await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
-
-                        return true;
-                    }
-
-                    return false;
-
-                }
-                
-            } catch(Exception e)
-            {
-                Debug.WriteLine(e + "****Error saving search result*****");
                 return false;
+
             }
+                
 
             
         }

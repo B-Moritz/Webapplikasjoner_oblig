@@ -66,11 +66,10 @@ function updatePortfolioList(data) {
                     <th>Total value</th>
                 </tr>`;
         portfolioTableElement.append(portfolioListHeader);
-        const portfolioListRow;
-        const curStockObj = {};
+        let curStockObj = {};
 
         for (let stock of data.stocks) {
-            portfolioListRow += `<tr id="${stock.symbol}" class="PortfolioRow">
+            let portfolioListRow = `<tr id="${stock.symbol}" class="PortfolioRow">
                     <td>${stock.symbol}</td>
                     <td>${stock.stockCounter}</td>
                     <td>${stock.stockName}</td>
@@ -93,14 +92,9 @@ function updatePortfolioList(data) {
             $(`#${stock.symbol}`).data(curStockObj);
         }
 
-        $("#PortfolioStockList").html(portfolioListHtml);
-
         $(".PortfolioRow").click(function () {
             if (selectedStock == null) {
                 $(this).toggleClass("bg-info");
-                const stockObj = {
-                    symbol: 
-                }
                 selectedStock = $(this).data("StockData");
                 //console.log(`Stock ${selectedStock} is selected! From null`);
             } else if (selectedStock == $(this).attr('id')) {
