@@ -68,8 +68,6 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
 
-
-
         public async Task<SearchResult>? GetOneKeyWordAsync(string keyWord)
         {
             if (keyWord == null)
@@ -77,20 +75,11 @@ namespace Webapplikasjoner_oblig.DAL
                 throw new ArgumentNullException();
             }
 
-<<<<<<< HEAD
-            
-=======
-
->>>>>>> e59665a92c1cff90a734aeb7d9ea6c3276226198
             // get a search result that has primary key og keyword
             SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
             var stockDList = new List<StockDetail>();
 
-<<<<<<< HEAD
-            if(searchResult is null)
-=======
             if (searchResult is null)
->>>>>>> e59665a92c1cff90a734aeb7d9ea6c3276226198
             {
                 return null;
             }
@@ -122,12 +111,7 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             return dbSearchResult;
-<<<<<<< HEAD
-            
-            
-=======
 
->>>>>>> e59665a92c1cff90a734aeb7d9ea6c3276226198
         }
 
        /**
