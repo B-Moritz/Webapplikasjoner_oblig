@@ -77,45 +77,45 @@ namespace Webapplikasjoner_oblig.DAL
                 throw new ArgumentNullException();
             }
 
-            try
+            
+            // get a search result that has primary key og keyword
+            SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
+            var stockDList = new List<StockDetail>();
+
+            if(searchResult is null)
             {
-                // get a search result that has primary key og keyword
-                SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
-                var stockDList = new List<StockDetail>();
-
-                //go over the list of stock the searchreasult holds
-                foreach (var searchRes in searchResult.Stocks)
-                {
-
-                    //make each stock in to stockdetail object with ony neccessary properties extracted
-                    var stockDetail = new StockDetail()
-                    {
-                        StockSymbol = searchRes.Symbol,
-                        StockName = searchRes.StockName,
-                    };
-
-                    //add stockDetail in to a list
-                    stockDList.Add(stockDetail);
-
-                };
-
-                //from searchResults to searchResult object
-                var dbSearchResult = new SearchResult()
-                {
-                    SearchKeyword = searchResult.SearchKeyword,
-                    SearchTime = searchResult.SearchTimestamp,
-                    //list containing searchResult objects
-                    StockList = stockDList
-
-                };
-
-                return dbSearchResult;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
                 return null;
             }
+
+            //go over the list of stock the searchreasult holds
+            foreach (var searchRes in searchResult.Stocks)
+            {
+
+                //make each stock in to stockdetail object with ony neccessary properties extracted
+                var stockDetail = new StockDetail()
+                {
+                    StockSymbol = searchRes.Symbol,
+                    StockName = searchRes.StockName,
+                };
+
+                //add stockDetail in to a list
+                stockDList.Add(stockDetail);
+
+            };
+
+            //from searchResults to searchResult object
+            var dbSearchResult = new SearchResult()
+            {
+                SearchKeyword = searchResult.SearchKeyword,
+                SearchTime = searchResult.SearchTimestamp,
+                //list containing searchResult objects
+                StockList = stockDList
+
+            };
+
+            return dbSearchResult;
+            
+            
         }
 
        /**

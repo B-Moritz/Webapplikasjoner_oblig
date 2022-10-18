@@ -76,8 +76,9 @@ namespace Webapplikasjoner_oblig.Controllers
                 var modelSearchResult = new Model.SearchResult();
 
                 // Try and find a search result with given keyword in searchresults table 
-                var res = _searchResultRepositry.GetOneKeyWordAsync(keyword);
+                Model.SearchResult res = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
 
+                
                 // If there is no such search result stored in the database, then go a head and fetch it from 
                 // Alpha vantage api
                 if (res is null)
