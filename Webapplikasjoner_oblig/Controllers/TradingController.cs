@@ -73,6 +73,7 @@ namespace Webapplikasjoner_oblig.Controllers
             // Search result object from Model 
             var modelSearchResult = new Model.SearchResult();
 
+
             // Try and find a search result with given keyword in searchresults table 
             Model.SearchResult res = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
 
@@ -82,6 +83,7 @@ namespace Webapplikasjoner_oblig.Controllers
             {
                 // Connection to alpha vantage api
                 AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+
 
                 // Fetch stocks from api using the given name 
                 var alphaObject = await AlphaV.findStockAsync(keyword);
@@ -176,7 +178,20 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             return await _db.GetFavoriteList(userId);
         }
-        
+
+        public async Task<FavoriteList> DeleteFromFavoriteList(int userId, string symbol)
+        {
+            await _db.DeleteFromFavoriteListAsync(userId, symbol);
+
+            return await GetFavoriteList(userId);
+        }
+
+        public async Task<FavoriteList> AddToFavoriteList(int userId, string symbol)
+        {
+            await _db.AddToFavoriteListAsync(userId, symbol);
+
+            return await GetFavoriteList(userId);
+        }
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
