@@ -92,16 +92,24 @@ function updatePortfolioList(data) {
 
 function printAllMyPortfolio() {
 
-        url = "trading/getPortfolio?userId=1";
-        $("#PortfolioSpinner").removeClass("hideDialog").addClass("showDialog");
-        
-        $.get(url, function (data) {
-            updatePortfolioList(data);
-            $("#PortfolioSpinner").removeClass("showDialog").addClass("hideDialog");
-        }).fail(function (response) {
-            alert(response.responseText);
-            $("#PortfolioSpinner").removeClass("showDialog").addClass("hideDialog");
-        });
+    url = "trading/getPortfolio?userId=1";
+    $("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
+    $("#get").addClass("disabled").attr("aria-disabled", "disabled");   
+    $("#sell").addClass("disabled").attr("aria-disabled", "disabled");
+
+    $(".PortfolioRow").off("click");
+
+    $.get(url, function (data) {
+        updatePortfolioList(data);
+        $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
+        $("#get").removeClass("disabled");
+        $("#sell").removeClass("disabled");
+    }).fail(function (response) {
+        alert(response.responseText);
+        $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
+        $("#get").removeClass("disabled");
+        $("#sell").removeClass("disabled");
+    });
 };
 
 function formatPortfolio(portfolio) {
