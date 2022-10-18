@@ -68,8 +68,6 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
 
-
-
         public async Task<SearchResult>? GetOneKeyWordAsync(string keyWord)
         {
             if (keyWord == null)
