@@ -54,7 +54,14 @@ namespace Webapplikasjoner_oblig.Controllers
 
                 if(searchResult is null)
                 {
-                    return null;
+                    var SavedResult = SaveSearchResult(keyword);
+                     
+                     if (SavedResult is null)
+                  {
+                       return null;
+                  }
+
+                      return await SavedResult;
                 }
 
                 return searchResult;
@@ -80,7 +87,7 @@ namespace Webapplikasjoner_oblig.Controllers
          * then removes exixting record and add new one by creating a new object of search result and passing it to  saveSearchResult in repository.
          * If there is no such record, it fetches data from api using the keyword and save it by passing it to saveSearchResult function
          */
-        public async Task<bool> SaveSearchResult(string keyword)
+        public async Task<Model.SearchResult> SaveSearchResult(string keyword)
         {
             // Search result object from Model 
             var modelSearchResult = new Model.SearchResult();
@@ -124,7 +131,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 // SearchResult is passed to a function in searchResultRepositry to be added to the database
                 await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
-                return true;
+                return modelSearchResult;
             }
             else
             {
@@ -138,10 +145,10 @@ namespace Webapplikasjoner_oblig.Controllers
 
                     await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
-                    return true;
+                    return modelSearchResult;
                 }
 
-                return false;
+                return null;
 
             }
                 
