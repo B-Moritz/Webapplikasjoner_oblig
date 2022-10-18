@@ -145,7 +145,6 @@ function formatFavorite(favorites) {
     if (favorites != null) {
         const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
         let machResult = regex.exec(favorites.lastUpdated);
-
         const updateFavorite = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
         $("#lastupdate").html(updateFavorite);
 

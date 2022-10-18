@@ -25,7 +25,7 @@ searchBar.addEventListener('keyup', (e) => {
 const loadCharacters = async () => {
     try {
         // https://hp-api.herokuapp.com/api/characters
-        const res = await fetch('https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=demo');
+        const res = await fetch('_apiKey');
         hpCharacters = await res.json();
         displayCharacters(hpCharacters);
     } catch (err) {
