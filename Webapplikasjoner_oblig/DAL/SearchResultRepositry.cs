@@ -77,45 +77,57 @@ namespace Webapplikasjoner_oblig.DAL
                 throw new ArgumentNullException();
             }
 
-            try
+<<<<<<< HEAD
+            
+=======
+
+>>>>>>> e59665a92c1cff90a734aeb7d9ea6c3276226198
+            // get a search result that has primary key og keyword
+            SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
+            var stockDList = new List<StockDetail>();
+
+<<<<<<< HEAD
+            if(searchResult is null)
+=======
+            if (searchResult is null)
+>>>>>>> e59665a92c1cff90a734aeb7d9ea6c3276226198
             {
-                // get a search result that has primary key og keyword
-                SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
-                var stockDList = new List<StockDetail>();
-
-                //go over the list of stock the searchreasult holds
-                foreach (var searchRes in searchResult.Stocks)
-                {
-
-                    //make each stock in to stockdetail object with ony neccessary properties extracted
-                    var stockDetail = new StockDetail()
-                    {
-                        StockSymbol = searchRes.Symbol,
-                        StockName = searchRes.StockName,
-                    };
-
-                    //add stockDetail in to a list
-                    stockDList.Add(stockDetail);
-
-                };
-
-                //from searchResults to searchResult object
-                var dbSearchResult = new SearchResult()
-                {
-                    SearchKeyword = searchResult.SearchKeyword,
-                    SearchTime = searchResult.SearchTimestamp,
-                    //list containing searchResult objects
-                    StockList = stockDList
-
-                };
-
-                return dbSearchResult;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
                 return null;
             }
+
+            //go over the list of stock the searchreasult holds
+            foreach (var searchRes in searchResult.Stocks)
+            {
+
+                //make each stock in to stockdetail object with ony neccessary properties extracted
+                var stockDetail = new StockDetail()
+                {
+                    StockSymbol = searchRes.Symbol,
+                    StockName = searchRes.StockName,
+                };
+
+                //add stockDetail in to a list
+                stockDList.Add(stockDetail);
+
+            };
+
+            //from searchResults to searchResult object
+            var dbSearchResult = new SearchResult()
+            {
+                SearchKeyword = searchResult.SearchKeyword,
+                SearchTime = searchResult.SearchTimestamp,
+                //list containing searchResult objects
+                StockList = stockDList
+
+            };
+
+            return dbSearchResult;
+<<<<<<< HEAD
+            
+            
+=======
+
+>>>>>>> e59665a92c1cff90a734aeb7d9ea6c3276226198
         }
 
        /**
@@ -123,35 +135,30 @@ namespace Webapplikasjoner_oblig.DAL
        */
        public async Task<bool> SaveSearchResultAsync(SearchResult result)
         {
-            try
+            
+            var stocksList = new List<Stocks>();
+
+            foreach (var stock in result.StockList)
             {
-                var stocksList = new List<Stocks>();
-
-                foreach (var stock in result.StockList)
-                {
-                    var newStock = new Stocks();
-                    newStock.StockName = stock.StockName;
-                    newStock.Symbol = stock.StockSymbol;
-
-                    stocksList.Add(newStock);
-                }
-
-                var dbSearchResult = new SearchResults();
-                dbSearchResult.SearchKeyword = result.SearchKeyword;
-                dbSearchResult.SearchTimestamp = DateTime.Now;
-                dbSearchResult.Stocks = stocksList;
-
-                 _db.SearchResults.Add(dbSearchResult);
-                await _db.SaveChangesAsync();
-
-
-                return true;
-
+                var newStock = new Stocks();
+                newStock.StockName = stock.StockName;
+                newStock.Symbol = stock.StockSymbol;
+                newStock.LastUpdated = stock.LastUpdated;
+                newStock.Description = stock.Description;
+                newStock.Currency = stock.Currency;
+                stocksList.Add(newStock);
             }
-            catch
-            {
-                return false;
-            }
+
+            var dbSearchResult = new SearchResults();
+            dbSearchResult.SearchKeyword = result.SearchKeyword;
+            dbSearchResult.SearchTimestamp = DateTime.Now;
+            dbSearchResult.Stocks = stocksList;
+
+                _db.SearchResults.Add(dbSearchResult);
+            await _db.SaveChangesAsync();
+
+
+            return true;
         }
 
     /**

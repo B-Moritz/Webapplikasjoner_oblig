@@ -1,0 +1,59 @@
+﻿.hideDialog {
+    display: none;    
+}
+
+#SellDialog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(105, 105, 105, 0.4);
+}
+
+#innerDialog {
+    position: absolute;
+    top: 25%;
+    left: 25%;
+    border-style: solid;
+    border-color: black;
+    padding: 5rem;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.bringBack {
+    z-index: -1;
+}
+
+.showDialog {
+    display: block;
+}
+
+#PortfolioLoading {
+    background-color: rgb(128, 128, 128, 0.4);
+}
+
+.hideLoading {
+    opacity: 0;
+}
+
+.displayLoading {
+    opacity: 1;
+}
+
+.siteContainer {
+    background-color: rgb(128, 128, 128);
+    padding-top: 5rem;
+}
+
+.fatureContainer {
+    margin: 5rem 5rem 5rem;
+    border-style: solid;
+    border-radius: 10px 10px 10px 10px;
+    padding: 2rem;
+    border-color: black;
+    background-color: white;
+}
+
+

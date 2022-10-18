@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\index.html" />
-    <None Include="wwwroot\js\index.js" />
+    <None Include="wwwroot\index.html.old" />
+    <None Include="wwwroot\js\index2.js" />
   </ItemGroup>
 
   <ItemGroup>

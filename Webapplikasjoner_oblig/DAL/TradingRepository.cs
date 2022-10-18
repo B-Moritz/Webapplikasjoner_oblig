@@ -42,13 +42,13 @@ namespace Webapplikasjoner_oblig.DAL
             return stockQuote;
         }
 
-        public Stocks GetStock(string symbol)
+        public async Task<Stocks> GetStockAsync(string symbol)
         {
             Stocks curStock = new Stocks();
 
             try
             {
-                curStock = _db.Stocks.Single<Stocks>(s => string.Compare(s.Symbol, symbol) == 0);
+                curStock = await _db.Stocks.SingleAsync(s => string.Compare(s.Symbol, symbol) == 0);
             }
             catch (Exception e)
             {
@@ -169,7 +169,25 @@ namespace Webapplikasjoner_oblig.DAL
             
         }
 
-        public async Task<User> GetUser(int userId)
+        public async Task AddToFavoriteListAsync(int userId, string symbol)
+        {
+            
+            Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            Stocks enStock = await _db.Stocks.SingleAsync(u => u.Symbol == symbol);           
+            enUser.Favorites.Add(enStock);
+            _db.SaveChanges();
+        }
+        public async Task DeleteFromFavoriteListAsync(int userId, string symbol)
+        {
+
+            Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            Stocks enStock = await _db.Stocks.SingleAsync(u => u.Symbol == symbol);
+            enUser.Favorites.Remove(enStock);
+            _db.SaveChanges();
+
+        }
+
+        public async Task<User> GetUserAsync(int userId)
         {
             // This method return the user object containing information about the user
             Users curUser = _db.Users.Single(t => t.UsersId == userId);
@@ -222,10 +240,46 @@ namespace Webapplikasjoner_oblig.DAL
 
         }
 
-        public async Task BuyStockTransaction(int userId, string symbol, int count) {
-            // Get the stock and check if the user already has an ownerhsip
-            //Stocks curStock = _db.Stocks.Single<Stocks>(s => s.Symbol == symbol);
-            //var curentOwnership = _db.StockOwnerships.Select(o => new { o.StocksId == symbol, o.UsersId});
+        public async Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count) {
+
+
+            StockOwnerships curentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.Id);
+            if (curentOwnership is null)
+            {
+                // The user has no existing ownership. Create new ownership
+                StockOwnerships newOwnerhsip = new StockOwnerships
+                {
+                    StocksId = curStock.Symbol,
+                    UsersId = curUser.Id,
+                    StockCounter = count,
+                    SpentValue = saldo,
+                };
+
+                _db.StockOwnerships.Add(newOwnerhsip);
+            }
+            else {
+                // Add to the existing ownership
+                curentOwnership.SpentValue += saldo;
+                curentOwnership.StockCounter += count;
+            }
+
+            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.Id);
+            dbUser.FundsAvailable -= saldo;
+
+            // Add a trade object
+            Trades newBuyTradeLog = new Trades
+            {
+                StockCount = count,
+                TradeTime = DateTime.Now,
+                UserIsBying = true,
+                Saldo = saldo,
+                Currency = dbUser.PortfolioCurrency,
+                Stock = curStock,
+                User = dbUser
+            };
+            await _db.Trades.AddAsync(newBuyTradeLog);
+
+            _db.SaveChanges();
         }
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)

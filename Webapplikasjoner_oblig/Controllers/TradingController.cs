@@ -70,81 +70,79 @@ namespace Webapplikasjoner_oblig.Controllers
          */
         public async Task<bool> SaveSearchResult(string keyword)
         {
-            try
+            // Search result object from Model 
+            var modelSearchResult = new Model.SearchResult();
+
+
+            // Try and find a search result with given keyword in searchresults table 
+            Model.SearchResult res = await _searchResultRepositry.GetOneKeyWordAsync(keyword);
+
+            // If there is no such search result stored in the database, then go a head and fetch it from 
+            // Alpha vantage api
+            if (res is null)
             {
-                // Search result object from Model 
-                var modelSearchResult = new Model.SearchResult();
+                // Connection to alpha vantage api
+                AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
 
-                // Try and find a search result with given keyword in searchresults table 
-                var res = _searchResultRepositry.GetOneKeyWordAsync(keyword);
 
-                // If there is no such search result stored in the database, then go a head and fetch it from 
-                // Alpha vantage api
-                if (res is null)
-                {
-                    // Connection to alpha vantage api
-                    AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
-
-                    // Fetch stocks from api using the given name 
-                    var alphaObject = await AlphaV.findStockAsync(keyword);
+                // Fetch stocks from api using the given name 
+                var alphaObject = await AlphaV.findStockAsync(keyword);
                     
-                    // Initiate a new searchResult object
-                    modelSearchResult.SearchKeyword = keyword.ToUpper();
-                    modelSearchResult.SearchTime = DateTime.Now;
+                // Initiate a new searchResult object
+                modelSearchResult.SearchKeyword = keyword.ToUpper();
+                modelSearchResult.SearchTime = DateTime.Now;
 
-                    // List of stocks received from api call are set to be stock objects and added to a lsit
-                    var StockList = new List<Stock>();
-                    foreach (var alphaStock in alphaObject.BestMatches)
-                    {
-                        var ApiStock = new Stock();
-                        ApiStock = alphaStock;
+                /*// List of stocks received from api call are set to be stock objects and added to a lsit
+                var StockList = new List<Stock>();
+                foreach (var alphaStock in alphaObject.BestMatches)
+                {
+                    var ApiStock = new Stock();
+                    ApiStock = alphaStock;
 
-                        StockList.Add(ApiStock);
-                    }
+                    StockList.Add(ApiStock);
+                }*/
 
-                    // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
-                    var StockDetailsList = new List<StockDetail>();
-                    foreach (var stock in StockList)
-                    {
-                        var stockDetails = new Model.StockDetail();
-                        stockDetails.StockName = stock.Name;
-                        stockDetails.StockSymbol = stock.Symbol;
+                // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
+                var StockDetailsList = new List<StockDetail>();
+                foreach (Stock stock in alphaObject.BestMatches)
+                {
+                    var stockDetails = new Model.StockDetail();
+                    stockDetails.StockName = stock.Name;
+                    stockDetails.StockSymbol = stock.Symbol;
+                    stockDetails.Description = stock.Type;
+                    stockDetails.Currency = stock.Currency;
+                    stockDetails.LastUpdated = DateTime.Now;
 
-                        StockDetailsList.Add(stockDetails);
-                    }
+                    StockDetailsList.Add(stockDetails);
+                }
 
-                    // SearchResults list properties is assigned a list holding stockDetail objects.
-                    modelSearchResult.StockList = StockDetailsList;
+                // SearchResults list properties is assigned a list holding stockDetail objects.
+                modelSearchResult.StockList = StockDetailsList;
 
-                    // SearchResult is passed to a function in searchResultRepositry to be added to the database
-                    _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+                // SearchResult is passed to a function in searchResultRepositry to be added to the database
+                await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
+
+                return true;
+            }
+            else
+            {
+                // If there exist a search result match then check when it was added.
+                double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
+
+                // if it has passed over 24 hours since it was added to table then remove it from table and add a new record
+                if (timeSinceLastUpdate >= _quoteCacheTime)
+                {
+                    _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
+
+                    await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
                     return true;
                 }
-                else
-                {
-                    // If there exist a search result match then check when it was added.
-                    double timeSinceLastUpdate = (DateTime.Now - modelSearchResult.SearchTime).TotalHours;
 
-                    // if it has passed over 24 hours since it was added to table then remove it from table and add a new record
-                    if (timeSinceLastUpdate >= _quoteCacheTime)
-                    {
-                        _searchResultRepositry.DeleteSearchResult(modelSearchResult.SearchKeyword);
-
-                        await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
-
-                        return true;
-                    }
-
-                    return false;
-
-                }
-                
-            } catch(Exception e)
-            {
-                Debug.WriteLine(e + "****Error saving search result*****");
                 return false;
+
             }
+                
 
             
         }
@@ -180,19 +178,66 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             return await _db.GetFavoriteList(userId);
         }
-        
+
+        public async Task<FavoriteList> DeleteFromFavoriteList(int userId, string symbol)
+        {
+            await _db.DeleteFromFavoriteListAsync(userId, symbol);
+
+            return await GetFavoriteList(userId);
+        }
+
+        public async Task<FavoriteList> AddToFavoriteList(int userId, string symbol)
+        {
+            await _db.AddToFavoriteListAsync(userId, symbol);
+
+            return await GetFavoriteList(userId);
+        }
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
-            return await GetPortfolio(userId);
 
+            // Test endpoint: localhost:1635/trading/buyStock?userId=1&symbol=MSFT&count=5
+            // Validate count input value
+            if (count < 1) {
+                throw new ArgumentException("The provided count value is not valid. It must be an integer greater than 0.");
+            }
+            // Get the user object
+            User curUser = await _db.GetUserAsync(userId);
+            if (curUser is null)
+            {
+                throw new ArgumentException("The provided userId did not match any user in the database!");
+            }
+            // Get the stock
+            Stocks curStock = await _db.GetStockAsync(symbol);
+            if (curStock is null)
+            {
+                throw new ArgumentException("The specified stock was not found in the database");
+            }
+            // Calculate the saldo required to by the amount of stocks
+            StockQuotes curQuote = await getUpdatedQuote(symbol);
+            decimal exchangeRate = 1;
+            if (curUser.Currency != curStock.Currency)
+            {
+                exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, curUser.Currency);
+            }
+            decimal saldo = exchangeRate * (decimal)curQuote.Price * count;
+
+            // Check that the user has the funds needed to perform the transaction
+            if (curUser.FundsAvailable - saldo < 0)
+            {
+                throw new Exception("The user has not enough funds to perform this transaction!");
+            }
+
+            await _db.BuyStockTransactionAsync(curUser, curStock, saldo, count);
+
+            return await GetPortfolio(userId);
         }
 
         public async Task<Portfolio> SellStock(int userId, string symbol, int count)
         {
             // Test http request: localhost:1633/trading/sellStock?userId=1&symbol=MSFT&count=5
             // Check if the stock exists in the database
-            Stocks curStock = _db.GetStock(symbol);
+            Stocks curStock = await _db.GetStockAsync(symbol);
             if (curStock is null) 
             {
                 throw new NullReferenceException("The stock was not found in the database");
@@ -201,7 +246,7 @@ namespace Webapplikasjoner_oblig.Controllers
             StockQuotes curQuote = await getUpdatedQuote(symbol);
 
             // Get user
-            User identifiedUser = await _db.GetUser(userId);
+            User identifiedUser = await _db.GetUserAsync(userId);
 
             // We now have a stock quote - find the total that needs to be added to the users funds
             // We need to handle currency
