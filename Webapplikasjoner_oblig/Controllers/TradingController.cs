@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.SignalR;
 using EcbCurrencyInterface;
 using System.Diagnostics;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-
+using System.Diagnostics.Metrics;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -242,6 +242,11 @@ namespace Webapplikasjoner_oblig.Controllers
             {
                 throw new NullReferenceException("The stock was not found in the database");
             }
+            // Validate stock counter. It must be an positive integer greather than or equal to 1
+            if (count < 1) {
+                throw new ArgumentException("The provided count value is invalid");
+            }
+
             // Get the updated quote for the stock
             StockQuotes curQuote = await getUpdatedQuote(symbol);
 
