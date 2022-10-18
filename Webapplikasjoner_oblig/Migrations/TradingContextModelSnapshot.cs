@@ -77,7 +77,7 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             SearchKeyword = "Microsoft",
-                            SearchTimestamp = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4352)
+                            SearchTimestamp = new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(3051)
                         });
                 });
 
@@ -195,7 +195,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Symbol = "MSFT",
                             Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4319),
+                            LastUpdated = new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(2996),
                             StockName = "Microsoft"
                         });
                 });
@@ -244,7 +244,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(5142),
+                            TradeTime = new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(4982),
                             UserIsBying = true,
                             UsersId = 1
                         });
