@@ -1,60 +1,120 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>WebApplicaton</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="js/index.js"></script>
 
 </head>
 <body>
-    <!--<div class="container">
-
-         <h1>Buy stocks</h1>
-         <form class="form">
-             <div class="form-group">
-                 <label>innstock</label>
-                 <input type="text" id="stockBuy" />
-             </div>
-             <div class="form-group">
-                 <input type="button" id="kjope" value="Kjope" onClick="buyStock()" class="btn btn-primary" />
-             </div>
-             <div id="feil" style="color: red"></div>
-         </form>
-         <h1>Sell stocks</h1>
-         <form class="form">
-             <div class="form-group">
-                 <label>utstock</label>
-                 <input type="text" id="stockSell" />
-             </div>
-             <div class="form-group">
-                 <input type="button" id="selge" value="Sell" onClick="sellStock()" class="btn btn-primary" />
-             </div>
-             <div id="feil" style="color: red"></div>
-         </form>
-
-         <h1>Portfolio</h1>
-         <form class="form">
-             <div id="skrivportfolio"></div>
-             <div id="feil" style="color: red"></div>
-         </form>
-     </div>-->
-
-    <h1>My Watchlist</h1>
-    <br /><br />
-    <label>LastUpdated:  </label>
-    <span id="lastupdate"></span><br />
-    <div class="btn-group" style="width: 100%">
-        <div id="skrivfavorite"></div>
-        <div id="feil" style="color: red"></div>
-        <button type="button" id="update" style="width:50%" class="btn btn-primary btn-lg">Update</button>
-        <button type="button" id="buy" style="width:50%" class="btn btn-danger btn-lg">Buy</button>
+    <div id="SellDialog" class="hideDialog">
+        <div id="innerDialog">
+            <h3>Sell stock</h3>
+            <p>Please specify the amount of stocks to sell:</p>
+            <div class="input-group">
+                <label class="input-group-addon">Number of stocks to be sold</label>
+                <input id="StockCouterInput" class="form-control" type="number" name="StockCounter" value="1">
+            </div>
+            <button id="confirmSell" class="btn-success">Confirm Transaction</button>
+            <button id="CancelSellDialog" class="btn-secondary">Cancel Transaction</button>
+        </div>
     </div>
+    <div class="bringBack">
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="index.html" class="navbar-brand">Trading</a>
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-main">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="index.html">portfolio</a>
+                        </li>
+                        <li>
+                            <a href="tradeSøk.html">market</a>
+                        </li>
+                        <li>
+                            <a href="">Transaksjoner</a>
+                        </li>
+                        <li>
+                            <a href="userinfo.html">user-info</a>
+                        </li>
+                        <li>
+                            <a href="tradsøk.html">søk</a>
+                        </li>
+                    </ul>
+
+                    <!--<ul class="nav navbar-nav navbar-right">
+                      <li><a href="loggUt.html">Logg ut</a></li>
+                    </ul> -->
+                </div>
+            </div>
+        </div>
+        <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
+        <div class="siteContainer">
+            <div id="PortfolioContainer" class="fatureContainer">
+                <h2>Portfolio</h2>
+                <div id="PortfolioLoading" class="hideLoading LoadingContainer float-right">
+                    <p class="loading">Loading ...</p>
+                </div>
+                <div class=" float-left">
+                    <label>Lastupdated: </label>
+                    <span id="lastupdate"></span><br />
+                    <label>Total value: </label>
+                    <span id="totalvaluespent"></span><br />
+                    <label>TotalportfolioValue: </label>
+                    <span id="totalportfoliovalue"></span><br />
+                    <label>Currency: </label>
+                    <span id="portfoliocurrency"></span><br />
+                </div>
+                <div class="btn-group" style="width:100%; z-index: 0">
+                    <table id="PortfolioStockList" class="table table-striped"></table>
+                    <button type="button" id="get" style="width:50%" class="btn btn-primary btn-lg">Update</button>
+                    <div id="portfolios"></div>
+                    <button type="button" id="sell" style="width:50%" class="btn btn-danger btn-lg">Sell</button>
+                </div>
+            </div>
+            <div id="FavoriteContainer" class="fatureContainer">
+                <h2>My Watchlist</h2>
+                <br /><br />
+                <label>LastUpdated:  </label>
+                <span id="lastupdate"></span><br />
+                <div class="btn-group" style="width: 100%">
+                    <div id="skrivfavorite"></div>
+                    <div id="feil" style="color: red"></div>
+                    <button type="button" id="update" style="width:50%" class="btn btn-primary btn-lg">Update</button>
+                    <button type="button" id="buy" style="width:50%" class="btn btn-danger btn-lg">Buy</button>
+                </div>
+            </div>
+        </div>
+     </div>
+
+    <!--<div class="container">
+        <br /><br />
+        <div class="container">
+            <h3>here is my_profile:</h3>
+            <div id="portfolios"></div>
+            <!--<a href="lagre.html" class="btn btn-primary">Lagre ny kunde</a>
+        </div>
+    </div>-->
 
 </body>
-
 </html>
+
+
+
 
 
 
