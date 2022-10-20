@@ -13,7 +13,7 @@ $(function () {
 
     getFavorite();
 
-    $("#update").click(function () {
+    $("#GetFavoriteBtn").click(function () {
         getFavorite();
     });
 
@@ -255,15 +255,8 @@ function formatPortfolio(portfolio) {
 
 function formatFavorite(favorites) {
     if (favorites != null) {
-<<<<<<< HEAD
-        const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
-        let machResult = regex.exec(favorites.lastUpdated);
-        const updateFavorite = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
-        $("#lastupdate").html(updateFavorite);
-=======
         
         $("#lastupdateFav").html(dateTimeFormat(favorites.lastUpdated));
->>>>>>> 09ca646bd9a748d32b9e1270a9417146b93d8932
 
         const favoriteTableContainer = $("#skrivfavorite");
 
@@ -293,7 +286,7 @@ function formatFavorite(favorites) {
             $(`${enfavorite.stockSymbol}_favorites`).data(curFavObj);
 
             if (selectedFavoriteStock == null) {
-                $(`${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
+                $(`#${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
                 selectedFavoriteStock = curFavObj.StockData;
                 displayStockQuote(curFavObj.StockData.symbol)
             }
