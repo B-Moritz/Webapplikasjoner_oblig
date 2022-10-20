@@ -1,5 +1,6 @@
 ﻿
-let selectedStock = null;
+let selectedPortfolioStock = null;
+let selectedFavoriteStock = null;
 const userId = 1;
 
 $(function () {
@@ -9,14 +10,14 @@ $(function () {
         printAllMyPortfolio();
     });
 
-    hentFavorite();
+    getFavorite();
 
     $("#update").click(function () {
-        hentFavorite();
+        getFavorite();
     });
 
     $("#BuyPortfolioBtn").click(function () {
-        if (selectedStock == null) {
+        if (selectedPortfolioStock == null) {
             alert("No stock was selected. Please select a stock");
             return;
         }
@@ -24,13 +25,13 @@ $(function () {
         const innerHtml = `
             <h3>Buy stock</h3>
             <label style="grid-area: label1;" name="Stock Symbol">Stock Symbol:</label>
-            <p style="grid-area: static1">${selectedStock.symbol}</p>
+            <p style="grid-area: static1">${selectedPortfolioStock.symbol}</p>
             <label styles="grid-area: label2;" name="Stock Name">Stock Name:</label>
-            <p style="grid-area: static2">${selectedStock.stockName}</p>
+            <p style="grid-area: static2">${selectedPortfolioStock.stockName}</p>
             <label style="grid-area: label3;" name="Quantity">Number of shares in portfolio:</label>
-            <p style="grid-area: static3">${selectedStock.quantity}</p>
+            <p style="grid-area: static3">${selectedPortfolioStock.quantity}</p>
             <label style="grid-area: label4;" name="EstPrice">Estimated price per share:</label>
-            <p style="grid-area: static4">${selectedStock.estPrice}</p>
+            <p style="grid-area: static4">${selectedPortfolioStock.estPrice}</p>
             <div style="grid-area: inputGroup1;" class="input-group">
                 <label class="input-group-addon">Number of stocks</label>
                 <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
@@ -44,7 +45,7 @@ $(function () {
             const count = parseInt($("#StockCounterInput").val());
 
             $("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
-            $.post(`trading/buyStock?userId=${userId}&symbol=${selectedStock.symbol}&count=${count}`, (data) => {
+            $.post(`trading/buyStock?userId=${userId}&symbol=${selectedPortfolioStock.symbol}&count=${count}`, (data) => {
                 updatePortfolioList(data);
                 $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
                 reenablePortfolioWidget(false);
@@ -59,7 +60,7 @@ $(function () {
     });
 
     $("#SellPortfolioBtn").click(function () {
-        if (selectedStock == null) {
+        if (selectedPortfolioStock == null) {
             alert("No stock was selected. Please select a stock");
             return;
         }
@@ -67,13 +68,13 @@ $(function () {
         const innerHtml = `
             <h3>Sell stock</h3>
             <label style="grid-area: label1;" name="Stock Symbol">Stock Symbol:</label>
-            <p style="grid-area: static1">${selectedStock.symbol}</p>
+            <p style="grid-area: static1">${selectedPortfolioStock.symbol}</p>
             <label styles="grid-area: label2;" name="Stock Name">Stock Name:</label>
-            <p style="grid-area: static2">${selectedStock.stockName}</p>
+            <p style="grid-area: static2">${selectedPortfolioStock.stockName}</p>
             <label style="grid-area: label3;" name="Quantity">Number of shares in portfolio:</label>
-            <p style="grid-area: static3">${selectedStock.quantity}</p>
+            <p style="grid-area: static3">${selectedPortfolioStock.quantity}</p>
             <label style="grid-area: label4;" name="EstPrice">Estimated price per share:</label>
-            <p style="grid-area: static4">${selectedStock.estPrice}</p>
+            <p style="grid-area: static4">${selectedPortfolioStock.estPrice}</p>
             <div style="grid-area: inputGroup1;" class="input-group">
                 <label class="input-group-addon">Number of stocks</label>
                 <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
@@ -86,12 +87,12 @@ $(function () {
         $("#ConfirmSell").click(function () {
             const count = parseInt($("#StockCounterInput").val());
 
-            if (selectedStock.count - count < 0) {
+            if (selectedPortfolioStock.count - count < 0) {
                 alert("You have not enough stocks of this type to perform this operation.");
             }
 
             $("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
-            $.post(`trading/sellStock?userId=${userId}&symbol=${selectedStock.symbol}&count=${count}`, (data) => {
+            $.post(`trading/sellStock?userId=${userId}&symbol=${selectedPortfolioStock.symbol}&count=${count}`, (data) => {
                 updatePortfolioList(data);
                 $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
                 reenablePortfolioWidget(false);
@@ -146,7 +147,7 @@ function updatePortfolioList(data) {
         let curStockObj = {};
 
         for (let stock of data.stocks) {
-            let portfolioListRow = `<tr id="${stock.symbol}" class="PortfolioRow">
+            let portfolioListRow = `<tr id="${stock.symbol}_portfolio" class="PortfolioRow">
                     <td>${stock.symbol}</td>
                     <td>${stock.stockName}</td>
                     <td>${stock.quantity}</td>
@@ -170,22 +171,22 @@ function updatePortfolioList(data) {
                     unrealizedPL: stock.unrealizedPL,
                 }
             };
-            $(`#${stock.symbol}`).data(curStockObj);
+            $(`#${stock.symbol}_portfolio`).data(curStockObj);
         }
 
         $(".PortfolioRow").click(function () {
-            if (selectedStock == null) {
+            if (selectedPortfolioStock == null) {
                 $(this).toggleClass("highlightRow");
-                selectedStock = $(this).data("StockData");
+                selectedPortfolioStock = $(this).data("StockData");
                 //console.log(`Stock ${selectedStock} is selected! From null`);
-            } else if (selectedStock.symbol == $(this).data("StockData").symbol) {
+            } else if (selectedPortfolioStock.symbol == $(this).data("StockData").symbol) {
                 $(this).toggleClass("highlightRow");
-                selectedStock = null;
+                selectedPortfolioStock = null;
                 //console.log("No stock is selected.");
             } else {
                 $(".PortfolioRow").removeClass("highlightRow");
                 $(this).addClass("highlightRow");
-                selectedStock = $(this).data("StockData");
+                selectedPortfolioStock = $(this).data("StockData");
                 //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
             }
         });
@@ -218,9 +219,9 @@ function reenablePortfolioWidget(isFromCancelBtn) {
     $("#GetPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     $("#SellPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     $("#BuyPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
-    if (selectedStock != null && isFromCancelBtn == false) {
-        $(`#${selectedStock.symbol}`).toggleClass("highlightRow");
-        selectedStock = $(`#${selectedStock.symbol}`).data("StockData");
+    if (selectedPortfolioStock != null && isFromCancelBtn == false) {
+        $(`#${selectedPortfolioStock.symbol}_portfolio`).toggleClass("highlightRow");
+        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_portfolio`).data("StockData");
     }
     
 }
@@ -253,39 +254,104 @@ function formatPortfolio(portfolio) {
 
 function formatFavorite(favorites) {
     if (favorites != null) {
-        const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})/;
-        let matchResult = regex.exec(favorites.lastUpdated);
+        
+        $("#lastupdateFav").html(dateTimeFormat(favorites.lastUpdated));
 
-        const updateFavorite = `${matchResult[1]}.${matchResult[2]}.${matchResult[3]}   ${matchResult[4]}:${matchResult[5]}:${matchResult[6]}`
-        $("#lastupdateFav").html(updateFavorite);
+        const favoriteTableContainer = $("#skrivfavorite");
 
-
-        favoritListHtml = ` <table class='table table-striped'>
+        favoriteTableContainer.append(`
                 <tr>
                     <th>Stock Name</th>
                     <th>Stock Symbol</th>
                     <th>Description</th>
                     <th>Last updated</th>
-                </tr>`;
+                </tr>`);
 
         for (let enfavorite of favorites.stockList) {
-            favoritListHtml += `<tr>
+            favoriteTableContainer.append(`<tr id="${enfavorite.stockSymbol}_favorites" class="favoritesRow">
                     <td>${enfavorite.stockName}</td >
                     <td>${enfavorite.stockSymbol}</td>
                     <td>${enfavorite.description}</td>
                     <td>${enfavorite.lastUpdated}</td>
-                    </tr >`
+                    </tr >`);
+            curFavObj = {
+                StockData: {
+                    symbol: enfavorite.stockSymbol,
+                    stockName: enfavorite.stockName,
+                    description: enfavorite.description,
+                    lastUpdated: enfavorite.lastUpdated
+                }
+            }
+            $(`${enfavorite.stockSymbol}_favorites`).data(curFavObj);
+
+            if (selectedFavoriteStock == null) {
+                $(`${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
+                selectedFavoriteStock = curFavObj;
+                displayStockQuote(curFavObj.StockData.symbol)
+            }
         }
-        favoritListHtml += "</table>";
-        $("#skrivfavorite").html(favoritListHtml);
+
+        $(".favoritesRow").click(() => {
+            if (selectedFavoriteStock == null) {
+                $(this).toggleClass("highlightRow");
+                selectedFavoriteStock = $(this).data("StockData");
+                //console.log(`Stock ${selectedStock} is selected! From null`);
+            } else if (selectedFavoriteStock.symbol == $(this).data("StockData").symbol) {
+                $(this).toggleClass("highlightRow");
+                selectedFavoriteStock = null;
+                //console.log("No stock is selected.");
+            } else {
+                $(".favoritesRow").removeClass("highlightRow");
+                $(this).addClass("highlightRow");
+                selectedFavoriteStock = $(this).data("StockData");
+                //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
+            }
+        });
     }
     else {
         alert("something went wrong!");
     }
-
 }
 
-function hentFavorite() {
+function displayStockQuote(symbol) {
+    $.get(`/trading/GetStockQuote?symbol=${symbol}`, (respData) => {
+        // Create the html for the quote and add it to quote container
+        const quoteHtml = `
+            <h3>Current Stock Quote</h3>
+            <label>Symbol: </label>
+            <span>${respData.symbol}</span><br />
+            <label>Name: </label>
+            <span>${respData.stockName}</span><br />
+            <label>Last updated: </label>
+            <span>${respData.lastUpdated}</span><br />
+            <label>Open: </label>
+            <span>${respData.open}</span><br />
+            <label>High: </label>
+            <span>${respData.high}</span><br />
+            <label>Low: </label>
+            <span>${respData.low}</span><br />
+            <label>Price: </label>
+            <span>${respData.price}</span><br />
+            <label>Volume: </label>
+            <span>${respData.volume}</span><br />
+            <label>Latest trading day: </label>
+            <span>${respData.latestTradingDay}</span><br />
+            <label>Previous close: </label>
+            <span>${respData.previousClose}</span><br />
+            <label>Change: </label>
+            <span>${respData.change}</span><br />
+            <label>Change percent: </label>
+            <span>${respData.changePercent}</span><br />
+         `;
+
+        $("#QuoteContainer").append(quoteHtml);
+
+    }).fail(function (response) {
+        alert(response.responseText);
+    });
+}
+
+function getFavorite() {
     url = "trading/getFavoriteList?userId=1";
     $.get(url, function (favorites) {
         formatFavorite(favorites);
