@@ -400,9 +400,9 @@ namespace Webapplikasjoner_oblig.Controllers
             return await _db.SaveTradeAsync(innTrading);
         }
 
-        public async Task<List<Trade>> GetAllTrades()
+        public async Task<List<Trade>> GetAllTrades(int userId)
         {
-            return await _db.GetAllTradesAsync();
+            return await _db.GetAllTradesAsync(userId);
         }
 
         public async Task<Trade> GetOneTrade(int id)

@@ -315,7 +315,7 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-        public async Task<List<Trade>> GetAllTradesAsync()
+        public async Task<List<Trade>> GetAllTradesAsync(int userId)
         { /**
             try
             {
@@ -334,6 +334,7 @@ namespace Webapplikasjoner_oblig.DAL
                 return null;
             }
             */
+            
             throw new NotImplementedException();
         }
 

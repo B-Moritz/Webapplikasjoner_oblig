@@ -2,6 +2,7 @@
 let selectedPortfolioStock = null;
 let selectedFavoriteStock = null;
 const userId = 1;
+//selectedFavoriteStock.symbol
 
 $(function () {
     printAllMyPortfolio();
@@ -276,7 +277,7 @@ function formatFavorite(favorites) {
                     <td>${enfavorite.stockName}</td >
                     <td>${enfavorite.stockSymbol}</td>
                     <td>${enfavorite.description}</td>
-                    <td>${enfavorite.lastUpdated}</td>
+                    <td>${dateTimeFormat(enfavorite.lastUpdated)}</td>
                     </tr >`);
             curFavObj = {
                 StockData: {
@@ -289,8 +290,8 @@ function formatFavorite(favorites) {
             $(`${enfavorite.stockSymbol}_favorites`).data(curFavObj);
 
             if (selectedFavoriteStock == null) {
-                $(`${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
-                selectedFavoriteStock = curFavObj;
+                $(`#${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
+                selectedFavoriteStock = curFavObj.StockData;
                 displayStockQuote(curFavObj.StockData.symbol)
             }
         }
@@ -327,7 +328,7 @@ function displayStockQuote(symbol) {
             <label>Name: </label>
             <span>${respData.stockName}</span><br />
             <label>Last updated: </label>
-            <span>${respData.lastUpdated}</span><br />
+            <span>${dateTimeFormat(respData.lastUpdated)}</span><br />
             <label>Open: </label>
             <span>${respData.open}</span><br />
             <label>High: </label>

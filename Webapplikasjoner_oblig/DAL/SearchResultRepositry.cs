@@ -76,7 +76,9 @@ namespace Webapplikasjoner_oblig.DAL
             if (keyWord == null)
             {
                 throw new ArgumentNullException();
-            }
+
+            }            
+
 
 
             // get a search result that has primary key og keyword
@@ -116,7 +118,6 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             return dbSearchResult;
-
         }
 
        /**
