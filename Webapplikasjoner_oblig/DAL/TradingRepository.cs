@@ -58,7 +58,7 @@ namespace Webapplikasjoner_oblig.DAL
             return curStock;
         }
 
-        public async Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote)
+        public async Task<StockQuotes> AddStockQuoteAsync(AlphaVantageInterface.Models.StockQuote stockQuote)
         {
             // This method converts an AlphaVantageInterface.Model.StockQuote object to
             // DAL.StockQuotes.
@@ -95,25 +95,30 @@ namespace Webapplikasjoner_oblig.DAL
             return newTableRow;
         }
 
-        [HttpGet]
-        public async Task<Portfolio> GetPortfolioAsync(int userId)
+
+        public async Task<Users> GetPortfolioAsync(int userId)
         {
-            var user = _db.Users.Single(u => u.UsersId == userId);
-            //user.Portfolio.<StockOwnerships>(s => s.UsersId, use)
-            List<StockOwnerships> stockList = user.Portfolio;
-            List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
+            // Get the user entity from database
+            var user = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            return user;
+            // Defining and initializing the list that will contain all stocks in the portfolio
+            /*List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
 
-
-            foreach (var min_stock in stockList)
+            Stocks stock;
+            foreach (StockOwnerships min_stock in user.Portfolio)
             {
-                // var stock_name = min_stock.UsersId;
-                var stock = min_stock.Stock;
-                   
+                stock = min_stock.Stock;
+                
+                // 
+
+
+
+                // Creating the new portfolio stock object derived from the above calculations 
                 var current_Portfolio_stock = new PortfolioStock
                 {
-                    StockCounter = min_stock.StockCounter,
-                    TotalValue = 0,
-                    TotalFundsSpent = min_stock.SpentValue,
+                    Quantity = min_stock.StockCounter,
+                    EstTotalMarketValue = 0,
+                    TotalCost = min_stock.SpentValue,
                     Symbol = stock.Symbol,
                     StockName = stock.StockName,
                     Description = stock.Description,
@@ -131,7 +136,7 @@ namespace Webapplikasjoner_oblig.DAL
                 PortfolioCurrency = user.PortfolioCurrency,
                 Stocks = portfolio_list
             };
-            return OutPortfolio;     
+            return OutPortfolio;*/
         }
 
         

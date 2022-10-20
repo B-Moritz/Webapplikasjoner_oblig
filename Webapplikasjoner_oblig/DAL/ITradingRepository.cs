@@ -17,12 +17,12 @@ namespace Webapplikasjoner_oblig.DAL
         void RemoveStockQuotes(string symbol);
 
         Task<User> GetUserAsync(int userId);
-        Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote);
+        Task<StockQuotes> AddStockQuoteAsync(AlphaVantageInterface.Models.StockQuote stockQuote);
         Task<FavoriteList> GetFavoriteList(int userId);
         Task AddToFavoriteListAsync(int userId, string symbol);
         Task DeleteFromFavoriteListAsync(int userId, string symbol);
 
-        Task<Portfolio> GetPortfolioAsync(int userId);
+        Task<Users> GetPortfolioAsync(int userId);
 
     }
 

@@ -26,8 +26,8 @@ namespace Webapplikasjoner_oblig.Migrations
                 columns: table => new
                 {
                     Symbol = table.Column<string>(type: "TEXT", nullable: false),
-                    StockName = table.Column<string>(type: "TEXT", nullable: true),
-                    Description = table.Column<string>(type: "TEXT", nullable: true),
+                    StockName = table.Column<string>(type: "TEXT", nullable: false),
+                    Description = table.Column<string>(type: "TEXT", nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Currency = table.Column<string>(type: "TEXT", nullable: false)
                 },
@@ -189,12 +189,12 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "SearchResults",
                 columns: new[] { "SearchKeyword", "SearchTimestamp" },
-                values: new object[] { "Microsoft", new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(3051) });
+                values: new object[] { "Microsoft", new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1762) });
 
             migrationBuilder.InsertData(
                 table: "Stocks",
                 columns: new[] { "Symbol", "Currency", "Description", "LastUpdated", "StockName" },
-                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(2996), "Microsoft" });
+                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1712), "Microsoft" });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -224,7 +224,7 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "Trades",
                 columns: new[] { "TradesId", "Currency", "Saldo", "StockCount", "StocksId", "TradeTime", "UserIsBying", "UsersId" },
-                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 18, 12, 42, 43, 969, DateTimeKind.Local).AddTicks(4982), true, 1 });
+                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(3165), true, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteLists_FavoritesSymbol",
