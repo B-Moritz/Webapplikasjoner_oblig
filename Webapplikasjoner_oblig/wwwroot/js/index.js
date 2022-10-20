@@ -13,8 +13,12 @@ $(function () {
 
     getFavorite();
 
-    $("#update").click(function () {
+    $("#GetFavoriteBtn").click(function () {
         getFavorite();
+    });
+
+    $("#DeleteFavoriteBtn").click(function () {
+        deleteFromFavorite();
     });
 
     $("#BuyPortfolioBtn").click(function () {
@@ -221,16 +225,33 @@ function reenablePortfolioWidget(isFromCancelBtn) {
     $("#SellPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     $("#BuyPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     if (selectedPortfolioStock != null && isFromCancelBtn == false) {
+        // Make sure that the selected stock stil is selected after the dialog closes
         $(`#${selectedPortfolioStock.symbol}_portfolio`).toggleClass("highlightRow");
         selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_portfolio`).data("StockData");
     }
-    
+}
+
+function reenableFavoriteWidget(isFromCancelBtn) {
+    $("#GetFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    $("#BuyFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    $("#DeleteFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    if (selectedFavoriteStock != null && isFromCancelBtn == false) {
+        // Make sure that the selected stock stil is selected after the dialog closes
+        $(`#${selectedFavoriteStock.symbol}_favorites`).toggleClass("highlightRow");
+        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_favorites`).data("StockData");
+    }
 }
 
 function disablePortfolioWidget() {
     $("#GetPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled");
     $("#SellPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled");
     $("#BuyPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled")
+}
+
+function disableFavoriteWidget() {
+    $("#GetFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
+    $("#BuyFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
+    $("#DeleteFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
 }
 
 function createDialog(innerHtml) {
@@ -255,18 +276,12 @@ function formatPortfolio(portfolio) {
 
 function formatFavorite(favorites) {
     if (favorites != null) {
-<<<<<<< HEAD
-        const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
-        let machResult = regex.exec(favorites.lastUpdated);
-        const updateFavorite = `${machResult[1]}.${machResult[2]}.${machResult[3]}   ${machResult[4]}:${machResult[5]}:${machResult[6]}`
-        $("#lastupdate").html(updateFavorite);
-=======
         
         $("#lastupdateFav").html(dateTimeFormat(favorites.lastUpdated));
->>>>>>> 09ca646bd9a748d32b9e1270a9417146b93d8932
 
         const favoriteTableContainer = $("#skrivfavorite");
 
+        favoriteTableContainer.empty();
         favoriteTableContainer.append(`
                 <tr>
                     <th>Stock Name</th>
@@ -275,6 +290,8 @@ function formatFavorite(favorites) {
                     <th>Last updated</th>
                 </tr>`);
 
+        let curFavObj = {};
+
         for (let enfavorite of favorites.stockList) {
             favoriteTableContainer.append(`<tr id="${enfavorite.stockSymbol}_favorites" class="favoritesRow">
                     <td>${enfavorite.stockName}</td >
@@ -282,6 +299,7 @@ function formatFavorite(favorites) {
                     <td>${enfavorite.description}</td>
                     <td>${dateTimeFormat(enfavorite.lastUpdated)}</td>
                     </tr >`);
+
             curFavObj = {
                 StockData: {
                     symbol: enfavorite.stockSymbol,
@@ -289,11 +307,12 @@ function formatFavorite(favorites) {
                     description: enfavorite.description,
                     lastUpdated: enfavorite.lastUpdated
                 }
-            }
-            $(`${enfavorite.stockSymbol}_favorites`).data(curFavObj);
+            };
+
+            $(`#${enfavorite.stockSymbol}_favorites`).data(curFavObj);
 
             if (selectedFavoriteStock == null) {
-                $(`${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
+                $(`#${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
                 selectedFavoriteStock = curFavObj.StockData;
                 displayStockQuote(curFavObj.StockData.symbol)
             }
@@ -302,16 +321,16 @@ function formatFavorite(favorites) {
         $(".favoritesRow").click(() => {
             if (selectedFavoriteStock == null) {
                 $(this).toggleClass("highlightRow");
-                selectedFavoriteStock = $(this).data("StockData");
+                selectedFavoriteStock = $(this).data().StockData;
                 //console.log(`Stock ${selectedStock} is selected! From null`);
-            } else if (selectedFavoriteStock.symbol == $(this).data("StockData").symbol) {
+            } else if (selectedFavoriteStock.symbol == $(this).data().StockData.symbol) {
                 $(this).toggleClass("highlightRow");
                 selectedFavoriteStock = null;
                 //console.log("No stock is selected.");
             } else {
                 $(".favoritesRow").removeClass("highlightRow");
                 $(this).addClass("highlightRow");
-                selectedFavoriteStock = $(this).data("StockData");
+                selectedFavoriteStock = $(this).data().StockData;
                 //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
             }
         });
@@ -361,13 +380,33 @@ function displayStockQuote(symbol) {
 
 function getFavorite() {
     url = "trading/getFavoriteList?userId=1";
+
+    $("#FavoriteLoading").removeClass("hideLoading").addClass("displayLoading");
+    disablePortfolioWidget();
+
     $.get(url, function (favorites) {
         formatFavorite(favorites);
+        $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
+        reenableFavoriteWidget();
+    }).fail(function (response) {
+        alert(response.responseText);
+        $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
+        reenableFavoriteWidget();
+    });
+}
+
+function deleteFavorite() {
+    if (selectedFavoriteStock == null) {
+        alert("No stock was selected. Please select a stock");
+        return;
+    }
+    url = `trading/deleteFromFavoriteList?userId=${userId}&symbol=${selectedFavoriteStock.symbol}`;
+    $.post(url, function (deletefavorite) {
+        formatFavorite(deletefavorite);
     }).fail(function (response) {
         alert(response.responseText);
     });
 }
-
 
     /*let ut = "<table><tr></tr>";
     for (const minStock of portfolio) {
