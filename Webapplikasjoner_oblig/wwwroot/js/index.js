@@ -17,6 +17,10 @@ $(function () {
         getFavorite();
     });
 
+    $("#DeleteFavoriteBtn").click(function () {
+        deleteFromFavorite();
+    });
+
     $("#BuyPortfolioBtn").click(function () {
         if (selectedPortfolioStock == null) {
             alert("No stock was selected. Please select a stock");
@@ -378,6 +382,18 @@ function getFavorite() {
     });
 }
 
+function deleteFavorite() {
+    if (selectedFavoriteStock == null) {
+        alert("No stock was selected. Please select a stock");
+        return;
+    }
+    url = `trading/deleteFromFavoriteList?userId=${userId}&symbol=${selectedFavoriteStock.symbol}`;
+    $.post(url, function (deletefavorite) {
+        formatFavorite(deletefavorite);
+    }).fail(function (response) {
+        alert(response.responseText);
+    });
+}
 
     /*let ut = "<table><tr></tr>";
     for (const minStock of portfolio) {
