@@ -77,7 +77,7 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             SearchKeyword = "Microsoft",
-                            SearchTimestamp = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4352)
+                            SearchTimestamp = new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1762)
                         });
                 });
 
@@ -177,12 +177,14 @@ namespace Webapplikasjoner_oblig.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StockName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Symbol");
@@ -195,7 +197,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Symbol = "MSFT",
                             Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(4319),
+                            LastUpdated = new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1712),
                             StockName = "Microsoft"
                         });
                 });
@@ -244,7 +246,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 16, 22, 46, 56, 934, DateTimeKind.Local).AddTicks(5142),
+                            TradeTime = new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(3165),
                             UserIsBying = true,
                             UsersId = 1
                         });

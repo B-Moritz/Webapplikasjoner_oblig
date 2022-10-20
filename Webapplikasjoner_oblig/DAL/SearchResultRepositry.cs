@@ -18,54 +18,57 @@ namespace Webapplikasjoner_oblig.DAL
             _db = db;
         }
 
-        
-        public async Task<List<SearchResult>> GetAllKeyWordsAsync()
-        {   
-            try
-            {
+    
+    /**
+     * A method to retreiv all serchResults from database
+     */
+    public async Task<List<SearchResult>> GetAllKeyWordsAsync()
+    {   
                 //list of all search results
-                var keywords = await _db.SearchResults.ToListAsync();
+            List<SearchResults> keywords = await _db.SearchResults.ToListAsync();
 
+            if (!(keywords is null))
+            {
                 //list to hold search result objects
                 var result = new List<SearchResult>();
 
-                //list to replace the list of stock retrived from searchResults table with stockDetails objects
-                var stockDList = new List<StockDetail>();
-
-                //search result object to be used when mapping from searchresults table
-                var searchRusltObject = new SearchResult();
-
-                //looping over anonymous type retived from database
+                //looping over type retived from database
+                //mapping searchResults element to searchResult object
                 foreach (var keyword in keywords)
                 {
+                    //list to replace the list of stock retrived from searchResults table with stockDetails objects
+                    var stockDList = new List<StockDetail>();
+
+                    //search result object to be used when mapping from searchresults table
+                    var searchRusltObject = new SearchResult();
+
+                    searchRusltObject.SearchKeyword = keyword.SearchKeyword;
+                    searchRusltObject.SearchTime = keyword.SearchTimestamp;
+                   
+
                     //looping over the list in keywords 
-                   foreach(var stock in keyword.Stocks)
+                    foreach (var stock in keyword.Stocks)
                     {
                         //mapping stock to stockDetails
                         var stockDetail = new StockDetail()
                         {
                             StockSymbol = stock.Symbol,
                             StockName = stock.StockName,
+                            Description = stock.Description,
+                            Currency = stock.Currency,
+                            LastUpdated = stock.LastUpdated,
                         };
-
+                       
                         stockDList.Add(stockDetail);
                     }
-
-                   //mapping searchResults element to searchResult object
-                   searchRusltObject.SearchKeyword = keyword.SearchKeyword;
-                   searchRusltObject.SearchTime = keyword.SearchTimestamp;
-                   searchRusltObject.StockList = stockDList;
-
-                   result.Add(searchRusltObject);
+                    searchRusltObject.StockList = stockDList;
+                    result.Add(searchRusltObject);
                 }
                 return result;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return null;
-            }
-        }
+
+               return null;
+     }
 
 
         public async Task<SearchResult>? GetOneKeyWordAsync(string keyWord)
@@ -75,9 +78,11 @@ namespace Webapplikasjoner_oblig.DAL
                 throw new ArgumentNullException();
             }
 
+
             // get a search result that has primary key og keyword
             SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
             var stockDList = new List<StockDetail>();
+
 
             if (searchResult is null)
             {

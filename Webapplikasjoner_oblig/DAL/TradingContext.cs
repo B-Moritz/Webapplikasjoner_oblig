@@ -180,9 +180,9 @@ namespace Webapplikasjoner_oblig.DAL
     public class Stocks
     {
         [Key]
-        public string? Symbol { get; set; }
-        public string? StockName { get; set; }
-        public string? Description { get; set; }
+        public string Symbol { get; set; }
+        public string StockName { get; set; }
+        public string Description { get; set; }
         public DateTime LastUpdated { get; set; }
 
         public string Currency { get; set; }

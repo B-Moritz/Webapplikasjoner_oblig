@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.SignalR;
 using EcbCurrencyInterface;
 using System.Diagnostics;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-
+using System.Diagnostics.Metrics;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -54,10 +54,29 @@ namespace Webapplikasjoner_oblig.Controllers
 
                 if(searchResult is null)
                 {
-                    return null;
+                    var SavedResult = SaveSearchResult(keyword);
+                     
+                     if (SavedResult is null)
+                  {
+                       return null;
+                  }
+
+                      return await SavedResult;
                 }
 
                 return searchResult;
+        }
+
+        public async Task<List<Model.SearchResult>> GetAllFromDB()
+        {
+            var list = _searchResultRepositry.GetAllKeyWordsAsync();
+
+            if(list is null)
+            {
+                return null;
+            }
+
+            return await list;
         }
 
 
@@ -68,7 +87,7 @@ namespace Webapplikasjoner_oblig.Controllers
          * then removes exixting record and add new one by creating a new object of search result and passing it to  saveSearchResult in repository.
          * If there is no such record, it fetches data from api using the keyword and save it by passing it to saveSearchResult function
          */
-        public async Task<bool> SaveSearchResult(string keyword)
+        public async Task<Model.SearchResult> SaveSearchResult(string keyword)
         {
             // Search result object from Model 
             var modelSearchResult = new Model.SearchResult();
@@ -92,16 +111,6 @@ namespace Webapplikasjoner_oblig.Controllers
                 modelSearchResult.SearchKeyword = keyword.ToUpper();
                 modelSearchResult.SearchTime = DateTime.Now;
 
-                /*// List of stocks received from api call are set to be stock objects and added to a lsit
-                var StockList = new List<Stock>();
-                foreach (var alphaStock in alphaObject.BestMatches)
-                {
-                    var ApiStock = new Stock();
-                    ApiStock = alphaStock;
-
-                    StockList.Add(ApiStock);
-                }*/
-
                 // StockDetails are initilized by assigning properties from stocks. StockDetails are the added to a list
                 var StockDetailsList = new List<StockDetail>();
                 foreach (Stock stock in alphaObject.BestMatches)
@@ -122,7 +131,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 // SearchResult is passed to a function in searchResultRepositry to be added to the database
                 await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
-                return true;
+                return modelSearchResult;
             }
             else
             {
@@ -136,41 +145,98 @@ namespace Webapplikasjoner_oblig.Controllers
 
                     await _searchResultRepositry.SaveSearchResultAsync(modelSearchResult);
 
-                    return true;
+                    return modelSearchResult;
                 }
 
-                return false;
+                return null;
 
             }
                 
-
-            
         }
 
-        [HttpGet]
         public async Task<Portfolio> GetPortfolio(int userId)
         {
-            Portfolio outPortfolio =  await _db.GetPortfolioAsync(userId);
-            // Add the total funds spent value:
-            // Get the quote:
-            StockQuotes curQuote;         
-            decimal PortfolioTotalValue = 0;
+            // Obtain the user from the database
+            Users curUser = await _db.GetPortfolioAsync(userId);
+
+            // Create the Portfolio object that the endpoint should return
+            Portfolio outPortfolio = new Portfolio();
+            outPortfolio.Stocks = new List<PortfolioStock>();
+
+            // Defining variables
+            StockQuotes curQuote;
+            Stocks curStock;
+            decimal portfolioTotalValue = 0;
             decimal totalValueSpent = 0;
             decimal exchangeRate = 1;
-            foreach (PortfolioStock stock in outPortfolio.Stocks)
+            decimal curStockValue = 0;
+            decimal curStockPrice = 0;
+            PortfolioStock newPortfolioStock;
+            string userCurrency = curUser.PortfolioCurrency;
+            decimal curUnrealizedPL = 0;
+            List<decimal> totalStockValueList = new List<decimal>();
+
+            foreach (StockOwnerships ownership in curUser.Portfolio)
             {
-                curQuote = await getUpdatedQuote(stock.Symbol);
+                newPortfolioStock = new PortfolioStock();
+                curQuote = await GetUpdatedQuote(ownership.StocksId);
+                curStock = ownership.Stock;
+
+                // Add the symbol
+                newPortfolioStock.Symbol = curStock.Symbol;
+                // Add stock name
+                newPortfolioStock.StockName = curStock.StockName;
+                // Add description
+                newPortfolioStock.Description = curStock.Description;
+                // Add stock currency
+                newPortfolioStock.StockCurrency = curStock.Currency;
+                // Add the qunatity to the out object
+                newPortfolioStock.Quantity = ownership.StockCounter;
+
                 // Check the currency
-                if (outPortfolio.PortfolioCurrency != stock.StockCurrency)
+                if (userCurrency != curStock.Currency)
                 {
-                    exchangeRate = await EcbCurrencyHandler.getExchangeRate(stock.StockCurrency, outPortfolio.PortfolioCurrency);
+                    exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, userCurrency);
                 }
-                stock.TotalValue = (decimal) curQuote.Price * stock.StockCounter * exchangeRate;
-                PortfolioTotalValue += stock.TotalValue;
-                totalValueSpent += stock.TotalFundsSpent;
+                // Add the estimated price obtained from the quote
+                curStockPrice = exchangeRate * (decimal) curQuote.Price;
+                newPortfolioStock.EstPrice = String.Format("{0:N} {1}", curStockPrice, userCurrency);
+
+                // Calculate the estimated market value of the shares owned by the user
+                curStockValue = (decimal) curQuote.Price * ownership.StockCounter * exchangeRate;
+                newPortfolioStock.EstTotalMarketValue = String.Format("{0:N} {1}", curStockValue, userCurrency);
+                // Add the estimated stock value to the total portfolio value
+                portfolioTotalValue += curStockValue;
+                totalStockValueList.Add(curStockValue);
+
+                // Set the total cost
+                newPortfolioStock.TotalCost = String.Format("{0:N} {1}", ownership.SpentValue, userCurrency); 
+                totalValueSpent += ownership.SpentValue;
+
+                // Find the unrealized profit/loss
+                curUnrealizedPL = curStockValue - ownership.SpentValue;
+                newPortfolioStock.UnrealizedPL = String.Format("{0}{1:N} {2}", 
+                                                              (curUnrealizedPL > 0 ? "+" : ""), 
+                                                               curUnrealizedPL,
+                                                               userCurrency);
+                outPortfolio.Stocks.Add(newPortfolioStock);
             }
-            outPortfolio.TotalPortfolioValue = PortfolioTotalValue;
-            outPortfolio.TotalValueSpent = totalValueSpent;
+
+            for (int i = 0; i < totalStockValueList.Count; i++) {
+                // Finde the relative size of the stock compared to the entire portfolio
+                outPortfolio.Stocks[i].PortfolioPortion = String.Format("{0:N}%", (totalStockValueList[i] / portfolioTotalValue) * 100);
+            }
+
+            outPortfolio.EstPortfolioValue = String.Format("{0:N} {1}", portfolioTotalValue, userCurrency);
+            outPortfolio.TotalValueSpent = String.Format("{0:N} {1}",totalValueSpent, userCurrency);
+            outPortfolio.BuyingPower = String.Format("{0:N} {1}", curUser.FundsAvailable, userCurrency);
+            decimal unrealizedPortfolioPL = portfolioTotalValue - totalValueSpent;
+            outPortfolio.UnrealizedPL = String.Format("{0}{1:N} {2}",
+                                                     (unrealizedPortfolioPL > 0 ? "+" : ""),
+                                                      unrealizedPortfolioPL,
+                                                      userCurrency);
+            outPortfolio.PortfolioCurrency = userCurrency;
+            outPortfolio.LastUpdate = DateTime.Now;
             return outPortfolio;        
         }
 
@@ -214,7 +280,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 throw new ArgumentException("The specified stock was not found in the database");
             }
             // Calculate the saldo required to by the amount of stocks
-            StockQuotes curQuote = await getUpdatedQuote(symbol);
+            StockQuotes curQuote = await GetUpdatedQuote(symbol);
             decimal exchangeRate = 1;
             if (curUser.Currency != curStock.Currency)
             {
@@ -242,8 +308,13 @@ namespace Webapplikasjoner_oblig.Controllers
             {
                 throw new NullReferenceException("The stock was not found in the database");
             }
+            // Validate stock counter. It must be an positive integer greather than or equal to 1
+            if (count < 1) {
+                throw new ArgumentException("The provided count value is invalid");
+            }
+
             // Get the updated quote for the stock
-            StockQuotes curQuote = await getUpdatedQuote(symbol);
+            StockQuotes curQuote = await GetUpdatedQuote(symbol);
 
             // Get user
             User identifiedUser = await _db.GetUserAsync(userId);
@@ -270,7 +341,7 @@ namespace Webapplikasjoner_oblig.Controllers
             return await GetPortfolio(userId);
         }
 
-        private async Task<StockQuotes> getUpdatedQuote(string symbol)
+        private async Task<StockQuotes> GetUpdatedQuote(string symbol)
         {
             // Create the api object
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
@@ -302,13 +373,6 @@ namespace Webapplikasjoner_oblig.Controllers
                 }
             }
             return curStockQuote;
-        }
-
-        public async Task<UserProfile> GetUserProfile(int userId)
-        {
-            // Denne metoden skal returnere informasjon om bruker, portfoliolisten og favorittlisten.
-            // Egner seg når frontend lastes inn første gang.
-            throw new NotImplementedException();
         }
 
         public async Task<bool> SaveTrade(Trade innTrading)
