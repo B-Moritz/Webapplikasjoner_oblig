@@ -2,7 +2,13 @@
 let selectedPortfolioStock = null;
 let selectedFavoriteStock = null;
 const userId = 1;
-//selectedFavoriteStock.symbol
+const commonDialogPart = `<div style="grid-area: inputGroup1;" class="input-group">
+                            <label class="input-group-addon">Number of shares</label>
+                            <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
+                          </div>
+                          <div id="DialogErrorMsg" style="grid-area: errorMsg;"></div>
+                          <button type="button" id="Confirm" class="btn btn-success btn-lg">Confirm Transaction</button>
+                          <button type="button" id="CancelDialog" class="btn btn-secondary btn-lg">Cancel Transaction</button>`;
 
 $(function () {
     printAllMyPortfolio();
@@ -27,7 +33,7 @@ $(function () {
             return;
         }
 
-        const innerHtml = `
+        let innerHtml = `
             <h3>Buy stock</h3>
             <label style="grid-area: label1;" name="Stock Symbol">Stock Symbol:</label>
             <p style="grid-area: static1">${selectedPortfolioStock.symbol}</p>
@@ -36,17 +42,20 @@ $(function () {
             <label style="grid-area: label3;" name="Quantity">Number of shares in portfolio:</label>
             <p style="grid-area: static3">${selectedPortfolioStock.quantity}</p>
             <label style="grid-area: label4;" name="EstPrice">Estimated price per share:</label>
-            <p style="grid-area: static4">${selectedPortfolioStock.estPrice}</p>
-            <div style="grid-area: inputGroup1;" class="input-group">
-                <label class="input-group-addon">Number of stocks</label>
-                <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
-            </div>
-            <button id="ConfirmBuy" class="btn-success">Confirm Transaction</button>
-            <button id="CancelDialog" class="btn-secondary">Cancel Transaction</button>`;
+            <p style="grid-area: static4">${selectedPortfolioStock.estPrice}</p>`;
 
-        createDialog(innerHtml);
+        innerHtml += commonDialogPart;
 
-        $("#ConfirmBuy").click(() => {
+        const template = `'title title'
+                          'label1 static1'
+                          'label2 static2'
+                          'label3 static3'
+                          'label4 static4'
+                          'inputGroup1 inputGroup1'
+                          'errorMsg errorMsg'
+                          'ConfirmButton CancelButton'`;
+
+        const buyPortfolio = function () {
             const count = parseInt($("#StockCounterInput").val());
 
             $("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
@@ -54,14 +63,73 @@ $(function () {
                 updatePortfolioList(data);
                 $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
                 reenablePortfolioWidget(false);
+                reenableFavoriteWidget(false);
             }).fail((response) => {
                 alert(response.responseText);
                 $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
                 reenablePortfolioWidget(false);
+                reenableFavoriteWidget(false);
             });
             $("#DialogContainer").removeClass("showDialog");
             $("#DialogContainer").addClass("hideDialog");
-        });
+            $("body").css("owerflow", "auto");
+        };
+
+        createDialog(innerHtml, template, buyPortfolio);
+
+        $("#Confirm").click(buyPortfolio);
+    });
+
+    $("#BuyFavoriteBtn").click(function () {
+        if (selectedFavoriteStock == null) {
+            alert("No stock was selected. Please select a stock");
+            return;
+        }
+
+        let innerHtml = `
+            <h3>Buy stock</h3>
+            <label style="grid-area: label1;" name="Stock Symbol">Stock Symbol:</label>
+            <p style="grid-area: static1">${selectedFavoriteStock.symbol}</p>
+            <label styles="grid-area: label2;" name="Stock Name">Stock Name:</label>
+            <p style="grid-area: static2">${selectedFavoriteStock.stockName}</p>
+            <label style="grid-area: label3;" name="EstPrice">Estimated price per share:</label>
+            <p style="grid-area: static3">${selectedFavoriteStock.estPrice}</p>`;
+
+        innerHtml += commonDialogPart;
+
+        const template = `'title title'
+                          'label1 static1'
+                          'label2 static2'
+                          'label3 static3'
+                          'inputGroup1 inputGroup1'
+                          'errorMsg errorMsg'
+                          'ConfirmButton CancelButton'`;
+
+        const buyFavorites = () => {
+            const count = parseInt($("#StockCounterInput").val());
+
+            $("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
+            $.post(`trading/buyStock?userId=${userId}&symbol=${selectedFavoriteStock.symbol}&count=${count}`, (data) => {
+                updatePortfolioList(data);
+                $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
+                reenablePortfolioWidget(false);
+                reenableFavoriteWidget(false);
+
+            }).fail((response) => {
+                alert(response.responseText);
+                $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
+                reenablePortfolioWidget(false);
+                reenableFavoriteWidget(false);
+
+            });
+            $("#DialogContainer").removeClass("showDialog");
+            $("#DialogContainer").addClass("hideDialog");
+            $("body").css("owerflow", "auto");
+        };
+
+        createDialog(innerHtml, template, buyFavorites);
+
+        $("#Confirm").click(buyFavorites);
     });
 
     $("#SellPortfolioBtn").click(function () {
@@ -70,7 +138,7 @@ $(function () {
             return;
         }
 
-        const innerHtml = `
+        let innerHtml = `
             <h3>Sell stock</h3>
             <label style="grid-area: label1;" name="Stock Symbol">Stock Symbol:</label>
             <p style="grid-area: static1">${selectedPortfolioStock.symbol}</p>
@@ -79,17 +147,20 @@ $(function () {
             <label style="grid-area: label3;" name="Quantity">Number of shares in portfolio:</label>
             <p style="grid-area: static3">${selectedPortfolioStock.quantity}</p>
             <label style="grid-area: label4;" name="EstPrice">Estimated price per share:</label>
-            <p style="grid-area: static4">${selectedPortfolioStock.estPrice}</p>
-            <div style="grid-area: inputGroup1;" class="input-group">
-                <label class="input-group-addon">Number of stocks</label>
-                <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
-            </div>
-            <button id="ConfirmSell" class="btn-success">Confirm Transaction</button>
-            <button id="CancelDialog" class="btn-secondary">Cancel Transaction</button>`;
+            <p style="grid-area: static4">${selectedPortfolioStock.estPrice}</p>`;
 
-        createDialog(innerHtml);
+        innerHtml += commonDialogPart;
 
-        $("#ConfirmSell").click(function () {
+        const template = `'title title'
+                          'label1 static1'
+                          'label2 static2'
+                          'label3 static3'
+                          'label4 static4'
+                          'inputGroup1 inputGroup1'
+                          'errorMsg errorMsg'
+                          'ConfirmButton CancelButton'`;
+
+        const sellPortfolio = function () {
             const count = parseInt($("#StockCounterInput").val());
 
             if (selectedPortfolioStock.count - count < 0) {
@@ -101,16 +172,104 @@ $(function () {
                 updatePortfolioList(data);
                 $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
                 reenablePortfolioWidget(false);
+                reenableFavoriteWidget(false);
             }).fail((response) => {
                 alert(response.responseText);
                 $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
                 reenablePortfolioWidget(false);
+                reenableFavoriteWidget(false);
             });
             $("#DialogContainer").removeClass("showDialog");
             $("#DialogContainer").addClass("hideDialog");
-        });
+            $("body").css("owerflow", "auto");
+        };
+
+        createDialog(innerHtml, template, sellPortfolio);
+
+        $("#Confirm").click(sellPortfolio);
     });
 });
+
+function reenablePortfolioWidget(isFromCancelBtn) {
+    $("#GetPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
+    $("#SellPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
+    $("#BuyPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
+    if (selectedPortfolioStock != null && isFromCancelBtn == false) {
+        // Make sure that the selected stock stil is selected after the dialog closes
+        $(`#${selectedPortfolioStock.symbol}_portfolio`).addClass("highlightRow");
+        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_portfolio`).data("StockData");
+    }
+}
+
+function reenableFavoriteWidget(isFromCancelBtn) {
+    $("#GetFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    $("#BuyFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    $("#DeleteFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    if (selectedFavoriteStock != null && isFromCancelBtn == false) {
+        // Make sure that the selected stock stil is selected after the dialog closes
+        $(`#${selectedFavoriteStock.symbol}_favorites`).addClass("highlightRow");
+        selectedFavoriteStock = $(`#${selectedFavoriteStock.symbol}_favorites`).data().StockData;
+    }
+}
+
+function disablePortfolioWidget() {
+    $("#GetPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled");
+    $("#SellPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled");
+    $("#BuyPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled")
+}
+
+function disableFavoriteWidget() {
+    $("#GetFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
+    $("#BuyFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
+    $("#DeleteFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
+}
+
+function createDialog(innerHtml, template, confirmCallback) {
+    disablePortfolioWidget();
+    disableFavoriteWidget();
+    $("#DialogContainer").removeClass("hideDialog");
+    $("#DialogContainer").addClass("showDialog");
+    $("body").css("owerflow", "hidden");
+
+    $("#InnerDialog").empty();
+    $("#InnerDialog").append(innerHtml)
+    $("#InnerDialog").css("grid-template-areas", template);
+
+    $("#CancelDialog").click(function () {
+        $("#DialogContainer").removeClass("showDialog");
+        $("#DialogContainer").addClass("hideDialog");
+        reenablePortfolioWidget(true);
+        reenableFavoriteWidget(true);
+        $("body").css("owerflow", "auto");
+    });
+
+    // Add change event handler to the input element for amount of shares
+    $("#StockCounterInput").change(function () {
+        // Get the amount of shares
+        const curVal = $(this).val();
+        if (curVal < 1 || curVal % 1 != 0) {
+            // If the amount of shares is invalid (not an integer greater than 1) -> disable confirm button and display error message
+            $("#DialogErrorMsg").html(`<p class="errorMsg">The provided number of shares is not valid. 
+                                            Please make sure that the value is an integer greather than 1.</p>`);
+            $(this).parent().addClass("has-error").removeClass("has-success");
+            $("#Confirm").addClass("disabled").attr("aria-disabled", "disabled").off();
+        } else {
+            // If the value is valid, ensure that confirm is not disabled and error message is removed
+            $(this).parent().addClass("has-success").removeClass("has-error");
+            $("#DialogErrorMsg").empty();
+            $("#Confirm").removeClass("disabled").removeAttr("aria-disabled", "disabled").click(confirmCallback);;
+        }
+    });
+}
+
+function setColoredValue(value) {
+    
+    if (value[0] === "+") {
+        return "greenValue";
+    } else {
+        return "redValue";
+    }
+}
 
 function dateTimeFormat(rawFormat) {
     // This method convert the date time string to a more concise format
@@ -131,7 +290,7 @@ function updatePortfolioList(data) {
         $("#TotalPortfolioValue").html(data.estPortfolioValue);
         $("#PortfolioCurrency").html(data.portfolioCurrency);
         $("#BuyingPower").html(data.buyingPower);
-        $("#UnrealizedPL").html(data.unrealizedPL);
+        $("#UnrealizedPL").html(`<p class="${setColoredValue(data.unrealizedPL)} colorValue">${data.unrealizedPL}</p>`);
 
         const portfolioTableElement = $("#PortfolioStockList");
 
@@ -160,7 +319,7 @@ function updatePortfolioList(data) {
                     <td>${stock.portfolioPortion}</td>
                     <td>${stock.estTotalMarketValue}</td>
                     <td>${stock.totalCost}</td>
-                    <td>${stock.unrealizedPL}</td>
+                    <td><span class="${setColoredValue(stock.unrealizedPL)} colorValue">${stock.unrealizedPL}</span></td>
                 </tr>`
             portfolioTableElement.append(portfolioListRow)
             curStockObj = {
@@ -220,55 +379,7 @@ function printAllMyPortfolio() {
     });
 };
 
-function reenablePortfolioWidget(isFromCancelBtn) {
-    $("#GetPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
-    $("#SellPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
-    $("#BuyPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
-    if (selectedPortfolioStock != null && isFromCancelBtn == false) {
-        // Make sure that the selected stock stil is selected after the dialog closes
-        $(`#${selectedPortfolioStock.symbol}_portfolio`).toggleClass("highlightRow");
-        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_portfolio`).data("StockData");
-    }
-}
 
-function reenableFavoriteWidget(isFromCancelBtn) {
-    $("#GetFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
-    $("#BuyFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
-    $("#DeleteFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
-    if (selectedFavoriteStock != null && isFromCancelBtn == false) {
-        // Make sure that the selected stock stil is selected after the dialog closes
-        $(`#${selectedFavoriteStock.symbol}_favorites`).toggleClass("highlightRow");
-        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_favorites`).data("StockData");
-    }
-}
-
-function disablePortfolioWidget() {
-    $("#GetPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled");
-    $("#SellPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled");
-    $("#BuyPortfolioBtn").addClass("disabled").attr("aria-disabled", "disabled")
-}
-
-function disableFavoriteWidget() {
-    $("#GetFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
-    $("#BuyFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
-    $("#DeleteFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
-}
-
-function createDialog(innerHtml) {
-    disablePortfolioWidget();
-    $("#DialogContainer").removeClass("hideDialog");
-    $("#DialogContainer").addClass("showDialog");
-
-    $("#InnerDialog").empty();
-    $("#InnerDialog").append(innerHtml);
-
-
-    $("#CancelDialog").click(function () {
-        $("#DialogContainer").removeClass("showDialog");
-        $("#DialogContainer").addClass("hideDialog");
-        reenablePortfolioWidget(true);
-    });
-}
 
 function formatPortfolio(portfolio) {
     return formatPortfolio(portfolio);
@@ -314,23 +425,26 @@ function formatFavorite(favorites) {
             if (selectedFavoriteStock == null) {
                 $(`#${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
                 selectedFavoriteStock = curFavObj.StockData;
-                displayStockQuote(curFavObj.StockData.symbol)
+                displayStockQuote(curFavObj)
             }
         }
 
-        $(".favoritesRow").click(() => {
+        $(".favoritesRow").click(function (event) {
+            const curElem = $(this);
             if (selectedFavoriteStock == null) {
-                $(this).toggleClass("highlightRow");
-                selectedFavoriteStock = $(this).data().StockData;
+                curElem.toggleClass("highlightRow");
+                selectedFavoriteStock = curElem.data().StockData;
+                displayStockQuote(curFavObj);
                 //console.log(`Stock ${selectedStock} is selected! From null`);
-            } else if (selectedFavoriteStock.symbol == $(this).data().StockData.symbol) {
-                $(this).toggleClass("highlightRow");
+            } else if (selectedFavoriteStock.symbol == curElem.data().StockData.symbol) {
+                curElem.toggleClass("highlightRow");
                 selectedFavoriteStock = null;
                 //console.log("No stock is selected.");
             } else {
                 $(".favoritesRow").removeClass("highlightRow");
-                $(this).addClass("highlightRow");
-                selectedFavoriteStock = $(this).data().StockData;
+                curElem.addClass("highlightRow");
+                selectedFavoriteStock = curElem.data().StockData;
+                displayStockQuote(curFavObj);
                 //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
             }
         });
@@ -340,8 +454,8 @@ function formatFavorite(favorites) {
     }
 }
 
-function displayStockQuote(symbol) {
-    $.get(`/trading/GetStockQuote?symbol=${symbol}`, (respData) => {
+function displayStockQuote(curFavObj) {
+    $.get(`/trading/GetStockQuote?symbol=${curFavObj.StockData.symbol}`, (respData) => {
         // Create the html for the quote and add it to quote container
         const quoteHtml = `
             <h3>Current Stock Quote</h3>
@@ -362,15 +476,17 @@ function displayStockQuote(symbol) {
             <label>Volume: </label>
             <span>${respData.volume}</span><br />
             <label>Latest trading day: </label>
-            <span>${respData.latestTradingDay}</span><br />
+            <span>${dateTimeFormat(respData.latestTradingDay)}</span><br />
             <label>Previous close: </label>
             <span>${respData.previousClose}</span><br />
             <label>Change: </label>
-            <span>${respData.change}</span><br />
+            <span class="${setColoredValue(respData.change)} colorValue">${respData.change}</span><br />
             <label>Change percent: </label>
-            <span>${respData.changePercent}</span><br />
+            <span class="${setColoredValue(respData.changePercent)} colorValue">${respData.changePercent}</span><br />
          `;
+        curFavObj.StockData["estPrice"] = respData.price;
 
+        $("#QuoteContainer").empty();
         $("#QuoteContainer").append(quoteHtml);
 
     }).fail(function (response) {
@@ -382,7 +498,9 @@ function getFavorite() {
     url = "trading/getFavoriteList?userId=1";
 
     $("#FavoriteLoading").removeClass("hideLoading").addClass("displayLoading");
-    disablePortfolioWidget();
+    disableFavoriteWidget();
+
+    $(".favoritesRow").off("click");
 
     $.get(url, function (favorites) {
         formatFavorite(favorites);
@@ -395,16 +513,26 @@ function getFavorite() {
     });
 }
 
-function deleteFavorite() {
+function deleteFromFavorite() {
     if (selectedFavoriteStock == null) {
         alert("No stock was selected. Please select a stock");
         return;
     }
+    $("#FavoriteLoading").removeClass("hideLoading").addClass("displayLoading");
+    disableFavoriteWidget();
+
+    $(".favoritesRow").off("click");
     url = `trading/deleteFromFavoriteList?userId=${userId}&symbol=${selectedFavoriteStock.symbol}`;
     $.post(url, function (deletefavorite) {
+        selectedFavoriteStock = null;
         formatFavorite(deletefavorite);
+        $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
+        reenableFavoriteWidget();
     }).fail(function (response) {
+        selectedFavoriteStock = null;
         alert(response.responseText);
+        $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
+        reenableFavoriteWidget();
     });
 }
 

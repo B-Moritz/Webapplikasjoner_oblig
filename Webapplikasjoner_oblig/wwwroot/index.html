@@ -63,14 +63,16 @@
                 <br /><br />
                 <label>LastUpdated:  </label>
                 <span id="lastupdateFav"></span><br />
-                <div class="btn-group" style="width: 100%">
-                    <div>
+                <div class="container" style="width: 100%">
+                    <div class="row">
                         <table id="skrivfavorite" class='table table-striped'></table>
                     </div>
-                    <div id="feil" style="color: red"></div>
-                    <button type="button" id="GetFavoriteBtn" style="width:50%" class="btn btn-primary btn-lg">Update</button>
-                    <button type="button" id="BuyFavoriteBtn" style="width:50%" class="btn btn-danger btn-lg">Buy</button>
-                    <button type="button" id="DeleteFavoriteBtn" style="width:50%" class="btn btn-warning btn-lg">Remove</button>
+                    <div class="btn-group row" style="width: 100%;">
+                        <button type="button" id="GetFavoriteBtn" class="btn btn-info btn-lg col-sm-6">Refresh</button>
+                        <button type="button" id="BuyFavoriteBtn" class="btn btn-danger btn-lg col-sm-3">Buy</button>
+                        <button type="button" id="DeleteFavoriteBtn" class="btn btn-warning btn-lg col-sm-3">Remove</button>
+                    </div>
+
                 </div>
             </div>
             <div id="QuoteContainer" class="featureContainer">

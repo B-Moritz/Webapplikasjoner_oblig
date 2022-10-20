@@ -222,6 +222,8 @@ namespace Webapplikasjoner_oblig.DAL
             // Remove stock 
             StockOwnerships curOwnership = curUser.Portfolio.Single<StockOwnerships>(t => t.StocksId == symbol);
             curOwnership.StockCounter -= count;
+            curOwnership.SpentValue -= saldo;
+
             if (curOwnership.StockCounter <= 0)
             {
                 // The user has no more ownership of this stock type
@@ -242,7 +244,6 @@ namespace Webapplikasjoner_oblig.DAL
             await _db.Trades.AddAsync(tradeLog);
 
             _db.SaveChanges();
-
         }
 
         public async Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count) {

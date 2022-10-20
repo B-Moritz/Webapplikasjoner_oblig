@@ -23,7 +23,6 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly IConfiguration _config;
 
-
         private readonly ISearchResultRepositry _searchResultRepositry;
 
         private readonly string _apiKey;
@@ -235,6 +234,7 @@ namespace Webapplikasjoner_oblig.Controllers
                                                      (unrealizedPortfolioPL > 0 ? "+" : ""),
                                                       unrealizedPortfolioPL,
                                                       userCurrency);
+
             outPortfolio.PortfolioCurrency = userCurrency;
             outPortfolio.LastUpdate = DateTime.Now;
             return outPortfolio;        
@@ -390,7 +390,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 LatestTradingDay = curQuote.LatestTradingDay,
                 PreviousClose = String.Format("{0:N} {1}", curQuote.PreviousClose, stockCurrency),
                 Change = curQuote.Change.ToString(),
-                ChangePercent = curQuote.ChangePercent + " %"
+                ChangePercent = curQuote.ChangePercent
             };
             return newStockQuote;
         }

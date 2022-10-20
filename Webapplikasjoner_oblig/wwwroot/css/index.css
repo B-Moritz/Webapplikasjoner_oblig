@@ -17,21 +17,14 @@
     top: 25%;
     left: 25%;
     border-style: solid;
-    border-color: black;
+    border-color: white;
+    border-radius: 10px 10px 10px 10px;
     padding: 5rem;
     background-color: rgba(255, 255, 255, 1);
     width: 55rem;
     display: grid;
     grid-row-gap: 0.5rem;
     grid-column-gap: 2rem;
-    grid-template-areas:
-        'title title'
-        'label1 static1'
-        'label2 static2'
-        'label3 static3'
-        'label4 static4'
-        'inputGroup1 inputGroup1'
-        'SellButton CancelButton';
 }
 #InnerDialog > h3 {
     grid-area: title;
@@ -46,6 +39,10 @@
 }
 
 #PortfolioLoading {
+    background-color: rgb(128, 128, 128, 0.4);
+}
+
+#FavoriteLoading {
     background-color: rgb(128, 128, 128, 0.4);
 }
 
@@ -90,12 +87,32 @@
     background-color: #d9edf7 !important;
 }
 
-#ConfirmSell {
-    grid-area: SellButton;
+#Confirm {
+    grid-area: ConfirmButton;
 }
 
-#CancelSellDialog {
+#CancelDialog {
     grid-area: CancelButton;
 }
 
+.colorValue {
+    color: white;
+    border-radius: 3px 3px 3px 3px;
+    margin: 5px;
+    display: inline;
+    padding: 5px 5px 5px;
+}
+
+.greenValue {
+    background-color: rgb(14, 185, 31);
+
+}
+
+.redValue {
+    background-color: rgb(255, 0, 0);
+}
+
+.errorMsg {
+    color: red;
+}
 
