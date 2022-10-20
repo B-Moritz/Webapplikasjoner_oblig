@@ -12,6 +12,7 @@ node_modules
 *.db-wal
 .vs
 ConnectionStatusCache.json
+TradingSchema.db
 
 # Cusom ignores
 node_modules
