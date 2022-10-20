@@ -225,10 +225,21 @@ function reenablePortfolioWidget(isFromCancelBtn) {
     $("#SellPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     $("#BuyPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     if (selectedPortfolioStock != null && isFromCancelBtn == false) {
+        // Make sure that the selected stock stil is selected after the dialog closes
         $(`#${selectedPortfolioStock.symbol}_portfolio`).toggleClass("highlightRow");
         selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_portfolio`).data("StockData");
     }
-    
+}
+
+function reenableFavoriteWidget(isFromCancelBtn) {
+    $("#GetFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    $("#BuyFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    $("#DeleteFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
+    if (selectedFavoriteStock != null && isFromCancelBtn == false) {
+        // Make sure that the selected stock stil is selected after the dialog closes
+        $(`#${selectedFavoriteStock.symbol}_favorites`).toggleClass("highlightRow");
+        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_favorites`).data("StockData");
+    }
 }
 
 function disablePortfolioWidget() {
@@ -240,7 +251,7 @@ function disablePortfolioWidget() {
 function disableFavoriteWidget() {
     $("#GetFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
     $("#BuyFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
-
+    $("#DeleteFavoriteBtn").addClass("disabled").attr("aria-disabled", "disabled");
 }
 
 function createDialog(innerHtml) {
@@ -371,14 +382,16 @@ function getFavorite() {
     url = "trading/getFavoriteList?userId=1";
 
     $("#FavoriteLoading").removeClass("hideLoading").addClass("displayLoading");
-
+    disablePortfolioWidget();
 
     $.get(url, function (favorites) {
         formatFavorite(favorites);
         $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
+        reenableFavoriteWidget();
     }).fail(function (response) {
         alert(response.responseText);
         $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
+        reenableFavoriteWidget();
     });
 }
 
