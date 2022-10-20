@@ -222,8 +222,6 @@ namespace Webapplikasjoner_oblig.DAL
 
     public class Trades
     {
-        internal List<Portfolio> minPortfolioValue;
-
         // Infered primary key
         public int TradesId { get; set; }
         // The amount of shares of the selected stock that is going to be traded

@@ -315,26 +315,22 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-        public async Task<List<Trade>> GetAllTradesAsync()
-        { /**
-            try
-            {
-                List<Trade> allTrades = await _db.Trades.Select(k => new Trade
-                {
-                    Id = k.Id,
-                    StockSymbol = k.StockSymbol,
-                    Date = k.Date,
-                    UserId = k.UserId
+        public async Task<List<Trade>> GetAllTradesAsync(int userId)
+        { 
+            Users curUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == userId);
+            List<Trades> dbTrades = curUser.Trades;
+            List<Trade> outTradeList = new List<Trade>();
 
-                }).ToListAsync();
-                return allTrades;
+            foreach (Trades curTrade in curUser.Trades) {
+                var newTrade = new Trade { 
+                    Id = curTrade.TradesId,
+                    StockSymbol = curTrade.StocksId,
+                    Date = curTrade.TradeTime,
+                    UserId = curTrade.UsersId
+                };
+                outTradeList.Add(newTrade);
             }
-            catch
-            {
-                return null;
-            }
-            */
-            throw new NotImplementedException();
+            return outTradeList;
         }
 
 
