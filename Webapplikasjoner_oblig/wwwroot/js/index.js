@@ -27,10 +27,10 @@ $(function () {
             <p style="grid-area: static1">${selectedStock.symbol}</p>
             <label styles="grid-area: label2;" name="Stock Name">Stock Name:</label>
             <p style="grid-area: static2">${selectedStock.stockName}</p>
-            <label style="grid-area: label3;" name="Stock Symbol">Number of shares in portfolio:</label>
-            <p style="grid-area: static3">${selectedStock.stockCounter}</p>
-            <label style="grid-area: label4;" name="Stock Name">Currency:</label>
-            <p style="grid-area: static4">${selectedStock.stockCurrency}</p>
+            <label style="grid-area: label3;" name="Quantity">Number of shares in portfolio:</label>
+            <p style="grid-area: static3">${selectedStock.quantity}</p>
+            <label style="grid-area: label4;" name="EstPrice">Estimated price per share:</label>
+            <p style="grid-area: static4">${selectedStock.estPrice}</p>
             <div style="grid-area: inputGroup1;" class="input-group">
                 <label class="input-group-addon">Number of stocks</label>
                 <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
@@ -70,10 +70,10 @@ $(function () {
             <p style="grid-area: static1">${selectedStock.symbol}</p>
             <label styles="grid-area: label2;" name="Stock Name">Stock Name:</label>
             <p style="grid-area: static2">${selectedStock.stockName}</p>
-            <label style="grid-area: label3;" name="Stock Symbol">Number of shares in portfolio:</label>
-            <p style="grid-area: static3">${selectedStock.stockCounter}</p>
-            <label style="grid-area: label4;" name="Stock Name">Currency:</label>
-            <p style="grid-area: static4">${selectedStock.stockCurrency}</p>
+            <label style="grid-area: label3;" name="Quantity">Number of shares in portfolio:</label>
+            <p style="grid-area: static3">${selectedStock.quantity}</p>
+            <label style="grid-area: label4;" name="EstPrice">Estimated price per share:</label>
+            <p style="grid-area: static4">${selectedStock.estPrice}</p>
             <div style="grid-area: inputGroup1;" class="input-group">
                 <label class="input-group-addon">Number of stocks</label>
                 <input id="StockCounterInput" class="form-control" type="number" name="StockCounter" value="1">
@@ -102,23 +102,30 @@ $(function () {
             });
             $("#DialogContainer").removeClass("showDialog");
             $("#DialogContainer").addClass("hideDialog");
-            
         });
-
     });
-
-
 });
 
+function dateTimeFormat(rawFormat) {
+    // This method convert the date time string to a more concise format
+    const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
+    let matchResult = regex.exec(rawFormat);
+    const tradingTimeFormat = `${matchResult[1]}.${matchResult[2]}.${matchResult[3]}   ${matchResult[4]}:${matchResult[5]}:${matchResult[6]}`
+    return tradingTimeFormat;
+}
+
 function updatePortfolioList(data) {
+    // This function updates the portfolio list
+    // Argument: data - the response object from the getPortfolio endpoint on server 
     if (data != null) {
-        const regex = /([0-9]{4})-([0-9]{2})-([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9])/;
-        let matchResult = regex.exec(data.lastUpdate);
-        const updateString = `${matchResult[1]}.${matchResult[2]}.${matchResult[3]}   ${matchResult[4]}:${matchResult[5]}:${matchResult[6]}`
-        $("#lastupdate").html(updateString);
-        $("#totalvaluespent").html(data.totalValueSpent);
-        $("#totalportfoliovalue").html(data.totalPortfolioValue);
-        $("#portfoliocurrency").html(data.portfolioCurrency);
+        // If the response data contains contnt, proceed with updating
+        
+        $("#LastUpdate").html(dateTimeFormat(data.lastUpdate));
+        $("#TotalValueSpent").html(data.totalValueSpent);
+        $("#TotalPortfolioValue").html(data.estPortfolioValue);
+        $("#PortfolioCurrency").html(data.portfolioCurrency);
+        $("#BuyingPower").html(data.buyingPower);
+        $("#UnrealizedPL").html(data.unrealizedPL);
 
         const portfolioTableElement = $("#PortfolioStockList");
 
@@ -127,12 +134,13 @@ function updatePortfolioList(data) {
         const portfolioListHeader = `
                 <tr>
                     <th>Stock symbol</th >
-                    <th>Number of shares</th>
                     <th>Stock Name</th>
-                    <th>Description</th>
-                    <th>Currency</th>
-                    <th>Funds spent on stock</th>
-                    <th>Total value</th>
+                    <th>Quantity</th>
+                    <th>Estimated price</th>
+                    <th>Portfolio partition %</th>
+                    <th>Estimated total value</th>
+                    <th>Total cost</th>
+                    <th>Unrealized profit/loss</th>
                 </tr>`;
         portfolioTableElement.append(portfolioListHeader);
         let curStockObj = {};
@@ -140,23 +148,26 @@ function updatePortfolioList(data) {
         for (let stock of data.stocks) {
             let portfolioListRow = `<tr id="${stock.symbol}" class="PortfolioRow">
                     <td>${stock.symbol}</td>
-                    <td>${stock.stockCounter}</td>
                     <td>${stock.stockName}</td>
-                    <td>${stock.description}</td>
-                    <td>${stock.stockCurrency}</td>
-                    <td>${stock.totalFundsSpent}</td>
-                    <td>${stock.totalValue}</td>
+                    <td>${stock.quantity}</td>
+                    <td>${stock.estPrice}</td>
+                    <td>${stock.portfolioPortion}</td>
+                    <td>${stock.estTotalMarketValue}</td>
+                    <td>${stock.totalCost}</td>
+                    <td>${stock.unrealizedPL}</td>
                 </tr>`
             portfolioTableElement.append(portfolioListRow)
             curStockObj = {
                 StockData: {
                     symbol: stock.symbol,
                     stockName: stock.stockName,
-                    stockCounter: stock.stockCounter,
+                    quantity: stock.quantity,
                     description: stock.description,
-                    stockCurrency: stock.stockCurrency,
-                    totalFundsSpent: stock.totalFundsSpent,
-                    totalValue: stock.totalValue
+                    totalCost: stock.totalCost,
+                    estTotalMarketValue: stock.estTotalMarketValue,
+                    estPrice: stock.estPrice,
+                    portfolioPortion: stock.portfolioPortion,
+                    unrealizedPL: stock.unrealizedPL,
                 }
             };
             $(`#${stock.symbol}`).data(curStockObj);
@@ -177,7 +188,6 @@ function updatePortfolioList(data) {
                 selectedStock = $(this).data("StockData");
                 //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
             }
-
         });
     }
     else {
