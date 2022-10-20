@@ -402,6 +402,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<List<Trade>> GetAllTrades(int userId)
         {
+
             return await _db.GetAllTradesAsync(userId);
         }
 

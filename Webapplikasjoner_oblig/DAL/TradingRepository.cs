@@ -336,7 +336,7 @@ namespace Webapplikasjoner_oblig.DAL
             */
             Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
             List<Trades> curTrader = dbUser.Trades;
-            List<Trade> alltrades = new List<Trade>();
+            List<Trade> trasaksjons = new List<Trade>();
 
             foreach(Trades curPortfolio in curTrader)
             {
@@ -345,11 +345,16 @@ namespace Webapplikasjoner_oblig.DAL
                     Id = curPortfolio.TradesId,
                     StockSymbol = curPortfolio.StocksId,
                     Date = curPortfolio.TradeTime,
-                    UserId = curPortfolio.UsersId
+                    UserId = curPortfolio.UsersId,
+                    UserBuying = curPortfolio.UserIsBying,
+                    StockCount = curPortfolio.StockCount
                 };
-               
+
+                trasaksjons.Add(newTrade);
+
             }
-            return alltrades;
+            return trasaksjons;
+
             
             //throw new NotImplementedException();
         }
