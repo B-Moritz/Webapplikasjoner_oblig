@@ -334,8 +334,24 @@ namespace Webapplikasjoner_oblig.DAL
                 return null;
             }
             */
+            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            List<Trades> curTrader = dbUser.Trades;
+            List<Trade> alltrades = new List<Trade>();
+
+            foreach(Trades curPortfolio in curTrader)
+            {
+                var newTrade = new Trade
+                {
+                    Id = curPortfolio.TradesId,
+                    StockSymbol = curPortfolio.StocksId,
+                    Date = curPortfolio.TradeTime,
+                    UserId = curPortfolio.UsersId
+                };
+               
+            }
+            return alltrades;
             
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
 
