@@ -58,7 +58,7 @@ namespace Webapplikasjoner_oblig.DAL
             return curStock;
         }
 
-        public async Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote)
+        public async Task<StockQuotes> AddStockQuoteAsync(AlphaVantageInterface.Models.StockQuote stockQuote)
         {
             // This method converts an AlphaVantageInterface.Model.StockQuote object to
             // DAL.StockQuotes.

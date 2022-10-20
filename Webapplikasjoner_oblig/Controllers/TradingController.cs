@@ -350,7 +350,7 @@ namespace Webapplikasjoner_oblig.Controllers
             if (curStockQuote is null)
             {
                 // get a new quote from Alpha vantage api
-                StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
+                AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
                 // Adding stock quote to db and get the StockQuotes object 
                 StockQuotes newConvertedQuote = await _db.AddStockQuoteAsync(newQuote);
                 // Set the new StockQuotes object as current quote
@@ -366,13 +366,33 @@ namespace Webapplikasjoner_oblig.Controllers
                     // If the quote was not updated within the specified _quoteCachedTime, then a new quote is obtained from api
                     // Remove the existing stock quotes from db
                     _db.RemoveStockQuotes(symbol);
-                    StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
+                    AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
                     // Adding stock quote to db
                     StockQuotes newConvertedQuote = await _db.AddStockQuoteAsync(newQuote);
                     curStockQuote = newConvertedQuote;
                 }
             }
             return curStockQuote;
+        }
+
+        public async Task<Model.StockQuote> GetStockQuote(string symbol) {
+            StockQuotes curQuote = await GetUpdatedQuote(symbol);
+            string stockCurrency = curQuote.Stock.Currency;
+            Model.StockQuote newStockQuote = new Model.StockQuote {
+                Symbol = curQuote.StocksId,
+                StockName = curQuote.Stock.StockName,
+                LastUpdated = curQuote.Timestamp,
+                Open = String.Format("{0:N} {1}", curQuote.Open, stockCurrency),
+                High = String.Format("{0:N} {1}", curQuote.High, stockCurrency),
+                Low = String.Format("{0:N} {1}", curQuote.Low, stockCurrency),
+                Price = String.Format("{0:N} {1}", curQuote.Price, stockCurrency),
+                Volume = curQuote.Volume,
+                LatestTradingDay = curQuote.LatestTradingDay,
+                PreviousClose = String.Format("{0:N} {1}", curQuote.PreviousClose, stockCurrency),
+                Change = curQuote.Change.ToString(),
+                ChangePercent = curQuote.ChangePercent + " %"
+            };
+            return newStockQuote;
         }
 
         public async Task<bool> SaveTrade(Trade innTrading)
