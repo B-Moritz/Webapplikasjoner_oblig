@@ -27,9 +27,6 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly string _apiKey;
 
-       
-
-
 
         public TradingController(ITradingRepository db,ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
@@ -88,6 +85,7 @@ namespace Webapplikasjoner_oblig.Controllers
          */
         public async Task<Model.SearchResult> SaveSearchResult(string keyword)
         {
+            // /trading/saveSearchResult?keyword=Equinor
             // Search result object from Model 
             var modelSearchResult = new Model.SearchResult();
 
@@ -146,9 +144,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
                     return modelSearchResult;
                 }
-
                 return null;
-
             }
                 
         }
@@ -415,5 +411,8 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();
         }
 
+        public async Task<User> GetUser(int userId) { 
+            return await _db.GetUserAsync(userId);
+        }
     }
 }

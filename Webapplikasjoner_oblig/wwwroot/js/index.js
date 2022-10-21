@@ -11,6 +11,10 @@ const commonDialogPart = `<div style="grid-area: inputGroup1;" class="input-grou
                           <button type="button" id="CancelDialog" class="btn btn-secondary btn-lg">Cancel Transaction</button>`;
 
 $(function () {
+    getUser();
+});
+
+$(function () {
     printAllMyPortfolio();
 
     $("#GetPortfolioBtn").click(function () {
