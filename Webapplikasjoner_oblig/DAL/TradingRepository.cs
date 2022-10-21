@@ -96,47 +96,11 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
 
-        public async Task<Users> GetPortfolioAsync(int userId)
+        public async Task<Users> GetUsersAsync(int userId)
         {
             // Get the user entity from database
             var user = await _db.Users.SingleAsync(u => u.UsersId == userId);
             return user;
-            // Defining and initializing the list that will contain all stocks in the portfolio
-            /*List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
-
-            Stocks stock;
-            foreach (StockOwnerships min_stock in user.Portfolio)
-            {
-                stock = min_stock.Stock;
-                
-                // 
-
-
-
-                // Creating the new portfolio stock object derived from the above calculations 
-                var current_Portfolio_stock = new PortfolioStock
-                {
-                    Quantity = min_stock.StockCounter,
-                    EstTotalMarketValue = 0,
-                    TotalCost = min_stock.SpentValue,
-                    Symbol = stock.Symbol,
-                    StockName = stock.StockName,
-                    Description = stock.Description,
-                    StockCurrency = stock.Currency
-                };
-
-                portfolio_list.Add(current_Portfolio_stock);
-            }
-
-            var OutPortfolio = new Portfolio
-            {
-                LastUpdate = DateTime.Now,
-                TotalValueSpent = 0,
-                TotalPortfolioValue = 0,
-                PortfolioCurrency = user.PortfolioCurrency,
-                Stocks = portfolio_list
-            };
-            return OutPortfolio;*/
         }
 
         
@@ -203,12 +167,25 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                Password = curUser.Password,
                 FundsSpent = curUser.FundsSpent,
                 FundsAvailable = curUser.FundsAvailable,
                 Currency = curUser.PortfolioCurrency
             };
             return convertedUser;
+        }
+
+        public async Task UpdateUserAsync(User curUser) {
+            Users oldUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == curUser.Id);
+            if (oldUser is null) {
+                throw new Exception("No such user in db!");
+            }
+
+            oldUser.FirstName = curUser.FirstName;
+            oldUser.LastName = curUser.LastName;
+            oldUser.Email = curUser.Email;
+            oldUser.PortfolioCurrency = curUser.Currency;
+
+            _db.SaveChanges();
         }
 
         public async Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count) 
@@ -375,5 +352,30 @@ namespace Webapplikasjoner_oblig.DAL
             */
             throw new NotImplementedException();
         }
+
+        public async Task<User> ResetPortfolio(int userId) {
+            // Obtain the user entity
+            Users curUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == userId);
+            curUser.Trades = new List<Trades>();
+            curUser.Favorites = new List<Stocks>();
+            curUser.Portfolio = new List<StockOwnerships>();
+            curUser.FundsAvailable = 1000000M;
+            curUser.FundsSpent = 0;
+
+            _db.SaveChanges();
+
+            User outObj = new User
+            {
+                Id = curUser.UsersId,
+                FirstName = curUser.FirstName,
+                LastName = curUser.LastName,
+                Email = curUser.Email,
+                FundsAvailable = curUser.FundsAvailable,
+                FundsSpent = curUser.FundsSpent,
+                Currency = curUser.PortfolioCurrency
+            };
+
+            return outObj;
+        } 
     }
 }

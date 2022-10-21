@@ -11,9 +11,7 @@ $(function () {
             for (let stock of data.stockList) {
                 outHtml += `<li class="list-group-item">${stock.stockSymbol}</li>`;
             }
-
             $("#StockResultList").empty().html(outHtml);
-                            
         }).fail(function (resp) {
             alert(resp.responseText);
         });

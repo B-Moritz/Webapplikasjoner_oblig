@@ -86,8 +86,8 @@ namespace Webapplikasjoner_oblig.DAL
                     LastName = "User",
                     Email = "DevUser@test.com",
                     Password = "testpwd",
-                    FundsAvailable = 1000M,
-                    FundsSpent = 0M,
+                    FundsAvailable = 1000000M,
+                    FundsSpent = 100M,
                     PortfolioCurrency = "NOK"
                 };
 

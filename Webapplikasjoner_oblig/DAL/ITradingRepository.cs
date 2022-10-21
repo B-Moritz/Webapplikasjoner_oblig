@@ -22,7 +22,9 @@ namespace Webapplikasjoner_oblig.DAL
         Task AddToFavoriteListAsync(int userId, string symbol);
         Task DeleteFromFavoriteListAsync(int userId, string symbol);
 
-        Task<Users> GetPortfolioAsync(int userId);
+        Task<Users> GetUsersAsync(int userId);
+
+        Task<User> ResetPortfolio(int userId);
 
     }
 

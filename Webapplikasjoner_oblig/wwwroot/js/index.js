@@ -10,9 +10,6 @@ const commonDialogPart = `<div style="grid-area: inputGroup1;" class="input-grou
                           <button type="button" id="Confirm" class="btn btn-success btn-lg">Confirm Transaction</button>
                           <button type="button" id="CancelDialog" class="btn btn-secondary btn-lg">Cancel Transaction</button>`;
 
-$(function () {
-    getUser();
-});
 
 $(function () {
     printAllMyPortfolio();

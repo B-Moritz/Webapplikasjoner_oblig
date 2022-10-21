@@ -1,0 +1,98 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <title>User settings</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="../js/userSettings.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+    <div id="DialogContainer" class="hideDialog">
+        <div id="InnerDialog"></div>
+    </div>
+    <div class="bringBack">
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="index.html" class="navbar-brand">Trading</a>
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-main">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="tradeSøk.html">market</a>
+                        </li>
+                        <li>
+                            <a href="">Transaksjoner</a>
+                        </li>
+                        <li>
+                            <a href="userSettings.html">user-settings</a>
+                        </li>
+                    </ul>
+
+                    <!--<ul class="nav navbar-nav navbar-right">
+              <li><a href="loggUt.html">Logg ut</a></li>
+            </ul> -->
+                </div>
+            </div>
+        </div>
+        <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
+        <div id="UserSiteContainer" class="siteContainer">
+            <div id="UserSettingsContainer" class="featureContainer">
+                <h1>User settings</h1>
+                <form class="form-horizontal">
+                    <div class="form-group input-group">
+                        <label class="input-group-addon">First name</label>
+                        <input type="text" id="FirstName" class="form-control" />
+                    </div>
+                    <div class="form-group input-group">
+                        <label class="input-group-addon">Last name</label>
+                        <input type="text" id="LastName" class="form-control" />
+                    </div>
+                    <div class="form-group input-group">
+                        <label class="input-group-addon">Email</label>
+                        <input type="text" id="Email" class="form-control" />
+                    </div>
+                    <div class="form-group input-group">
+                        <label class="input-group-addon">Password</label>
+                        <input type="text" id="Password" class="form-control" />
+                    </div>
+                    <div class="form-group input-group">
+                        <label for="currency" class="input-group-addon">Currency</label>
+                        <select class="form-control form-control" id="currency">
+                            <option>NOK</option>
+                            <option>EUR</option>
+                            <option>USD</option>
+                            <option>DKK</option>
+                            <option>SEK</option>
+                            <option>RUB</option>
+                            <option>CHF</option>
+                            <option>CAD</option>
+                            <option>BRL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Total cost</label>
+                        <p id="CostField"></p>
+                        <label>Total funds available</label>
+                        <p id="TotalFundsField"></p>
+                    </div>
+                    <div class="form-group btn-group">
+                        <button type="button" id="lagre" onclick="lagreSettings()" class="btn btn-primary">Update settings</button>
+                        <button type="button" id="reset" class="btn btn-danger">Reset account</button>
+                    </div>
+                    <div id="feil" style="color: red"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

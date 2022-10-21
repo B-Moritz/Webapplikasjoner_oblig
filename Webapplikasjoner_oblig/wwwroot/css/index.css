@@ -54,14 +54,30 @@
     opacity: 1;
 }
 
-#SiteContainer {
+.siteContainer {
     padding: 5rem 5rem 5rem;
     margin-top: 5rem;
     background-color: rgb(14, 63, 107);
     display: grid;
     grid-row-gap: 0.5rem;
     grid-column-gap: 0.5rem;
-    grid-template-areas: 'Favorites Quote' 'Portfolio Portfolio'
+    
+}
+
+#MainSiteContainer {
+    grid-template-areas: 'Favorites Quote' 'Portfolio Portfolio';
+}
+
+#UserSiteContainer {
+    grid-template-areas: 'UserSettings'
+}
+
+#UserSettingsContainer {
+    grid-area: UserSettings;
+}
+
+#UserSettingsContainer > form {
+    margin-left: 2rem;
 }
 
 #QuoteContainer {
