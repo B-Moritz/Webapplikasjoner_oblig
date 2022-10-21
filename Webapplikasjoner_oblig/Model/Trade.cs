@@ -9,6 +9,7 @@
         // legger noen atributer
         public bool UserBuying { get; set; }
         public int StockCount { get; set; }
+        public decimal Price { get; set; }
 
     }
 }

@@ -347,7 +347,8 @@ namespace Webapplikasjoner_oblig.DAL
                     Date = curPortfolio.TradeTime,
                     UserId = curPortfolio.UsersId,
                     UserBuying = curPortfolio.UserIsBying,
-                    StockCount = curPortfolio.StockCount
+                    StockCount = curPortfolio.StockCount,
+                    Price = curPortfolio.Saldo
                 };
 
                 trasaksjons.Add(newTrade);

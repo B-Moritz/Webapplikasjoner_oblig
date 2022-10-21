@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../css/index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/transaksjon.js"></script>
 
 </head>
 <body>
@@ -55,36 +55,26 @@
         </div>
         <!--<a style="position: absolute; right: 10px;" href="loggInnAdmin.html" class="btn btn-default">Logg in Admin</a>-->
         <div id="SiteContainer">
+            <div id="FavoriteContainer" class="featureContainer">
+
+            </div>
+            <div id="QuoteContainer" class="featureContainer">
+
             </div>
             <div id="PortfolioContainer" class="featureContainer">
-                <h2>Portfolio</h2>
+                <h2>Transactions</h2>
                 <div id="PortfolioLoading" class="hideLoading LoadingContainer">
                     <p class="loading">Loading ...</p>
                 </div>
-                <div class=" float-left">
-                    <label>Last updated: </label>
-                    <span id="LastUpdate"></span><br />
-                    <label>Total value spent: </label>
-                    <span id="TotalValueSpent"></span><br />
-                    <label>Estimated portfolio value: </label>
-                    <span id="TotalPortfolioValue"></span><br />
-                    <label>Buying power: </label>
-                    <span id="BuyingPower"></span><br />
-                    <label>Unrealized profit/loss: </label>
-                    <span id="UnrealizedPL"></span><br />
-                    <label>Currency: </label>
-                    <span id="PortfolioCurrency"></span><br />
-                </div>
+
                 <div class="container" style="width:100%; z-index: 0">
                     <div class="row">
                         <table id="PortfolioStockList" class="table table-striped"></table>
                     </div>
                     <div class="btn-group row" style="width: 100%;">
-                        <button type="button" id="GetPortfolioBtn" class="btn btn-info btn-lg col-sm-6">Refresh portfolio</button>
-                        <button type="button" id="SellPortfolioBtn" class="btn btn-success btn-lg col-sm-3 z-index: 0">Sell</button>
-                        <button type="button" id="BuyPortfolioBtn" class="btn btn-danger btn-lg col-sm-3 z-index: 0">Buy</button>
+                        <!--<button type="button" id="GetPortfolioBtn" class="btn btn-info btn-lg col-sm-3">Refresh portfolio</button>
+    <button type="button" id="SellPortfolioBtn" class="btn btn-success btn-lg col-sm-3 z-index: 0">clear</button>-->
                     </div>
-
                 </div>
             </div>
         </div>
