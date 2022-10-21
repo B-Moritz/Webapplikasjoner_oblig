@@ -3,16 +3,13 @@ $(function () {
     getUser()
 });
 function getUser() {
-    const url = "Trading/GetUser?userId=1"
-    $.get(url, user, function (data) {
+    const url = "trading/getUser?userId=1"
+    $.get(url, function (data) {
         if (data) {
             $("#FirstName").val(data.firstName)
-            $("#FirstName").innerhtml(data.firstName)
-            $("LastName").val(data.lasttName)
-            $("Email").val(data.email)
-            $("Password").val(data.password)
-            $("Currency").val(data.currency)
-            $("#Currency").html(data.currency)
+            $("#LastName").val(data.lasttName)
+            $("#Email").val(data.email)
+            $("#Currency").val(data.currency)
         }
     }).fail(function (response) {
         selectedFavoriteStock = null;
@@ -22,8 +19,8 @@ function getUser() {
     });
 }
 
-
-function lagreSettings() {
+/*
+function UpdateSettings() {
     const user = {
         userId = 1,
         forname: $("FirstName").val(),
@@ -44,3 +41,4 @@ function lagreSettings() {
         reenableFavoriteWidget();
     });
 }
+*/

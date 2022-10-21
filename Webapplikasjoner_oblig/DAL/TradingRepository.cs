@@ -203,7 +203,6 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                Password = curUser.Password,
                 FundsSpent = curUser.FundsSpent,
                 FundsAvailable = curUser.FundsAvailable,
                 Currency = curUser.PortfolioCurrency
