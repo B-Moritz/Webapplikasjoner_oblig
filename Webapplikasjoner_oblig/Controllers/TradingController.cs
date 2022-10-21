@@ -414,6 +414,10 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             throw new NotImplementedException();
         }
+        public async Task<User> GetUser(int userId)
+        {
+            return await _db.GetUserAsync(userId);
+        }
 
     }
 }
