@@ -356,11 +356,13 @@ namespace Webapplikasjoner_oblig.DAL
         public async Task<User> ResetPortfolio(int userId) {
             // Obtain the user entity
             Users curUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == userId);
-            curUser.Trades = new List<Trades>();
-            curUser.Favorites = new List<Stocks>();
-            curUser.Portfolio = new List<StockOwnerships>();
+            // Remove trade history of user
+            curUser.Trades.Clear();
+            curUser.Favorites.Clear();
+            curUser.Portfolio.Clear();
             curUser.FundsAvailable = 1000000M;
             curUser.FundsSpent = 0;
+            curUser.PortfolioCurrency = "NOK";
 
             _db.SaveChanges();
 

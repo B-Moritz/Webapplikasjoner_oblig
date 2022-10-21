@@ -1,17 +1,11 @@
 ﻿
-using Webapplikasjoner_oblig.DAL;
-using Webapplikasjoner_oblig.Model;
-using Microsoft.AspNetCore.Mvc;
-using System.Text;
+using System.Diagnostics;
 using AlphaVantageInterface;
 using AlphaVantageInterface.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.SignalR;
 using EcbCurrencyInterface;
-using System.Diagnostics;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using System.Diagnostics.Metrics;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Mvc;
+using Webapplikasjoner_oblig.DAL;
+using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -20,7 +14,7 @@ namespace Webapplikasjoner_oblig.Controllers
     {
         private readonly int _quoteCacheTime = 24;
 
-        private readonly ITradingRepository tradingRepo;
+        private readonly ITradingRepository _tradingRepo;
 
         private readonly IConfiguration _config;
 
@@ -31,7 +25,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public TradingController(ITradingRepository db,ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
-            tradingRepo = db;
+            _tradingRepo = db;
             // Adding configuration object that contains the appsettings.json content
             _config = config;
             // We can now access the AlphaVantage api key:
@@ -153,7 +147,7 @@ namespace Webapplikasjoner_oblig.Controllers
         public async Task<Portfolio> GetPortfolio(int userId)
         {
             // Obtain the user from the database
-            Users curUser = await tradingRepo.GetUsersAsync(userId);
+            Users curUser = await _tradingRepo.GetUsersAsync(userId);
 
             // Create the Portfolio object that the endpoint should return
             Portfolio outPortfolio = new Portfolio();
@@ -239,19 +233,19 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
-            return await tradingRepo.GetFavoriteList(userId);
+            return await _tradingRepo.GetFavoriteList(userId);
         }
 
         public async Task<FavoriteList> DeleteFromFavoriteList(int userId, string symbol)
         {
-            await tradingRepo.DeleteFromFavoriteListAsync(userId, symbol);
+            await _tradingRepo.DeleteFromFavoriteListAsync(userId, symbol);
 
             return await GetFavoriteList(userId);
         }
 
         public async Task<FavoriteList> AddToFavoriteList(int userId, string symbol)
         {
-            await tradingRepo.AddToFavoriteListAsync(userId, symbol);
+            await _tradingRepo.AddToFavoriteListAsync(userId, symbol);
 
             return await GetFavoriteList(userId);
         }
@@ -265,13 +259,13 @@ namespace Webapplikasjoner_oblig.Controllers
                 throw new ArgumentException("The provided count value is not valid. It must be an integer greater than 0.");
             }
             // Get the user object
-            User curUser = await tradingRepo.GetUserAsync(userId);
+            User curUser = await _tradingRepo.GetUserAsync(userId);
             if (curUser is null)
             {
                 throw new ArgumentException("The provided userId did not match any user in the database!");
             }
             // Get the stock
-            Stocks curStock = await tradingRepo.GetStockAsync(symbol);
+            Stocks curStock = await _tradingRepo.GetStockAsync(symbol);
             if (curStock is null)
             {
                 throw new ArgumentException("The specified stock was not found in the database");
@@ -291,7 +285,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 throw new Exception("The user has not enough funds to perform this transaction!");
             }
 
-            await tradingRepo.BuyStockTransactionAsync(curUser, curStock, saldo, count);
+            await _tradingRepo.BuyStockTransactionAsync(curUser, curStock, saldo, count);
 
             return await GetPortfolio(userId);
         }
@@ -300,7 +294,7 @@ namespace Webapplikasjoner_oblig.Controllers
         {
             // Test http request: localhost:1633/trading/sellStock?userId=1&symbol=MSFT&count=5
             // Check if the stock exists in the database
-            Stocks curStock = await tradingRepo.GetStockAsync(symbol);
+            Stocks curStock = await _tradingRepo.GetStockAsync(symbol);
             if (curStock is null) 
             {
                 throw new NullReferenceException("The stock was not found in the database");
@@ -314,7 +308,7 @@ namespace Webapplikasjoner_oblig.Controllers
             StockQuotes curQuote = await GetUpdatedQuote(symbol);
 
             // Get user
-            User identifiedUser = await tradingRepo.GetUserAsync(userId);
+            User identifiedUser = await _tradingRepo.GetUserAsync(userId);
 
             // We now have a stock quote - find the total that needs to be added to the users funds
             // We need to handle currency
@@ -333,7 +327,7 @@ namespace Webapplikasjoner_oblig.Controllers
                               $"User currency: {identifiedUser.Currency}\nResult: {saldo}\n*******\n");
 
             // One transaction to sell the stocks
-            await tradingRepo.SellStockTransactionAsync(userId, symbol, saldo, count);
+            await _tradingRepo.SellStockTransactionAsync(userId, symbol, saldo, count);
 
             return await GetPortfolio(userId);
         }
@@ -343,13 +337,13 @@ namespace Webapplikasjoner_oblig.Controllers
             // Create the api object
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
             // Check if there are stock quotes
-            StockQuotes curStockQuote = tradingRepo.GetStockQuote(symbol);
+            StockQuotes curStockQuote = _tradingRepo.GetStockQuote(symbol);
             if (curStockQuote is null)
             {
                 // get a new quote from Alpha vantage api
                 AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
                 // Adding stock quote to db and get the StockQuotes object 
-                StockQuotes newConvertedQuote = await tradingRepo.AddStockQuoteAsync(newQuote);
+                StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
                 // Set the new StockQuotes object as current quote
                 curStockQuote = newConvertedQuote;
             }
@@ -362,10 +356,10 @@ namespace Webapplikasjoner_oblig.Controllers
                 {
                     // If the quote was not updated within the specified _quoteCachedTime, then a new quote is obtained from api
                     // Remove the existing stock quotes from db
-                    tradingRepo.RemoveStockQuotes(symbol);
+                    _tradingRepo.RemoveStockQuotes(symbol);
                     AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
                     // Adding stock quote to db
-                    StockQuotes newConvertedQuote = await tradingRepo.AddStockQuoteAsync(newQuote);
+                    StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
                     curStockQuote = newConvertedQuote;
                 }
             }
@@ -394,17 +388,17 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<bool> SaveTrade(Trade innTrading)
         {
-            return await tradingRepo.SaveTradeAsync(innTrading);
+            return await _tradingRepo.SaveTradeAsync(innTrading);
         }
 
         public async Task<List<Trade>> GetAllTrades(int userId)
         {
-            return await tradingRepo.GetAllTradesAsync(userId);
+            return await _tradingRepo.GetAllTradesAsync(userId);
         }
 
         public async Task<Trade> GetOneTrade(int id)
         {
-            return await tradingRepo.GetOneTradeAsync(id);
+            return await _tradingRepo.GetOneTradeAsync(id);
         }
 
         public async Task ClearTradeHistory(int userId)
@@ -413,7 +407,7 @@ namespace Webapplikasjoner_oblig.Controllers
         }
         public async Task<User> GetUser(int userId)
         {
-            return await tradingRepo.GetUserAsync(userId);
+            return await _tradingRepo.GetUserAsync(userId);
         }
 
         public async Task UpdateUser(User curUser) {
@@ -429,7 +423,7 @@ namespace Webapplikasjoner_oblig.Controllers
         }
 
         public async Task<User> ResetProfile(int userId) {
-            return await tradingRepo.ResetPortfolio(userId);
+            return await _tradingRepo.ResetPortfolio(userId);
         } 
     }
 }

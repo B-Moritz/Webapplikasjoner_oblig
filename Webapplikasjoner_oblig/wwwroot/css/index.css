@@ -38,12 +38,14 @@
     display: block;
 }
 
-#PortfolioLoading {
-    background-color: rgb(128, 128, 128, 0.4);
+.loadingContainer {
+    background-color: #c9e7f5;
+    padding: 1rem;
+    border-radius: 10px 10px 10px 10px;
 }
 
-#FavoriteLoading {
-    background-color: rgb(128, 128, 128, 0.4);
+#UserLoading {
+    margin: 1rem;
 }
 
 .hideLoading {
@@ -74,10 +76,11 @@
 
 #UserSettingsContainer {
     grid-area: UserSettings;
+    max-width: 700px;
 }
 
 #UserSettingsContainer > form {
-    margin-left: 2rem;
+    margin: 1rem 2rem 1rem;
 }
 
 #QuoteContainer {

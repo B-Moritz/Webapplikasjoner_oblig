@@ -2,23 +2,75 @@
 $(function () {
     getUser()
 
-    $("#reset").click(function(data) {
-        if (data) {
-            displayUser(data);
-        }
-    }).fail(function (response) {
-        alert(response.responseText);
-    });
+    $("#reset").click(function () {
 
+        const dialogHtml = `<h3 style="grid-area: Title">Reset the user account</h3>
+                            <p style="grid-area: Text">Please note that the action of resetting your user account will remove
+                            your entire wachlist, portfolio, earnings and trade history. The funds available will be set to 1 000 000 NOK</p>
+                            <button id="ConfirmReset" style="grid-area: ResetBtn" class="btnbtn-lg btn-danger">Confirm reset</button>
+                            <button id="CancelReset" style="grid-area: CancelBtn" class="btnbtn-lg btn-secondary">Cancel</button>`;
+
+        $("#InnerDialog").html(dialogHtml).css("grid-template-areas", `'Title Title' 'Text Text' 'ResetBtn CancelBtn'`);
+        $("#DialogContainer").removeClass("hideDialog");
+
+        // Disable functionality
+        $("input:enabled").prop("disabled", true);
+        $("select:enabled").prop("disabled", true);
+        $("#lagre").prop("disabled", true);
+        $("#reset").prop("disabled", true);
+
+        $("#ConfirmReset").click(function () {
+            const url = `/trading/ResetProfile?userId=1`;
+            $("#UserLoading").addClass("displayLoading").removeClass("hideLoading");
+            $.post(url, function (data) {
+                if (data) {
+                    displayUser(data);
+                }
+                enableFunctionality();
+                $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
+            }).fail(function (response) {
+                alert(response.responseText);
+                enableFunctionality();
+                $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
+            });
+            $("#DialogContainer").addClass("hideDialog");
+        });
+
+        $("#CancelReset").click(function () {
+            $("#DialogContainer").addClass("hideDialog");
+            // Enable functionality
+            enableFunctionality();
+        });
+    })
 });
+
+function enableFunctionality() {
+    $("input:disabled").prop("disabled", false);
+    $("select:disabled").prop("disabled", false);
+    $("#lagre").prop("disabled", false);
+    $("#reset").prop("disabled", false);
+}
+
 function getUser() {
     const url = `trading/getUser?userId=${userId}`;
+
+    // Disable functionality
+    $("input:enabled").prop("disabled", true);
+    $("select:enabled").prop("disabled", true);
+    $("#lagre").prop("disabled", true);
+    $("#reset").prop("disabled", true);
+
+    $("#UserLoading").addClass("displayLoading").removeClass("hideLoading");
     $.get(url, function (data) {
         if (data) {
             displayUser(data);
         }
+        enableFunctionality();
+        $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
     }).fail(function (response) {
         alert(response.responseText);
+        enableFunctionality();
+        $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
     });
 }
 
@@ -33,8 +85,8 @@ function displayUser(user) {
     $("#TotalFundsField").html(user.fundsAvailable);
 }
 
-
-/*function lagreSettings() {
+/*
+function UpdateSettings() {
     const user = {
         userId = 1,
         forname: $("FirstName").val(),
