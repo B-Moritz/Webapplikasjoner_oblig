@@ -411,10 +411,17 @@ namespace Webapplikasjoner_oblig.Controllers
             return await _db.GetOneTradeAsync(id);
         }
 
-        public async Task ClearTradeHistory(int userId)
+        public async Task<Portfolio> ClearTradeHistory(int userId, string symbol)
+        {
+            await _db.ClearTradeHistoryAsync(userId, symbol);
+
+            return await ClearTradeHistory(userId);
+
+        }
+
+        private Task<Portfolio> ClearTradeHistory(int userId)
         {
             throw new NotImplementedException();
         }
-
     }
 }

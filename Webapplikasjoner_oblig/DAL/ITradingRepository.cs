@@ -24,6 +24,8 @@ namespace Webapplikasjoner_oblig.DAL
 
         Task<Users> GetPortfolioAsync(int userId);
 
+        Task ClearTradeHistoryAsync(int userId, string symbol);
+
     }
 
 }

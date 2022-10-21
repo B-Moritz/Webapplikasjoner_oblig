@@ -1,22 +1,16 @@
-﻿
-//let selectedPortfolioStock = null;
-//let selectedFavoriteStock = null;
-//const userId = 1;
-//selectedFavoriteStock.symbol
+﻿let selectedTransaksjonStock = null;
+const userId = 1;
 
 $(function () {
-    printAllMyPortfolio();
+    getAllTransaction();
 
     /*$("#GetPortfolioBtn").click(function () {
         printAllMyPortfolio();
+    });*/
+    $("#ClearTransaksjonBtn").click(function () {
+        clearTransaksjon();
     });
 
-    $("#SellPortfolioBtn").click(function () {
-        if (selectedPortfolioStock == null) {
-            alert("No stock was selected. Please select a stock");
-            return;
-        }     
-    });*/
 });
 
 function dateTimeFormat(rawFormat) {
@@ -27,17 +21,17 @@ function dateTimeFormat(rawFormat) {
     return tradingTimeFormat;
 }
 
-function updatePortfolioList(data) {
+
+
+function formatTransaction(data) {
     // This function updates the portfolio list
     // Argument: data - the response object from the getPortfolio endpoint on server 
     if (data != null) {
         // If the response data contains contnt, proceed with updating
 
-        const portfolioTableElement = $("#PortfolioStockList");
-
-        portfolioTableElement.empty();
-
-        const portfolioListHeader = `
+        const transaksjonTableElement = $("#PortfolioStockList");
+        transaksjonTableElement.empty();
+        const transactionListHeader = `
                 <tr>
                     <th>Symbol</th >
                     <th>Amount</th>
@@ -46,47 +40,20 @@ function updatePortfolioList(data) {
                     <th>Date</th>
 
                 </tr>`;
-        portfolioTableElement.append(portfolioListHeader);
+        transaksjonTableElement.append(transactionListHeader);
         let curStockObj = {};
 
-        for (let stock of data) {
-            let portfolioListRow = `<tr id="${stock.symbol}_portfolio" class="PortfolioRow">
-                    <td>${stock.stockSymbol}</td>
-                    <td>${stock.stockCount}</td>
-                    <td>${stock.userBuying}</td>
-                    <td>${stock.price}</td>
-                    <td>${dateTimeFormat(stock.date)}</td>
+        for (let transaksjon of data) {
+            let portfolioListRow = `<tr id="${transaksjon.symbol}_transaction" class="PortfolioRow">
+                    <td>${transaksjon.stockSymbol}</td>
+                    <td>${transaksjon.stockCount}</td>
+                    <td>${transaksjon.userBuying}</td>
+                    <td>${transaksjon.price}</td>
+                    <td>${dateTimeFormat(transaksjon.date)}</td>
                 </tr>`
-    
-  
-           portfolioTableElement.append(portfolioListRow)
-            /*curStockObj = {
-                StockData: {
-                    symbol: stock.stockSymbol,
-                    stockCount: stock.stockCount,
-                    userBuying: stock.userBuying,
-                    date: stock.date.tradingTimeFormat,    
-                }
-            };*/
-            $(`#${stock.symbol}_portfolio`).data(curStockObj);
+            transaksjonTableElement.append(portfolioListRow)
+            $(`#${transaksjon.symbol}_transaction`).data(curStockObj);
         }
-
-        /*$(".PortfolioRow").click(function () {
-            if (selectedPortfolioStock == null) {
-                $(this).toggleClass("highlightRow");
-                selectedPortfolioStock = $(this).data("StockData");
-                //console.log(`Stock ${selectedStock} is selected! From null`);
-            } else if (selectedPortfolioStock.symbol == $(this).data("StockData").symbol) {
-                $(this).toggleClass("highlightRow");
-                selectedPortfolioStock = null;
-                //console.log("No stock is selected.");
-            } else {
-                $(".PortfolioRow").removeClass("highlightRow");
-                $(this).addClass("highlightRow");
-                selectedPortfolioStock = $(this).data("StockData");
-                //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
-            }
-        }); */
 
     }
     else {
@@ -94,7 +61,7 @@ function updatePortfolioList(data) {
     }
 }
 
-function printAllMyPortfolio() {
+function getAllTransaction() {
 
     url = "trading/GetAllTrades?userId=1";
     //$("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
@@ -103,7 +70,7 @@ function printAllMyPortfolio() {
    // $(".PortfolioRow").off("click");
 
     $.get(url, function (data) {
-        updatePortfolioList(data);
+        formatTransaction(data);
         //$("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
         //reenablePortfolioWidget(false);
 
@@ -114,12 +81,29 @@ function printAllMyPortfolio() {
     });
 };
 
+function clearTransaksjon(data) {
+    //const url = "trading/GetAllTrades?userId=1";
+
+    $("#ClearTransaksjonBtn").click(function () {
+        $("table").remove();
+    });
+
+}
+
 // portofolio
-
-
-
-
-
+function clearTransaksjon() {
+    if (selectedTransaksjonStock == null) {
+        
+        alert("No stock was selected. Please select a stock");
+        return;
+    }
+    url = `trading/ClearTradeHistory?userId=${userId}&symbol=${selectedTransaksjonStock.symbol}`;
+    $.post(url, function (cleattransaksjon) {
+        formatTransaction(cleattransaksjon);
+    }).fail(function (response) {
+        alert(response.responseText);
+    });
+}
 
 
 
@@ -177,55 +161,6 @@ $("#portfolios").html(ut);*/
 
     });
 };*/
-
-
-
-
-
-
-/*$(function () {
-    hentlTransaksjon();
-    updatePortfolioList();
-    $("#GetPortfolioBtn").click(function () {
-        updatePortfolioList();
-    });
-});
-
-function hentlTransaksjon() {
-    url = "trading/GetAllTrades?userId=1";
-    $.get(url, function (trasaksjon) {
-        formatPortfolio(trasaksjon);
-        $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
-    }).fail(function (response) {
-        alert(response.responseText);
-        $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
-    });
-};
-function formatPortfolio(transaksjon) {
-    transaksjontHtml = ` <table class='table table-striped'>
-               <tr>
-                    <th>Stock symbol</th >
-                    <th>StockCount</th>
-                    <th>UserBuying</th>
-                    <th>Date</th>
-               </tr>`;
-
-    for (let stock of transaksjon) {
-        transaksjontHtml += `<tr>
-                    <td>${stock.stockSymbol}</td >
-                    <td>${stock.stockCount}</td>
-                    <td>${stock.userBuying}</td>
-                    <td>${stock.date}</td>
-                    </tr >`
-    }
-
-    transaksjontHtml += "</table>";
-    $("#skrivTransaksjon").html(transaksjontHtml);
-};
-
-function formatPortfolio(portfolio) {
-    return formatPortfolio(portfolio);
-}*/
 
 
 
