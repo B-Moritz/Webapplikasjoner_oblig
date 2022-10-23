@@ -186,7 +186,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 // Check the currency
                 if (userCurrency != curStock.Currency)
                 {
-                    exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, userCurrency);
+                    exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, userCurrency);
                 }
                 // Add the estimated price obtained from the quote
                 curStockPrice = exchangeRate * (decimal) curQuote.Price;
@@ -259,7 +259,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 throw new ArgumentException("The provided count value is not valid. It must be an integer greater than 0.");
             }
             // Get the user object
-            User curUser = await _tradingRepo.GetUserAsync(userId);
+            Users curUser = await _tradingRepo.GetUsersAsync(userId);
             if (curUser is null)
             {
                 throw new ArgumentException("The provided userId did not match any user in the database!");
@@ -273,9 +273,9 @@ namespace Webapplikasjoner_oblig.Controllers
             // Calculate the saldo required to by the amount of stocks
             StockQuotes curQuote = await GetUpdatedQuote(symbol);
             decimal exchangeRate = 1;
-            if (curUser.Currency != curStock.Currency)
+            if (curUser.PortfolioCurrency != curStock.Currency)
             {
-                exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, curUser.Currency);
+                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, curUser.PortfolioCurrency);
             }
             decimal saldo = exchangeRate * (decimal)curQuote.Price * count;
 
@@ -316,7 +316,7 @@ namespace Webapplikasjoner_oblig.Controllers
             if (identifiedUser.Currency != curStock.Currency)
             {
                 // Get the exchange rate from Ecb
-                exchangeRate = await EcbCurrencyHandler.getExchangeRate(curStock.Currency, identifiedUser.Currency);
+                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, identifiedUser.Currency);
                 // Likning
                 // n curStock_cur = exchange * n user_cur
             }
@@ -410,8 +410,9 @@ namespace Webapplikasjoner_oblig.Controllers
             return await _tradingRepo.GetUserAsync(userId);
         }
 
-        public async Task UpdateUser(User curUser) {
-            await UpdateUser(curUser);
+        public async Task<User> UpdateUser(User curUser) {
+            await _tradingRepo.UpdateUserAsync(curUser);
+            return await _tradingRepo.GetUserAsync(curUser.Id);
         }
 
         public async Task CreateUser(int userId) {

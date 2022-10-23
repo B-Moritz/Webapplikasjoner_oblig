@@ -398,7 +398,7 @@ function formatFavorite(favorites) {
                 <tr>
                     <th>Stock Name</th>
                     <th>Stock Symbol</th>
-                    <th>Description</th>
+                    <th>Type</th>
                     <th>Last updated</th>
                 </tr>`);
 

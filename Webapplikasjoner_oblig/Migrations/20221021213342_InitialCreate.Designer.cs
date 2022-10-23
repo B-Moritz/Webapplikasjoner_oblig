@@ -11,7 +11,7 @@ using Webapplikasjoner_oblig.DAL;
 namespace Webapplikasjoner_oblig.Migrations
 {
     [DbContext(typeof(TradingContext))]
-    [Migration("20221019220337_InitialCreate")]
+    [Migration("20221021213342_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,7 +79,7 @@ namespace Webapplikasjoner_oblig.Migrations
                         new
                         {
                             SearchKeyword = "Microsoft",
-                            SearchTimestamp = new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1762)
+                            SearchTimestamp = new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(8373)
                         });
                 });
 
@@ -199,7 +199,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Symbol = "MSFT",
                             Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1712),
+                            LastUpdated = new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(8340),
                             StockName = "Microsoft"
                         });
                 });
@@ -248,7 +248,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(3165),
+                            TradeTime = new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(9170),
                             UserIsBying = true,
                             UsersId = 1
                         });
@@ -292,8 +292,8 @@ namespace Webapplikasjoner_oblig.Migrations
                             UsersId = 1,
                             Email = "DevUser@test.com",
                             FirstName = "Dev",
-                            FundsAvailable = 1000m,
-                            FundsSpent = 0m,
+                            FundsAvailable = 1000000m,
+                            FundsSpent = 100m,
                             LastName = "User",
                             Password = "testpwd",
                             PortfolioCurrency = "NOK"

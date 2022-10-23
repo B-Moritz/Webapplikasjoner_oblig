@@ -189,17 +189,17 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "SearchResults",
                 columns: new[] { "SearchKeyword", "SearchTimestamp" },
-                values: new object[] { "Microsoft", new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1762) });
+                values: new object[] { "Microsoft", new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(8373) });
 
             migrationBuilder.InsertData(
                 table: "Stocks",
                 columns: new[] { "Symbol", "Currency", "Description", "LastUpdated", "StockName" },
-                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(1712), "Microsoft" });
+                values: new object[] { "MSFT", "USD", "Tech company", new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(8340), "Microsoft" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "UsersId", "Email", "FirstName", "FundsAvailable", "FundsSpent", "LastName", "Password", "PortfolioCurrency" },
-                values: new object[] { 1, "DevUser@test.com", "Dev", 1000m, 0m, "User", "testpwd", "NOK" });
+                values: new object[] { 1, "DevUser@test.com", "Dev", 1000000m, 100m, "User", "testpwd", "NOK" });
 
             migrationBuilder.InsertData(
                 table: "FavoriteLists",
@@ -224,7 +224,7 @@ namespace Webapplikasjoner_oblig.Migrations
             migrationBuilder.InsertData(
                 table: "Trades",
                 columns: new[] { "TradesId", "Currency", "Saldo", "StockCount", "StocksId", "TradeTime", "UserIsBying", "UsersId" },
-                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 20, 0, 3, 36, 463, DateTimeKind.Local).AddTicks(3165), true, 1 });
+                values: new object[] { 1, "NOK", 100m, 10, "MSFT", new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(9170), true, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_FavoriteLists_FavoritesSymbol",

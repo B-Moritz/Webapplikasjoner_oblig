@@ -8,6 +8,8 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using PeanutButter.Utils;
 
+using EcbCurrencyInterface;
+
 namespace Webapplikasjoner_oblig.DAL
 {
     public class TradingRepository : ITradingRepository
@@ -167,8 +169,8 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                FundsSpent = curUser.FundsSpent,
-                FundsAvailable = curUser.FundsAvailable,
+                FundsSpent = string.Format("{0:N} {1}",curUser.FundsSpent, curUser.PortfolioCurrency),
+                FundsAvailable = string.Format("{0:N} {1}",curUser.FundsAvailable, curUser.PortfolioCurrency),
                 Currency = curUser.PortfolioCurrency
             };
             return convertedUser;
@@ -183,8 +185,16 @@ namespace Webapplikasjoner_oblig.DAL
             oldUser.FirstName = curUser.FirstName;
             oldUser.LastName = curUser.LastName;
             oldUser.Email = curUser.Email;
-            oldUser.PortfolioCurrency = curUser.Currency;
 
+            // Change currency
+            decimal exchangeRate = 1;
+            if (oldUser.PortfolioCurrency != curUser.Currency)
+            {
+                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(oldUser.PortfolioCurrency, curUser.Currency);
+            }
+            oldUser.FundsAvailable = oldUser.FundsAvailable * exchangeRate;
+            oldUser.FundsSpent = oldUser.FundsSpent * exchangeRate;
+            oldUser.PortfolioCurrency = curUser.Currency;
             _db.SaveChanges();
         }
 
@@ -223,17 +233,17 @@ namespace Webapplikasjoner_oblig.DAL
             _db.SaveChanges();
         }
 
-        public async Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count) {
+        public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
 
 
-            StockOwnerships curentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.Id);
+            StockOwnerships curentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
             if (curentOwnership is null)
             {
                 // The user has no existing ownership. Create new ownership
                 StockOwnerships newOwnerhsip = new StockOwnerships
                 {
                     StocksId = curStock.Symbol,
-                    UsersId = curUser.Id,
+                    UsersId = curUser.UsersId,
                     StockCounter = count,
                     SpentValue = saldo,
                 };
@@ -246,7 +256,7 @@ namespace Webapplikasjoner_oblig.DAL
                 curentOwnership.StockCounter += count;
             }
 
-            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.Id);
+            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.UsersId);
             dbUser.FundsAvailable -= saldo;
 
             // Add a trade object
@@ -372,8 +382,8 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                FundsAvailable = curUser.FundsAvailable,
-                FundsSpent = curUser.FundsSpent,
+                FundsAvailable = string.Format("{0:N} {1}", curUser.FundsAvailable, curUser.PortfolioCurrency),
+                FundsSpent = string.Format("{0:N} {1}", curUser.FundsSpent, curUser.PortfolioCurrency),
                 Currency = curUser.PortfolioCurrency
             };
 

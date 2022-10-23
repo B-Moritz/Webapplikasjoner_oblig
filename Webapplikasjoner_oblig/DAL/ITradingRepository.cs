@@ -13,7 +13,7 @@ namespace Webapplikasjoner_oblig.DAL
         StockQuotes GetStockQuote(string symbol);
 
         Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count);
-        Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count);
+        Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count);
         void RemoveStockQuotes(string symbol);
 
         Task<User> GetUserAsync(int userId);
@@ -25,6 +25,8 @@ namespace Webapplikasjoner_oblig.DAL
         Task<Users> GetUsersAsync(int userId);
 
         Task<User> ResetPortfolio(int userId);
+
+        Task UpdateUserAsync(User curUser);
 
     }
 
