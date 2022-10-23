@@ -8,5 +8,7 @@
         public string Description { get; set; }
 
         public string StockCurrency { get; set; }
+
+        public DateTime LastUpdated { get; set; }
     }
 }

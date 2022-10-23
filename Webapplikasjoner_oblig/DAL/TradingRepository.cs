@@ -7,7 +7,7 @@ using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using PeanutButter.Utils;
-
+using System.Diagnostics;
 using EcbCurrencyInterface;
 
 namespace Webapplikasjoner_oblig.DAL
@@ -91,7 +91,8 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             // Add the new object to the database (asuming that stock already is in database)
-            await _db.StockQuotes.AddAsync(newTableRow);
+            Stocks curStock = await _db.Stocks.SingleAsync<Stocks>(s => s.Symbol == stockQuote.Symbol);
+            curStock.StockQuotes.Add(newTableRow);
             _db.SaveChanges();
 
             return newTableRow;
@@ -112,15 +113,15 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
                 List<Stocks>? favorites = enUser.Favorites;
-                List<StockDetail>? stockFavorite = new List<StockDetail>();
-                StockDetail currentStockDetail;
+                List<StockBase>? stockFavorite = new List<StockBase>();
+                StockBase currentStockDetail;
 
                 foreach (Stocks currentStock in favorites)
                 {
-                    currentStockDetail = new StockDetail
+                    currentStockDetail = new StockBase
                     {
                         StockName = currentStock.StockName,
-                        StockSymbol = currentStock.Symbol,
+                        Symbol = currentStock.Symbol,
                         Description = currentStock.Description,
                         LastUpdated = currentStock.LastUpdated
                     };
@@ -234,13 +235,21 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
         public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
-
-
-            StockOwnerships curentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
-            if (curentOwnership is null)
+            StockOwnerships currentOwnership;
+            try
+            {
+                currentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.WriteLine(ex);
+                currentOwnership = null;
+            }
+            
+            if (currentOwnership is null)
             {
                 // The user has no existing ownership. Create new ownership
-                StockOwnerships newOwnerhsip = new StockOwnerships
+                StockOwnerships newOwnership = new StockOwnerships
                 {
                     StocksId = curStock.Symbol,
                     UsersId = curUser.UsersId,
@@ -248,12 +257,12 @@ namespace Webapplikasjoner_oblig.DAL
                     SpentValue = saldo,
                 };
 
-                _db.StockOwnerships.Add(newOwnerhsip);
+                await _db.StockOwnerships.AddAsync(newOwnership);
             }
             else {
                 // Add to the existing ownership
-                curentOwnership.SpentValue += saldo;
-                curentOwnership.StockCounter += count;
+                currentOwnership.SpentValue += saldo;
+                currentOwnership.StockCounter += count;
             }
 
             Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.UsersId);

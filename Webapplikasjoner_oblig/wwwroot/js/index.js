@@ -312,7 +312,8 @@ function updatePortfolioList(data) {
         let curStockObj = {};
 
         for (let stock of data.stocks) {
-            let portfolioListRow = `<tr id="${stock.symbol}_portfolio" class="PortfolioRow">
+            const curId = "Portfolio_" + stock.symbol.replace(".", "");
+            let portfolioListRow = `<tr id="${curId}" class="PortfolioRow">
                     <td>${stock.symbol}</td>
                     <td>${stock.stockName}</td>
                     <td>${stock.quantity}</td>
@@ -336,7 +337,7 @@ function updatePortfolioList(data) {
                     unrealizedPL: stock.unrealizedPL,
                 }
             };
-            $(`#${stock.symbol}_portfolio`).data(curStockObj);
+            $(`#${curId}`).data(curStockObj);
         }
 
         $(".PortfolioRow").click(function () {
@@ -405,28 +406,29 @@ function formatFavorite(favorites) {
         let curFavObj = {};
 
         for (let enfavorite of favorites.stockList) {
-            favoriteTableContainer.append(`<tr id="${enfavorite.stockSymbol}_favorites" class="favoritesRow">
+            const curId = "Favorites_" + enfavorite.symbol.replace(".", "");
+            favoriteTableContainer.append(`<tr id="${curId}" class="favoritesRow">
                     <td>${enfavorite.stockName}</td >
-                    <td>${enfavorite.stockSymbol}</td>
+                    <td>${enfavorite.symbol}</td>
                     <td>${enfavorite.description}</td>
                     <td>${dateTimeFormat(enfavorite.lastUpdated)}</td>
                     </tr >`);
 
             curFavObj = {
                 StockData: {
-                    symbol: enfavorite.stockSymbol,
+                    symbol: enfavorite.symbol,
                     stockName: enfavorite.stockName,
                     description: enfavorite.description,
                     lastUpdated: enfavorite.lastUpdated
                 }
             };
 
-            $(`#${enfavorite.stockSymbol}_favorites`).data(curFavObj);
+            $(`#${curId}`).data(curFavObj);
 
             if (selectedFavoriteStock == null) {
-                $(`#${enfavorite.stockSymbol}_favorites`).toggleClass("highlightRow");
+                $(`#${curId}`).toggleClass("highlightRow");
                 selectedFavoriteStock = curFavObj.StockData;
-                displayStockQuote(curFavObj)
+                displayStockQuote(selectedFavoriteStock)
             }
         }
 
@@ -435,7 +437,7 @@ function formatFavorite(favorites) {
             if (selectedFavoriteStock == null) {
                 curElem.toggleClass("highlightRow");
                 selectedFavoriteStock = curElem.data().StockData;
-                displayStockQuote(curFavObj);
+                displayStockQuote(selectedFavoriteStock);
                 //console.log(`Stock ${selectedStock} is selected! From null`);
             } else if (selectedFavoriteStock.symbol == curElem.data().StockData.symbol) {
                 curElem.toggleClass("highlightRow");
@@ -445,7 +447,7 @@ function formatFavorite(favorites) {
                 $(".favoritesRow").removeClass("highlightRow");
                 curElem.addClass("highlightRow");
                 selectedFavoriteStock = curElem.data().StockData;
-                displayStockQuote(curFavObj);
+                displayStockQuote(selectedFavoriteStock);
                 //console.log(`Stock ${selectedStock} is selected! different stock is selected`);
             }
         });
@@ -456,7 +458,7 @@ function formatFavorite(favorites) {
 }
 
 function displayStockQuote(curFavObj) {
-    $.get(`/trading/GetStockQuote?symbol=${curFavObj.StockData.symbol}`, (respData) => {
+    $.get(`/trading/GetStockQuote?symbol=${curFavObj.symbol}`, (respData) => {
         // Create the html for the quote and add it to quote container
         const quoteHtml = `
             <h3>Current Stock Quote</h3>
@@ -485,7 +487,7 @@ function displayStockQuote(curFavObj) {
             <label>Change percent: </label>
             <span class="${setColoredValue(respData.changePercent)} colorValue">${respData.changePercent}</span><br />
          `;
-        curFavObj.StockData["estPrice"] = respData.price;
+        curFavObj["estPrice"] = respData.price;
 
         $("#QuoteContainer").empty();
         $("#QuoteContainer").append(quoteHtml);
