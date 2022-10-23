@@ -4,9 +4,10 @@ const userId = 1;
 $(function () {
     getAllTransaction();
 
-    /*$("#GetPortfolioBtn").click(function () {
-        printAllMyPortfolio();
-    });*/
+    $("#GetPortfolioBtn").click(function () {
+        getAllTransaction();
+    });
+
     $("#ClearTransaksjonBtn").click(function () {
         clearTransaksjon();
     });
@@ -20,8 +21,6 @@ function dateTimeFormat(rawFormat) {
     const tradingTimeFormat = `${matchResult[1]}.${matchResult[2]}.${matchResult[3]}   ${matchResult[4]}:${matchResult[5]}:${matchResult[6]}`
     return tradingTimeFormat;
 }
-
-
 
 function formatTransaction(data) {
     // This function updates the portfolio list
@@ -52,9 +51,10 @@ function formatTransaction(data) {
                     <td>${dateTimeFormat(transaksjon.date)}</td>
                 </tr>`
             transaksjonTableElement.append(portfolioListRow)
+            
+
             $(`#${transaksjon.symbol}_transaction`).data(curStockObj);
         }
-
     }
     else {
         alert("something went wrong!");
@@ -63,21 +63,15 @@ function formatTransaction(data) {
 
 function getAllTransaction() {
 
-    url = "trading/GetAllTrades?userId=1";
-    //$("#PortfolioLoading").removeClass("hideLoading").addClass("displayLoading");
-    //disablePortfolioWidget();
+   
+    $("#GetPortfolioBtn").click(function () {
+        url = "trading/GetAllTrades?userId=1";
+        $.get(url, function (data) {
+            formatTransaction(data);
 
-   // $(".PortfolioRow").off("click");
-
-    $.get(url, function (data) {
-        formatTransaction(data);
-        //$("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
-        //reenablePortfolioWidget(false);
-
-    }).fail(function (response) {
-        alert(response.responseText);
-       // $("#PortfolioLoading").removeClass("displayLoading").addClass("hideLoading");
-        //reenablePortfolioWidget(false);
+        }).fail(function (response) {
+            alert(response.responseText);
+        });
     });
 };
 
@@ -90,79 +84,16 @@ function clearTransaksjon(data) {
 
 }
 
-// portofolio
-function clearTransaksjon() {
+/*function clearTransaksjon() {
     if (selectedTransaksjonStock == null) {
         
         alert("No stock was selected. Please select a stock");
         return;
     }
     url = `trading/ClearTradeHistory?userId=${userId}&symbol=${selectedTransaksjonStock.symbol}`;
-    $.post(url, function (cleattransaksjon) {
-        formatTransaction(cleattransaksjon);
+    $.post(url, function (cleartransaksjon) {
+        formatTransaction(cleartransaksjon);
     }).fail(function (response) {
         alert(response.responseText);
     });
-}
-
-
-
-
-
-
-/*let ut = "<table><tr></tr>";
-for (const minStock of portfolio) {
-    ut += "<tr><td>" + minStock.LastUpdate + "</td><td>" + minStock.TotalValueSpent +
-        "</td><td>" + minStock.TotalPortfolioValue + "</td><td>" + minStock.Stocks + "</td></tr>";
-}
-ut += "</table>";
-$("#portfolios").html(ut);*/
-
-
-
-/*$(document).ready(function () {
-    $("button").click(function () {
-        $.get("Trading/getPortfolio", function (data) {
-            formatPortfolio(data);
-        })
-    });
-});*/
-
-/*function formatPortfolio(minStocks) {
-    let ut = "<table class='table table-striped'>" +
-        "<tr>" +
-        "<th>Stock_Name</th><th>Discriptions</th><th>value</th><th>Values</th><th></th>" +
-        "</tr>";
-
-    for (let stock of minStocks) {
-        ut += "<tr>" +
-            "<td>" + stock.LastUpdate + "</td>" +
-            "<td>" + stock.TotalValueSpent + "</td>" +
-            "<td>" + stock.TotalPortfolioValue + "</td>" +
-            "<td>" + stock.Stocks + "</td>" +
-            "<td> <button class='btn btn-danger' onclick='sellStock(" + stock.id + ")'>sell</button></td>" +
-
-            "</tr>";
-    }
-
-    ut += "</table>";
-    $("#portfolios").html(ut);
-}
-
-/*function slettKunde(id) {
-    const url = "trading/SellStock?id=" + id;
-    $.get(url, function (OK) {
-        if (OK) {
-            window.location.href = 'portfolio.html';
-        }
-        else {
-            $("#feil").html("Feil i db - prøv igjen senere");
-        }
-
-    });
-};*/
-
-
-
-
-
+}*/
