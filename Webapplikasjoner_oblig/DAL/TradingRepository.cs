@@ -238,7 +238,7 @@ namespace Webapplikasjoner_oblig.DAL
             StockOwnerships currentOwnership;
             try
             {
-                currentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
+                currentOwnership = _db.StockOwnerships.Single<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
             }
             catch (InvalidOperationException ex)
             {
@@ -257,7 +257,7 @@ namespace Webapplikasjoner_oblig.DAL
                     SpentValue = saldo,
                 };
 
-                await _db.StockOwnerships.AddAsync(newOwnership);
+                _db.StockOwnerships.Add(newOwnership);
             }
             else {
                 // Add to the existing ownership
@@ -265,7 +265,7 @@ namespace Webapplikasjoner_oblig.DAL
                 currentOwnership.StockCounter += count;
             }
 
-            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.UsersId);
+            Users dbUser = _db.Users.Single(u => u.UsersId == curUser.UsersId);
             dbUser.FundsAvailable -= saldo;
 
             // Add a trade object
@@ -279,9 +279,9 @@ namespace Webapplikasjoner_oblig.DAL
                 Stock = curStock,
                 User = dbUser
             };
-            await _db.Trades.AddAsync(newBuyTradeLog);
+            _db.Trades.Add(newBuyTradeLog);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)

@@ -265,7 +265,7 @@ function createDialog(innerHtml, template, confirmCallback) {
 
 function setColoredValue(value) {
     
-    if (value[0] === "+") {
+    if (value[0] !== "-") {
         return "greenValue";
     } else {
         return "redValue";
