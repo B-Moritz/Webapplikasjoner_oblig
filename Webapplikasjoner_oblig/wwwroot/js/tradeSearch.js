@@ -39,25 +39,7 @@ $(function () {
         }).fail(function (resp) {
             alert(resp.responseText);
         });
-
-
-
-        /*const searchString = event.target.value.toLowerCase();
-
-        // if searchstr is H - h
-        // if searchstr is h - h
-        // convert name to lowercase and then compare
-        // convert zone to lowercase and the copmare
-
-        const filteredCharacters = hpCharacters.filter((character) => {
-            return (
-                character.name.toLowerCase().includes(searchString) ||
-                character.zone.toLowerCase().includes(searchString)
-            );
-        });
-        displayCharacters(filteredCharacters);*/
     });
-
 });
 
 

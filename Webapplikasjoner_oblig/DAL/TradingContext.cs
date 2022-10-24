@@ -102,7 +102,7 @@ namespace Webapplikasjoner_oblig.DAL
 
                 var searchResult1 = new SearchResults
                 {
-                    SearchKeyword = "Microsoft",
+                    SearchKeyword = "MICROSOFT",
                     SearchTimestamp = DateTime.Now,
                 };
 

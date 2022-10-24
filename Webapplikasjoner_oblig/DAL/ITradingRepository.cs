@@ -28,6 +28,8 @@ namespace Webapplikasjoner_oblig.DAL
 
         Task UpdateUserAsync(User curUser);
 
+        Task ClearAllTradeHistoryAsync(int userId);
+
     }
 
 }

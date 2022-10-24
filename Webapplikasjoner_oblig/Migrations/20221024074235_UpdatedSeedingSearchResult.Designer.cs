@@ -11,8 +11,8 @@ using Webapplikasjoner_oblig.DAL;
 namespace Webapplikasjoner_oblig.Migrations
 {
     [DbContext(typeof(TradingContext))]
-    [Migration("20221021213342_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20221024074235_UpdatedSeedingSearchResult")]
+    partial class UpdatedSeedingSearchResult
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,8 +78,8 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasData(
                         new
                         {
-                            SearchKeyword = "Microsoft",
-                            SearchTimestamp = new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(8373)
+                            SearchKeyword = "MICROSOFT",
+                            SearchTimestamp = new DateTime(2022, 10, 24, 9, 42, 35, 445, DateTimeKind.Local).AddTicks(3024)
                         });
                 });
 
@@ -199,7 +199,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Symbol = "MSFT",
                             Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(8340),
+                            LastUpdated = new DateTime(2022, 10, 24, 9, 42, 35, 445, DateTimeKind.Local).AddTicks(2989),
                             StockName = "Microsoft"
                         });
                 });
@@ -248,7 +248,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 21, 23, 33, 42, 108, DateTimeKind.Local).AddTicks(9170),
+                            TradeTime = new DateTime(2022, 10, 24, 9, 42, 35, 445, DateTimeKind.Local).AddTicks(3761),
                             UserIsBying = true,
                             UsersId = 1
                         });
