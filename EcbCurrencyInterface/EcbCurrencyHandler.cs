@@ -10,7 +10,7 @@ namespace EcbCurrencyInterface;
 public class EcbCurrencyHandler
 {
     private static string rssUri = "https://www.ecb.europa.eu/rss/fxref-";
-    public async static Task<decimal> getExchangeRate(string baseCurr, string targetCurr)
+    public async static Task<decimal> getExchangeRateAsync(string baseCurr, string targetCurr)
     {
         // n base = exhangeRate * n target
 

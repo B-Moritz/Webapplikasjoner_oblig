@@ -17,21 +17,14 @@
     top: 25%;
     left: 25%;
     border-style: solid;
-    border-color: black;
+    border-color: white;
+    border-radius: 10px 10px 10px 10px;
     padding: 5rem;
     background-color: rgba(255, 255, 255, 1);
     width: 55rem;
     display: grid;
     grid-row-gap: 0.5rem;
     grid-column-gap: 2rem;
-    grid-template-areas:
-        'title title'
-        'label1 static1'
-        'label2 static2'
-        'label3 static3'
-        'label4 static4'
-        'inputGroup1 inputGroup1'
-        'SellButton CancelButton';
 }
 #InnerDialog > h3 {
     grid-area: title;
@@ -45,8 +38,14 @@
     display: block;
 }
 
-#PortfolioLoading {
-    background-color: rgb(128, 128, 128, 0.4);
+.loadingContainer {
+    background-color: #c9e7f5;
+    padding: 1rem;
+    border-radius: 10px 10px 10px 10px;
+}
+
+#UserLoading {
+    margin: 1rem;
 }
 
 .hideLoading {
@@ -57,14 +56,31 @@
     opacity: 1;
 }
 
-#SiteContainer {
+.siteContainer {
     padding: 5rem 5rem 5rem;
     margin-top: 5rem;
     background-color: rgb(14, 63, 107);
     display: grid;
     grid-row-gap: 0.5rem;
     grid-column-gap: 0.5rem;
-    grid-template-areas: 'Favorites Quote' 'Portfolio Portfolio'
+    
+}
+
+#MainSiteContainer {
+    grid-template-areas: 'Favorites Quote' 'Portfolio Portfolio';
+}
+
+#UserSiteContainer {
+    grid-template-areas: 'UserSettings'
+}
+
+#UserSettingsContainer {
+    grid-area: UserSettings;
+    max-width: 700px;
+}
+
+#UserSettingsContainer > form {
+    margin: 1rem 2rem 1rem;
 }
 
 #QuoteContainer {
@@ -90,12 +106,32 @@
     background-color: #d9edf7 !important;
 }
 
-#ConfirmSell {
-    grid-area: SellButton;
+#Confirm {
+    grid-area: ConfirmButton;
 }
 
-#CancelSellDialog {
+#CancelDialog {
     grid-area: CancelButton;
 }
 
+.colorValue {
+    color: white;
+    border-radius: 3px 3px 3px 3px;
+    margin: 5px;
+    display: inline;
+    padding: 5px 5px 5px;
+}
+
+.greenValue {
+    background-color: rgb(14, 185, 31);
+
+}
+
+.redValue {
+    background-color: rgb(255, 0, 0);
+}
+
+.errorMsg {
+    color: red;
+}
 

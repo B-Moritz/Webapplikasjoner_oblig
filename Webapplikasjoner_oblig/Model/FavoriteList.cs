@@ -3,6 +3,6 @@
     public class FavoriteList
     {
         public DateTime LastUpdated { get; set; }
-        public List<StockDetail> StockList { get; set; }
+        public List<StockBase> StockList { get; set; }
     }
 }

@@ -2,11 +2,8 @@
 
 namespace Webapplikasjoner_oblig.Model
 {
-    public class StockQuote
+    public class StockQuote : StockBase
     {
-        public string Symbol { get; set; }
-        public string StockName { get; set; }
-        public DateTime LastUpdated { get; set; }
         public string Open { get; set; }
         public string High { get; set; }
         public string Low { get; set; }
