@@ -2,6 +2,8 @@
 $(function () {
     getUser()
 
+    $("#lagre").click(UpdateSettings);
+
     $("#reset").click(function () {
 
         const dialogHtml = `<h3 style="grid-area: Title">Reset the user account</h3>
@@ -51,14 +53,20 @@ function enableFunctionality() {
     $("#reset").prop("disabled", false);
 }
 
-function getUser() {
-    const url = `trading/getUser?userId=${userId}`;
-
-    // Disable functionality
+function disableFunctionality() {
     $("input:enabled").prop("disabled", true);
     $("select:enabled").prop("disabled", true);
     $("#lagre").prop("disabled", true);
     $("#reset").prop("disabled", true);
+
+    $("#UserLoading").addClass("displayLoading").removeClass("hideLoading");
+}
+
+function getUser() {
+    const url = `trading/getUser?userId=${userId}`;
+
+    // Disable functionality
+    disableFunctionality();
 
     $("#UserLoading").addClass("displayLoading").removeClass("hideLoading");
     $.get(url, function (data) {
@@ -85,26 +93,29 @@ function displayUser(user) {
     $("#TotalFundsField").html(user.fundsAvailable);
 }
 
-/*
+
 function UpdateSettings() {
     const user = {
-        userId = 1,
-        forname: $("FirstName").val(),
-        lastname: $("LastName").val(), 
-        email: $("Email").val(),
-        password: $("Password").val(),
-        currency: $("Currency").val()
+        Id: 1,
+        FirstName: $("#FirstName").val(),
+        Lastname: $("#LastName").val(), 
+        Email: $("#Email").val(),
+        Currency: $("#Currency").val()
     }
-    const url = "Trading/UpdateUser"
+    const url = "trading/updateUser"
+
+    disableFunctionality();
+
+    $("#UserLoading").addClass("displayLoading").removeClass("hideLoading");
     $.post(url, user, function (data) {
         if (data) {
-
+            displayUser(data);
         }
+        enableFunctionality();
+        $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
     }).fail(function (response) {
-        selectedFavoriteStock = null;
         alert(response.responseText);
-        $("#FavoriteLoading").addClass("hideLoading").removeClass("displayLoading");
-        reenableFavoriteWidget();
+        enableFunctionality();
+        $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
     });
 }
-*/

@@ -7,9 +7,8 @@
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-
-        public decimal FundsAvailable { get; set; }
-        public decimal FundsSpent { get; set; }
+        public string FundsAvailable { get; set; }
+        public string FundsSpent { get; set; }
 
         public string Currency { get; set; }
     }

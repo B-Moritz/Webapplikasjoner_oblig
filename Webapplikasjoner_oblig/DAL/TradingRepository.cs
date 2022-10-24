@@ -7,6 +7,8 @@ using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using PeanutButter.Utils;
+using System.Diagnostics;
+using EcbCurrencyInterface;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -89,7 +91,8 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             // Add the new object to the database (asuming that stock already is in database)
-            await _db.StockQuotes.AddAsync(newTableRow);
+            Stocks curStock = await _db.Stocks.SingleAsync<Stocks>(s => s.Symbol == stockQuote.Symbol);
+            curStock.StockQuotes.Add(newTableRow);
             _db.SaveChanges();
 
             return newTableRow;
@@ -110,15 +113,15 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
                 List<Stocks>? favorites = enUser.Favorites;
-                List<StockDetail>? stockFavorite = new List<StockDetail>();
-                StockDetail currentStockDetail;
+                List<StockBase>? stockFavorite = new List<StockBase>();
+                StockBase currentStockDetail;
 
                 foreach (Stocks currentStock in favorites)
                 {
-                    currentStockDetail = new StockDetail
+                    currentStockDetail = new StockBase
                     {
                         StockName = currentStock.StockName,
-                        StockSymbol = currentStock.Symbol,
+                        Symbol = currentStock.Symbol,
                         Description = currentStock.Description,
                         LastUpdated = currentStock.LastUpdated
                     };
@@ -167,8 +170,8 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                FundsSpent = curUser.FundsSpent,
-                FundsAvailable = curUser.FundsAvailable,
+                FundsSpent = string.Format("{0:N} {1}",curUser.FundsSpent, curUser.PortfolioCurrency),
+                FundsAvailable = string.Format("{0:N} {1}",curUser.FundsAvailable, curUser.PortfolioCurrency),
                 Currency = curUser.PortfolioCurrency
             };
             return convertedUser;
@@ -183,8 +186,16 @@ namespace Webapplikasjoner_oblig.DAL
             oldUser.FirstName = curUser.FirstName;
             oldUser.LastName = curUser.LastName;
             oldUser.Email = curUser.Email;
-            oldUser.PortfolioCurrency = curUser.Currency;
 
+            // Change currency
+            decimal exchangeRate = 1;
+            if (oldUser.PortfolioCurrency != curUser.Currency)
+            {
+                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(oldUser.PortfolioCurrency, curUser.Currency);
+            }
+            oldUser.FundsAvailable = oldUser.FundsAvailable * exchangeRate;
+            oldUser.FundsSpent = oldUser.FundsSpent * exchangeRate;
+            oldUser.PortfolioCurrency = curUser.Currency;
             _db.SaveChanges();
         }
 
@@ -223,30 +234,38 @@ namespace Webapplikasjoner_oblig.DAL
             _db.SaveChanges();
         }
 
-        public async Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count) {
-
-
-            StockOwnerships curentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.Id);
-            if (curentOwnership is null)
+        public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
+            StockOwnerships currentOwnership;
+            try
+            {
+                currentOwnership = _db.StockOwnerships.Single<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.WriteLine(ex);
+                currentOwnership = null;
+            }
+            
+            if (currentOwnership is null)
             {
                 // The user has no existing ownership. Create new ownership
-                StockOwnerships newOwnerhsip = new StockOwnerships
+                StockOwnerships newOwnership = new StockOwnerships
                 {
                     StocksId = curStock.Symbol,
-                    UsersId = curUser.Id,
+                    UsersId = curUser.UsersId,
                     StockCounter = count,
                     SpentValue = saldo,
                 };
 
-                _db.StockOwnerships.Add(newOwnerhsip);
+                _db.StockOwnerships.Add(newOwnership);
             }
             else {
                 // Add to the existing ownership
-                curentOwnership.SpentValue += saldo;
-                curentOwnership.StockCounter += count;
+                currentOwnership.SpentValue += saldo;
+                currentOwnership.StockCounter += count;
             }
 
-            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.Id);
+            Users dbUser = _db.Users.Single(u => u.UsersId == curUser.UsersId);
             dbUser.FundsAvailable -= saldo;
 
             // Add a trade object
@@ -260,9 +279,9 @@ namespace Webapplikasjoner_oblig.DAL
                 Stock = curStock,
                 User = dbUser
             };
-            await _db.Trades.AddAsync(newBuyTradeLog);
+            _db.Trades.Add(newBuyTradeLog);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
@@ -372,8 +391,8 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                FundsAvailable = curUser.FundsAvailable,
-                FundsSpent = curUser.FundsSpent,
+                FundsAvailable = string.Format("{0:N} {1}", curUser.FundsAvailable, curUser.PortfolioCurrency),
+                FundsSpent = string.Format("{0:N} {1}", curUser.FundsSpent, curUser.PortfolioCurrency),
                 Currency = curUser.PortfolioCurrency
             };
 
