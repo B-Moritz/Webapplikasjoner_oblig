@@ -93,3 +93,6 @@ const displayCharacters = (characters) => {
 
 loadCharacters();
 */
+
+
+//     <link rel="stylesheet" href="../css/tradeSearch.css" />
