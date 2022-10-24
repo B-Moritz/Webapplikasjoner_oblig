@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webapplikasjoner_oblig.DAL;
 
@@ -10,9 +11,10 @@ using Webapplikasjoner_oblig.DAL;
 namespace Webapplikasjoner_oblig.Migrations
 {
     [DbContext(typeof(TradingContext))]
-    partial class TradingContextModelSnapshot : ModelSnapshot
+    [Migration("20221024102844_UpdatedSeedings")]
+    partial class UpdatedSeedings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
@@ -30,6 +32,13 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasIndex("StocksSymbol");
 
                     b.ToTable("StockOccurances", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            SearchResultsSearchKeyword = "Microsoft",
+                            StocksSymbol = "MSFT"
+                        });
                 });
 
             modelBuilder.Entity("StocksUsers", b =>
@@ -45,6 +54,13 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasIndex("FavoritesSymbol");
 
                     b.ToTable("FavoriteLists", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            FavoriteUsersUsersId = 1,
+                            FavoritesSymbol = "MSFT"
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.SearchResults", b =>
@@ -58,6 +74,13 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasKey("SearchKeyword");
 
                     b.ToTable("SearchResults");
+
+                    b.HasData(
+                        new
+                        {
+                            SearchKeyword = "MICROSOFT",
+                            SearchTimestamp = new DateTime(2022, 10, 24, 12, 28, 44, 360, DateTimeKind.Local).AddTicks(1508)
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.StockOwnerships", b =>
@@ -79,6 +102,15 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasIndex("StocksId");
 
                     b.ToTable("StockOwnerships");
+
+                    b.HasData(
+                        new
+                        {
+                            UsersId = 1,
+                            StocksId = "MSFT",
+                            SpentValue = 100m,
+                            StockCounter = 20
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.StockQuotes", b =>
@@ -119,6 +151,22 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasKey("StocksId", "Timestamp");
 
                     b.ToTable("StockQuotes");
+
+                    b.HasData(
+                        new
+                        {
+                            StocksId = "MSFT",
+                            Timestamp = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Change = 0.35999999999999999,
+                            ChangePercent = "0.2373%",
+                            High = 153.41999999999999,
+                            LatestTradingDay = new DateTime(2019, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Low = 151.02000000000001,
+                            Open = 151.65000000000001,
+                            PreviousClose = 151.69999999999999,
+                            Price = 152.06,
+                            Volume = 9425575
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Stocks", b =>
@@ -144,6 +192,16 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasKey("Symbol");
 
                     b.ToTable("Stocks");
+
+                    b.HasData(
+                        new
+                        {
+                            Symbol = "MSFT",
+                            Currency = "USD",
+                            Description = "Tech company",
+                            LastUpdated = new DateTime(2022, 10, 24, 12, 28, 44, 360, DateTimeKind.Local).AddTicks(1476),
+                            StockName = "Microsoft"
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Trades", b =>
@@ -181,6 +239,19 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("Trades");
+
+                    b.HasData(
+                        new
+                        {
+                            TradesId = 1,
+                            Currency = "NOK",
+                            Saldo = 100m,
+                            StockCount = 10,
+                            StocksId = "MSFT",
+                            TradeTime = new DateTime(2022, 10, 24, 12, 28, 44, 360, DateTimeKind.Local).AddTicks(2243),
+                            UserIsBying = true,
+                            UsersId = 1
+                        });
                 });
 
             modelBuilder.Entity("Webapplikasjoner_oblig.DAL.Users", b =>

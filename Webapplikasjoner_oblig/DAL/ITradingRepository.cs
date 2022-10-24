@@ -6,9 +6,7 @@ namespace Webapplikasjoner_oblig.DAL
 {
     public interface ITradingRepository
     {
-        Task<bool> SaveTradeAsync(Trade innTrading);
         Task<List<Trade>> GetAllTradesAsync(int userId);
-        Task<Trade> GetOneTradeAsync(int id);
         Task<Stocks> GetStockAsync(string symbol);
         StockQuotes GetStockQuote(string symbol);
 

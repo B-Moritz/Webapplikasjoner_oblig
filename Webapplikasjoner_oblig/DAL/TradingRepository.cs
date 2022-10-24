@@ -229,9 +229,9 @@ namespace Webapplikasjoner_oblig.DAL
                 User = curOwnership.User
             };
 
-            await _db.Trades.AddAsync(tradeLog);
+            _db.Trades.Add(tradeLog);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
         public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
@@ -279,58 +279,15 @@ namespace Webapplikasjoner_oblig.DAL
                 Stock = curStock,
                 User = dbUser
             };
-            _db.Trades.Add(newBuyTradeLog);
+            dbUser.Trades.Add(newBuyTradeLog);
 
             await _db.SaveChangesAsync();
-        }
-
-        public async Task<bool> SaveTradeAsync(Trade innTrading)
-        {
-            /**{
-                try
-                {
-                    var nyTradingRad = new Trades()
-                    {
-                        Id = innTrading.Id,
-                        StockSymbol = innTrading.StockSymbol,
-                        Date = innTrading.Date,
-                        UserId = innTrading.Id
-                    };
-
-                    _db.Trades.Add(nyTradingRad);
-                    await _db.SaveChangesAsync();
-                    return true;
-
-                }
-                catch
-                {
-                    return false;
-                }
-            */
-            throw new NotImplementedException();
         }
 
 
 
         public async Task<List<Trade>> GetAllTradesAsync(int userId)
-        { /**
-            try
-            {
-                List<Trade> allTrades = await _db.Trades.Select(k => new Trade
-                {
-                    Id = k.Id,
-                    StockSymbol = k.StockSymbol,
-                    Date = k.Date,
-                    UserId = k.UserId
-
-                }).ToListAsync();
-                return allTrades;
-            }
-            catch
-            {
-                return null;
-            }
-            */
+        {
             Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
             List<Trades> curTrader = dbUser.Trades;
             List<Trade> trasaksjons = new List<Trade>();
@@ -352,36 +309,13 @@ namespace Webapplikasjoner_oblig.DAL
 
             }
             return trasaksjons;
-
-            
-            //throw new NotImplementedException();
-        }
-
-
-        public async Task<Trade> GetOneTradeAsync(int id)
-        {
-            /**
-            Trade oneTrade = await _db.Trades.FindAsync(id);
-            var hentetTrading = new Trade()
-            {
-                Id = oneTrade.Id,
-                StockSymbol = oneTrade.StockSymbol,
-                Date = oneTrade.Date,
-                UserId = oneTrade.UserId
-
-            };
-            return hentetTrading;
-        }
-
-    }
-            */
-            throw new NotImplementedException();
         }
 
         public async Task ClearAllTradeHistoryAsync(int userId)
         {
             Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
             enUser.Trades.Clear();
+
             _db.SaveChanges();
 
         }
