@@ -33,7 +33,8 @@ namespace Webapplikasjoner_oblig.DAL
         {
             // connect to sqlite database
             options.UseSqlite(_configuration.GetConnectionString("WebApiDatabase"))
-                   .UseLazyLoadingProxies();
+                   .UseLazyLoadingProxies()
+                   .EnableSensitiveDataLogging();
         }
 
         public DbSet<Stocks> Stocks { get; set; }
@@ -103,7 +104,7 @@ namespace Webapplikasjoner_oblig.DAL
                 var searchResult1 = new SearchResults
                 {
                     SearchKeyword = "MICROSOFT",
-                    SearchTimestamp = DateTime.Now,
+                    SearchTimestamp = DateTime.Now
                 };
 
                 var own2 = new StockOwnerships
@@ -121,23 +122,23 @@ namespace Webapplikasjoner_oblig.DAL
                 modelBuilder.Entity<Users>()
                         .HasMany(favStocks => favStocks.Favorites)
                         .WithMany(u => u.FavoriteUsers)
-                        .UsingEntity(j => j.ToTable("FavoriteLists").HasData(new { FavoritesSymbol = "MSFT", FavoriteUsersUsersId = 1 }));
+                        .UsingEntity(j => j.ToTable("FavoriteLists"));//.HasData(new { FavoritesSymbol = "MSFT", FavoriteUsersUsersId = 1 }));
 
                 // Configuration of the StockOccurances join table used to store the many to many relationship between 
                 // Search results and stocks
                 modelBuilder.Entity<SearchResults>()
                         .HasMany(d => d.Stocks)
                         .WithMany(d => d.SearchResults)
-                        .UsingEntity(t => t.ToTable("StockOccurances").HasData(new { SearchResultsSearchKeyword = "Microsoft", StocksSymbol = "MSFT" }));
+                        .UsingEntity(t => t.ToTable("StockOccurances"));//.HasData(new { SearchResultsSearchKeyword = "Microsoft", StocksSymbol = "MSFT" }));
 
-                modelBuilder.Entity<StockQuotes>().HasData(stockQuote1);
+                modelBuilder.Entity<StockQuotes>();//.HasData(stockQuote1);
 
-                modelBuilder.Entity<Stocks>().HasData(newStock1);
+                modelBuilder.Entity<Stocks>();//;.HasData(newStock1);
 
                 modelBuilder.Entity<Users>().HasData(user1);
 
-                modelBuilder.Entity<Trades>().HasData(
-                    new Trades
+                modelBuilder.Entity<Trades>();//;.HasData(
+                    /*new Trades
                     {
                         TradesId = 1,
                         StockCount = 10,
@@ -147,10 +148,10 @@ namespace Webapplikasjoner_oblig.DAL
                         StocksId = "MSFT",
                         UsersId = 1,
                         Currency = "NOK"
-                    });
+                    });*/
 
-                modelBuilder.Entity<SearchResults>().HasData(searchResult1);
-                modelBuilder.Entity<StockOwnerships>().HasData(own2);
+                modelBuilder.Entity<SearchResults>();//.HasData(searchResult1);
+                modelBuilder.Entity<StockOwnerships>();//.HasData(own2);
             }
             else
             {

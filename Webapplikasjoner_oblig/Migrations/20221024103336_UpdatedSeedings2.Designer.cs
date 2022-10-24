@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webapplikasjoner_oblig.DAL;
 
@@ -10,9 +11,10 @@ using Webapplikasjoner_oblig.DAL;
 namespace Webapplikasjoner_oblig.Migrations
 {
     [DbContext(typeof(TradingContext))]
-    partial class TradingContextModelSnapshot : ModelSnapshot
+    [Migration("20221024103336_UpdatedSeedings2")]
+    partial class UpdatedSeedings2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
@@ -214,19 +216,6 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasKey("UsersId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UsersId = 1,
-                            Email = "DevUser@test.com",
-                            FirstName = "Dev",
-                            FundsAvailable = 1000000m,
-                            FundsSpent = 100m,
-                            LastName = "User",
-                            Password = "testpwd",
-                            PortfolioCurrency = "NOK"
-                        });
                 });
 
             modelBuilder.Entity("SearchResultsStocks", b =>
