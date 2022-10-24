@@ -138,7 +138,6 @@ namespace Webapplikasjoner_oblig.Controllers
             // Connection to alpha vantage api
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
 
-
             // Fetch stocks from api using the given name 
             var alphaObject = await AlphaV.findStockAsync(keyword);
 
@@ -411,22 +410,12 @@ namespace Webapplikasjoner_oblig.Controllers
             return newStockQuote;
         }
 
-        public async Task<bool> SaveTrade(Trade innTrading)
-        {
-            return await _tradingRepo.SaveTradeAsync(innTrading);
-        }
-
         public async Task<List<Trade>> GetAllTrades(int userId)
         {
 
             return await _tradingRepo.GetAllTradesAsync(userId);
 
             return await _tradingRepo.GetAllTradesAsync(userId);
-        }
-
-        public async Task<Trade> GetOneTrade(int id)
-        {
-            return await _tradingRepo.GetOneTradeAsync(id);
         }
 
         public async Task ClearAllTradeHistory(int userId)

@@ -40,10 +40,10 @@ function formatTransaction(data) {
 
                 </tr>`;
         transaksjonTableElement.append(transactionListHeader);
-        //let curStockObj = {};
+        let curStockObj = {};
 
         for (let transaksjon of data) {
-            let portfolioListRow = `<tr id="${transaksjon.symbol}_transaction" class="PortfolioRow">
+            let portfolioListRow = `<tr class="PortfolioRow">
                     <td>${transaksjon.stockSymbol}</td>
                     <td>${transaksjon.stockCount}</td>
                     <td>${transaksjon.userBuying}</td>
@@ -51,9 +51,7 @@ function formatTransaction(data) {
                     <td>${dateTimeFormat(transaksjon.date)}</td>
                 </tr>`
             transaksjonTableElement.append(portfolioListRow)
-            
-
-            $(`#${transaksjon.symbol}_transaction`).data(curStockObj);
+           
         }
     }
     else {
