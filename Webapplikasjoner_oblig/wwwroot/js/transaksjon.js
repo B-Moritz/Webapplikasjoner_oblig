@@ -40,7 +40,7 @@ function formatTransaction(data) {
 
                 </tr>`;
         transaksjonTableElement.append(transactionListHeader);
-        let curStockObj = {};
+        //let curStockObj = {};
 
         for (let transaksjon of data) {
             let portfolioListRow = `<tr id="${transaksjon.symbol}_transaction" class="PortfolioRow">

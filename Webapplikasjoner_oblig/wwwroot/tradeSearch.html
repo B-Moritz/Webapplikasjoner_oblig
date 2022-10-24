@@ -12,6 +12,15 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="../js/tradeSearch.js"></script>
 
+    <style>
+        input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }  
+    </style>
+
 </head>
 <body>
     
@@ -47,16 +56,16 @@
         </div>
         <br /><br /><br />
 
-        <div class="container">
             <h1>&#x2728;Stock Market &#x2728;</h1>
             <div id="searchWrapper">
                 <input type="text"
                        name="searchBar"
                        id="SearchBar"
-                       placeholder="search for a character" />
+                       placeholder="search for stocks"
+                />
             </div>
             <ul id="StockResultList" class="list-group"></ul>
-        </div>
+        
     </div>
 </body>
 </html>
