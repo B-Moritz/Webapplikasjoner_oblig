@@ -62,8 +62,7 @@
     background-color: rgb(14, 63, 107);
     display: grid;
     grid-row-gap: 0.5rem;
-    grid-column-gap: 0.5rem;
-    
+    grid-column-gap: 0.5rem;   
 }
 
 #MainSiteContainer {
@@ -71,13 +70,22 @@
 }
 
 #UserSiteContainer {
-    grid-template-areas: 'UserSettings'
+    grid-template-areas: 'UserSettings';
+}
+
+#TransactionSiteContainer {
+    grid-template-areas: 'TransactionList';
+}
+
+#TransactionContainer {
+    grid-area: TransactionList;
 }
 
 #UserSettingsContainer {
     grid-area: UserSettings;
     max-width: 700px;
 }
+
 
 #UserSettingsContainer > form {
     margin: 1rem 2rem 1rem;
