@@ -28,7 +28,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         Task UpdateUserAsync(User curUser);
 
-        Task ClearTradeHistoryAsync(int userId, string symbol);
+        Task ClearAllTradeHistoryAsync(int userId);
 
     }
 

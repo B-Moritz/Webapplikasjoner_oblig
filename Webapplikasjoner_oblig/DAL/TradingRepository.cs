@@ -378,11 +378,10 @@ namespace Webapplikasjoner_oblig.DAL
             throw new NotImplementedException();
         }
 
-        public async Task ClearTradeHistoryAsync(int userId, string symbol)
+        public async Task ClearAllTradeHistoryAsync(int userId)
         {
             Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
-            Stocks enstock = await _db.Stocks.SingleAsync(u => u.Symbol == symbol);
-            enUser.Favorites.Remove(enstock);
+            enUser.Trades.Clear();
             _db.SaveChanges();
 
         }

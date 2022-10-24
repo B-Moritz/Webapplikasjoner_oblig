@@ -63,37 +63,30 @@ function formatTransaction(data) {
 
 function getAllTransaction() {
 
-   
-    $("#GetPortfolioBtn").click(function () {
-        url = "trading/GetAllTrades?userId=1";
-        $.get(url, function (data) {
-            formatTransaction(data);
+    url = "trading/GetAllTrades?userId=1";
+    $.get(url, function (data) {
+        formatTransaction(data);
 
-        }).fail(function (response) {
-            alert(response.responseText);
-        });
-    });
-};
-
-function clearTransaksjon(data) {
-    //const url = "trading/GetAllTrades?userId=1";
-
-    $("#ClearTransaksjonBtn").click(function () {
-        $("table").remove();
-    });
-
-}
-
-/*function clearTransaksjon() {
-    if (selectedTransaksjonStock == null) {
-        
-        alert("No stock was selected. Please select a stock");
-        return;
-    }
-    url = `trading/ClearTradeHistory?userId=${userId}&symbol=${selectedTransaksjonStock.symbol}`;
-    $.post(url, function (cleartransaksjon) {
-        formatTransaction(cleartransaksjon);
     }).fail(function (response) {
         alert(response.responseText);
     });
+};
+
+/*function clearTransaksjon(data) {
+    //const url = "trading/GetAllTrades?userId=1";
+
+    $("#ClearTransaksjonBtn").click(function () {
+        
+    });
+
 }*/
+
+function clearTransaksjon() {
+
+    url = `trading/clearAllTradeHistory?userId=${userId}`;
+    $.post(url, function () {
+        $("table").remove();
+    }).fail(function (response) {
+        alert(response.responseText);
+    });
+}

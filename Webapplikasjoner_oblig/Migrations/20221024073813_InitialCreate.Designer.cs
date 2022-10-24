@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Webapplikasjoner_oblig.DAL;
 
@@ -10,9 +11,10 @@ using Webapplikasjoner_oblig.DAL;
 namespace Webapplikasjoner_oblig.Migrations
 {
     [DbContext(typeof(TradingContext))]
-    partial class TradingContextModelSnapshot : ModelSnapshot
+    [Migration("20221024073813_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.9");
@@ -76,8 +78,8 @@ namespace Webapplikasjoner_oblig.Migrations
                     b.HasData(
                         new
                         {
-                            SearchKeyword = "MICROSOFT",
-                            SearchTimestamp = new DateTime(2022, 10, 24, 9, 42, 35, 445, DateTimeKind.Local).AddTicks(3024)
+                            SearchKeyword = "Microsoft",
+                            SearchTimestamp = new DateTime(2022, 10, 24, 9, 38, 13, 739, DateTimeKind.Local).AddTicks(5261)
                         });
                 });
 
@@ -197,8 +199,8 @@ namespace Webapplikasjoner_oblig.Migrations
                             Symbol = "MSFT",
                             Currency = "USD",
                             Description = "Tech company",
-                            LastUpdated = new DateTime(2022, 10, 24, 9, 42, 35, 445, DateTimeKind.Local).AddTicks(2989),
-                            StockName = "Microsoft"
+                            LastUpdated = new DateTime(2022, 10, 24, 9, 38, 13, 739, DateTimeKind.Local).AddTicks(5228),
+                            StockName = "MICROSOFT"
                         });
                 });
 
@@ -246,7 +248,7 @@ namespace Webapplikasjoner_oblig.Migrations
                             Saldo = 100m,
                             StockCount = 10,
                             StocksId = "MSFT",
-                            TradeTime = new DateTime(2022, 10, 24, 9, 42, 35, 445, DateTimeKind.Local).AddTicks(3761),
+                            TradeTime = new DateTime(2022, 10, 24, 9, 38, 13, 739, DateTimeKind.Local).AddTicks(5997),
                             UserIsBying = true,
                             UsersId = 1
                         });
