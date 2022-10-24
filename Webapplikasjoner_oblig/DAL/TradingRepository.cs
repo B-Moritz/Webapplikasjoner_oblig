@@ -7,6 +7,8 @@ using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
 using PeanutButter.Utils;
+using System.Diagnostics;
+using EcbCurrencyInterface;
 
 namespace Webapplikasjoner_oblig.DAL
 {
@@ -58,7 +60,7 @@ namespace Webapplikasjoner_oblig.DAL
             return curStock;
         }
 
-        public async Task<StockQuotes> AddStockQuoteAsync(StockQuote stockQuote)
+        public async Task<StockQuotes> AddStockQuoteAsync(AlphaVantageInterface.Models.StockQuote stockQuote)
         {
             // This method converts an AlphaVantageInterface.Model.StockQuote object to
             // DAL.StockQuotes.
@@ -89,49 +91,19 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             // Add the new object to the database (asuming that stock already is in database)
-            await _db.StockQuotes.AddAsync(newTableRow);
+            Stocks curStock = await _db.Stocks.SingleAsync<Stocks>(s => s.Symbol == stockQuote.Symbol);
+            curStock.StockQuotes.Add(newTableRow);
             _db.SaveChanges();
 
             return newTableRow;
         }
 
-        [HttpGet]
-        public async Task<Portfolio> GetPortfolioAsync(int userId)
+
+        public async Task<Users> GetUsersAsync(int userId)
         {
-            var user = _db.Users.Single(u => u.UsersId == userId);
-            //user.Portfolio.<StockOwnerships>(s => s.UsersId, use)
-            List<StockOwnerships> stockList = user.Portfolio;
-            List<PortfolioStock> portfolio_list = new List<PortfolioStock>();
-
-
-            foreach (var min_stock in stockList)
-            {
-                // var stock_name = min_stock.UsersId;
-                var stock = min_stock.Stock;
-                   
-                var current_Portfolio_stock = new PortfolioStock
-                {
-                    StockCounter = min_stock.StockCounter,
-                    TotalValue = 0,
-                    TotalFundsSpent = min_stock.SpentValue,
-                    Symbol = stock.Symbol,
-                    StockName = stock.StockName,
-                    Description = stock.Description,
-                    StockCurrency = stock.Currency
-                };
-
-                portfolio_list.Add(current_Portfolio_stock);
-            }
-
-            var OutPortfolio = new Portfolio
-            {
-                LastUpdate = DateTime.Now,
-                TotalValueSpent = 0,
-                TotalPortfolioValue = 0,
-                PortfolioCurrency = user.PortfolioCurrency,
-                Stocks = portfolio_list
-            };
-            return OutPortfolio;     
+            // Get the user entity from database
+            var user = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            return user;
         }
 
         
@@ -141,15 +113,15 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
                 List<Stocks>? favorites = enUser.Favorites;
-                List<StockDetail>? stockFavorite = new List<StockDetail>();
-                StockDetail currentStockDetail;
+                List<StockBase>? stockFavorite = new List<StockBase>();
+                StockBase currentStockDetail;
 
                 foreach (Stocks currentStock in favorites)
                 {
-                    currentStockDetail = new StockDetail
+                    currentStockDetail = new StockBase
                     {
                         StockName = currentStock.StockName,
-                        StockSymbol = currentStock.Symbol,
+                        Symbol = currentStock.Symbol,
                         Description = currentStock.Description,
                         LastUpdated = currentStock.LastUpdated
                     };
@@ -198,12 +170,33 @@ namespace Webapplikasjoner_oblig.DAL
                 FirstName = curUser.FirstName,
                 LastName = curUser.LastName,
                 Email = curUser.Email,
-                Password = curUser.Password,
-                FundsSpent = curUser.FundsSpent,
-                FundsAvailable = curUser.FundsAvailable,
+                FundsSpent = string.Format("{0:N} {1}",curUser.FundsSpent, curUser.PortfolioCurrency),
+                FundsAvailable = string.Format("{0:N} {1}",curUser.FundsAvailable, curUser.PortfolioCurrency),
                 Currency = curUser.PortfolioCurrency
             };
             return convertedUser;
+        }
+
+        public async Task UpdateUserAsync(User curUser) {
+            Users oldUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == curUser.Id);
+            if (oldUser is null) {
+                throw new Exception("No such user in db!");
+            }
+
+            oldUser.FirstName = curUser.FirstName;
+            oldUser.LastName = curUser.LastName;
+            oldUser.Email = curUser.Email;
+
+            // Change currency
+            decimal exchangeRate = 1;
+            if (oldUser.PortfolioCurrency != curUser.Currency)
+            {
+                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(oldUser.PortfolioCurrency, curUser.Currency);
+            }
+            oldUser.FundsAvailable = oldUser.FundsAvailable * exchangeRate;
+            oldUser.FundsSpent = oldUser.FundsSpent * exchangeRate;
+            oldUser.PortfolioCurrency = curUser.Currency;
+            _db.SaveChanges();
         }
 
         public async Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count) 
@@ -217,6 +210,8 @@ namespace Webapplikasjoner_oblig.DAL
             // Remove stock 
             StockOwnerships curOwnership = curUser.Portfolio.Single<StockOwnerships>(t => t.StocksId == symbol);
             curOwnership.StockCounter -= count;
+            curOwnership.SpentValue -= saldo;
+
             if (curOwnership.StockCounter <= 0)
             {
                 // The user has no more ownership of this stock type
@@ -237,33 +232,40 @@ namespace Webapplikasjoner_oblig.DAL
             await _db.Trades.AddAsync(tradeLog);
 
             _db.SaveChanges();
-
         }
 
-        public async Task BuyStockTransactionAsync(User curUser, Stocks curStock, decimal saldo, int count) {
-
-
-            StockOwnerships curentOwnership = await _db.StockOwnerships.SingleAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.Id);
-            if (curentOwnership is null)
+        public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
+            StockOwnerships currentOwnership;
+            try
+            {
+                currentOwnership = _db.StockOwnerships.Single<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.WriteLine(ex);
+                currentOwnership = null;
+            }
+            
+            if (currentOwnership is null)
             {
                 // The user has no existing ownership. Create new ownership
-                StockOwnerships newOwnerhsip = new StockOwnerships
+                StockOwnerships newOwnership = new StockOwnerships
                 {
                     StocksId = curStock.Symbol,
-                    UsersId = curUser.Id,
+                    UsersId = curUser.UsersId,
                     StockCounter = count,
                     SpentValue = saldo,
                 };
 
-                _db.StockOwnerships.Add(newOwnerhsip);
+                _db.StockOwnerships.Add(newOwnership);
             }
             else {
                 // Add to the existing ownership
-                curentOwnership.SpentValue += saldo;
-                curentOwnership.StockCounter += count;
+                currentOwnership.SpentValue += saldo;
+                currentOwnership.StockCounter += count;
             }
 
-            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == curUser.Id);
+            Users dbUser = _db.Users.Single(u => u.UsersId == curUser.UsersId);
             dbUser.FundsAvailable -= saldo;
 
             // Add a trade object
@@ -277,9 +279,9 @@ namespace Webapplikasjoner_oblig.DAL
                 Stock = curStock,
                 User = dbUser
             };
-            await _db.Trades.AddAsync(newBuyTradeLog);
+            _db.Trades.Add(newBuyTradeLog);
 
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
         public async Task<bool> SaveTradeAsync(Trade innTrading)
@@ -310,7 +312,7 @@ namespace Webapplikasjoner_oblig.DAL
 
 
 
-        public async Task<List<Trade>> GetAllTradesAsync()
+        public async Task<List<Trade>> GetAllTradesAsync(int userId)
         { /**
             try
             {
@@ -329,7 +331,24 @@ namespace Webapplikasjoner_oblig.DAL
                 return null;
             }
             */
-            throw new NotImplementedException();
+            Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            List<Trades> curTrader = dbUser.Trades;
+            List<Trade> alltrades = new List<Trade>();
+
+            foreach(Trades curPortfolio in curTrader)
+            {
+                var newTrade = new Trade
+                {
+                    Id = curPortfolio.TradesId,
+                    StockSymbol = curPortfolio.StocksId,
+                    Date = curPortfolio.TradeTime,
+                    UserId = curPortfolio.UsersId
+                };
+               
+            }
+            return alltrades;
+            
+            //throw new NotImplementedException();
         }
 
 
@@ -352,5 +371,32 @@ namespace Webapplikasjoner_oblig.DAL
             */
             throw new NotImplementedException();
         }
+
+        public async Task<User> ResetPortfolio(int userId) {
+            // Obtain the user entity
+            Users curUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == userId);
+            // Remove trade history of user
+            curUser.Trades.Clear();
+            curUser.Favorites.Clear();
+            curUser.Portfolio.Clear();
+            curUser.FundsAvailable = 1000000M;
+            curUser.FundsSpent = 0;
+            curUser.PortfolioCurrency = "NOK";
+
+            _db.SaveChanges();
+
+            User outObj = new User
+            {
+                Id = curUser.UsersId,
+                FirstName = curUser.FirstName,
+                LastName = curUser.LastName,
+                Email = curUser.Email,
+                FundsAvailable = string.Format("{0:N} {1}", curUser.FundsAvailable, curUser.PortfolioCurrency),
+                FundsSpent = string.Format("{0:N} {1}", curUser.FundsSpent, curUser.PortfolioCurrency),
+                Currency = curUser.PortfolioCurrency
+            };
+
+            return outObj;
+        } 
     }
 }

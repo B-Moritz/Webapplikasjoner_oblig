@@ -22,7 +22,7 @@ namespace Webapplikasjoner_oblig.DAL
     /**
      * A method to retreiv all serchResults from database
      */
-    public async Task<List<SearchResult>> GetAllKeyWordsAsync()
+    public async Task<List<SearchResult>> GetAllKeywordsAsync()
     {   
                 //list of all search results
             List<SearchResults> keywords = await _db.SearchResults.ToListAsync();
@@ -37,7 +37,7 @@ namespace Webapplikasjoner_oblig.DAL
                 foreach (var keyword in keywords)
                 {
                     //list to replace the list of stock retrived from searchResults table with stockDetails objects
-                    var stockDList = new List<StockDetail>();
+                    var stockDList = new List<StockSearchResult>();
 
                     //search result object to be used when mapping from searchresults table
                     var searchRusltObject = new SearchResult();
@@ -50,12 +50,12 @@ namespace Webapplikasjoner_oblig.DAL
                     foreach (var stock in keyword.Stocks)
                     {
                         //mapping stock to stockDetails
-                        var stockDetail = new StockDetail()
+                        var stockDetail = new StockSearchResult()
                         {
-                            StockSymbol = stock.Symbol,
+                            Symbol = stock.Symbol,
                             StockName = stock.StockName,
                             Description = stock.Description,
-                            Currency = stock.Currency,
+                            StockCurrency = stock.Currency,
                             LastUpdated = stock.LastUpdated,
                         };
                        
@@ -71,17 +71,18 @@ namespace Webapplikasjoner_oblig.DAL
      }
 
 
-        public async Task<SearchResult>? GetOneKeyWordAsync(string keyWord)
+        public async Task<SearchResult>? GetOneKeywordAsync(string keyWord)
         {
             if (keyWord == null)
             {
                 throw new ArgumentNullException();
-            }
+            }            
+
 
 
             // get a search result that has primary key og keyword
             SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
-            var stockDList = new List<StockDetail>();
+            var stockDList = new List<StockSearchResult>();
 
 
             if (searchResult is null)
@@ -94,9 +95,9 @@ namespace Webapplikasjoner_oblig.DAL
             {
 
                 //make each stock in to stockdetail object with ony neccessary properties extracted
-                var stockDetail = new StockDetail()
+                var stockDetail = new StockSearchResult()
                 {
-                    StockSymbol = searchRes.Symbol,
+                    Symbol = searchRes.Symbol,
                     StockName = searchRes.StockName,
                 };
 
@@ -116,7 +117,6 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             return dbSearchResult;
-
         }
 
        /**
@@ -131,10 +131,10 @@ namespace Webapplikasjoner_oblig.DAL
             {
                 var newStock = new Stocks();
                 newStock.StockName = stock.StockName;
-                newStock.Symbol = stock.StockSymbol;
+                newStock.Symbol = stock.Symbol;
                 newStock.LastUpdated = stock.LastUpdated;
                 newStock.Description = stock.Description;
-                newStock.Currency = stock.Currency;
+                newStock.Currency = stock.StockCurrency;
                 stocksList.Add(newStock);
             }
 
@@ -143,7 +143,7 @@ namespace Webapplikasjoner_oblig.DAL
             dbSearchResult.SearchTimestamp = DateTime.Now;
             dbSearchResult.Stocks = stocksList;
 
-                _db.SearchResults.Add(dbSearchResult);
+            await _db.SearchResults.AddAsync(dbSearchResult);
             await _db.SaveChangesAsync();
 
 

@@ -2,24 +2,32 @@
     display: none;    
 }
 
-#SellDialog {
+#DialogContainer {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1;
+    z-index: 1000;
     width: 100%;
     height: 100%;
     background-color: rgba(105, 105, 105, 0.4);
 }
 
-#innerDialog {
+#InnerDialog {
     position: absolute;
     top: 25%;
     left: 25%;
     border-style: solid;
-    border-color: black;
+    border-color: white;
+    border-radius: 10px 10px 10px 10px;
     padding: 5rem;
     background-color: rgba(255, 255, 255, 1);
+    width: 55rem;
+    display: grid;
+    grid-row-gap: 0.5rem;
+    grid-column-gap: 2rem;
+}
+#InnerDialog > h3 {
+    grid-area: title;
 }
 
 .bringBack {
@@ -30,8 +38,14 @@
     display: block;
 }
 
-#PortfolioLoading {
-    background-color: rgb(128, 128, 128, 0.4);
+.loadingContainer {
+    background-color: #c9e7f5;
+    padding: 1rem;
+    border-radius: 10px 10px 10px 10px;
+}
+
+#UserLoading {
+    margin: 1rem;
 }
 
 .hideLoading {
@@ -43,12 +57,44 @@
 }
 
 .siteContainer {
-    background-color: rgb(128, 128, 128);
-    padding-top: 5rem;
+    padding: 5rem 5rem 5rem;
+    margin-top: 5rem;
+    background-color: rgb(14, 63, 107);
+    display: grid;
+    grid-row-gap: 0.5rem;
+    grid-column-gap: 0.5rem;
+    
 }
 
-.fatureContainer {
-    margin: 5rem 5rem 5rem;
+#MainSiteContainer {
+    grid-template-areas: 'Favorites Quote' 'Portfolio Portfolio';
+}
+
+#UserSiteContainer {
+    grid-template-areas: 'UserSettings'
+}
+
+#UserSettingsContainer {
+    grid-area: UserSettings;
+    max-width: 700px;
+}
+
+#UserSettingsContainer > form {
+    margin: 1rem 2rem 1rem;
+}
+
+#QuoteContainer {
+    grid-area: Quote;
+}
+
+#PortfolioContainer {
+    grid-area: Portfolio
+}
+
+#FavoriteContainer {
+    grid-area: Favorites
+}
+.featureContainer {
     border-style: solid;
     border-radius: 10px 10px 10px 10px;
     padding: 2rem;
@@ -56,4 +102,36 @@
     background-color: white;
 }
 
+.highlightRow {
+    background-color: #d9edf7 !important;
+}
+
+#Confirm {
+    grid-area: ConfirmButton;
+}
+
+#CancelDialog {
+    grid-area: CancelButton;
+}
+
+.colorValue {
+    color: white;
+    border-radius: 3px 3px 3px 3px;
+    margin: 5px;
+    display: inline;
+    padding: 5px 5px 5px;
+}
+
+.greenValue {
+    background-color: rgb(14, 185, 31);
+
+}
+
+.redValue {
+    background-color: rgb(255, 0, 0);
+}
+
+.errorMsg {
+    color: red;
+}
 

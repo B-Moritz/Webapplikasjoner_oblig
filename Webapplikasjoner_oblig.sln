@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webapplikasjoner_oblig", "Webapplikasjoner_oblig\Webapplikasjoner_oblig.csproj", "{444AD8CB-716D-4201-A59C-5A7FAB7F1D90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webapplikasjoner_oblig", "Webapplikasjoner_oblig\Webapplikasjoner_oblig.csproj", "{444AD8CB-716D-4201-A59C-5A7FAB7F1D90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlphaVantageInterface", "AlphaVantageInterface\AlphaVantageInterface.csproj", "{75799029-156B-42ED-AE09-18A8440D462B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlphaVantageInterface", "AlphaVantageInterface\AlphaVantageInterface.csproj", "{75799029-156B-42ED-AE09-18A8440D462B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EcbCurrencyInterface", "EcbCurrencyInterface\EcbCurrencyInterface.csproj", "{59AE6729-13AC-4184-AC44-E5963738C8BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EcbCurrencyInterface", "EcbCurrencyInterface\EcbCurrencyInterface.csproj", "{59AE6729-13AC-4184-AC44-E5963738C8BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
