@@ -16,11 +16,11 @@ $(function () {
             let counter = 0;
             for (let stock of data.stockList) {
                 const curId = "Stock_" + stock.symbol.replaceAll(".", "");
-                outHtml = `<li class="list-group-item">
-                                <span>${stock.symbol}</span>
-                                <span>${stock.stockName}</span>
-                                <button id="${curId}" ${stock.isFavorite ? removeFavoriteHtml : addFavoriteHtml}
-                            </li>`;
+                outHtml = `<tr>
+                                <td>${stock.symbol}</td>
+                                <td>${stock.stockName}</td>
+                                <td><button id="${curId}" ${stock.isFavorite ? removeFavoriteHtml : addFavoriteHtml}</td>
+                            </tr>`;
                 const curStockObj = {
                     searchStock: {
                         symbol: stock.symbol,
@@ -54,7 +54,7 @@ function addFavoriteList (curElem) {
 }
 
 function removeFavoriteList(curElem) {
-    const url = `/trading/deleteFromFavoriteList?userId=${userId}&keyword=${$(this).data().searchStock.symbol}`
+    const url = `/trading/deleteFromFavoriteList?userId=${userId}&keyword=${curElem.data().searchStock.symbol}`
     $.post(url, function () {
         curElem.text("Add to watchlist").addClass(["addFavorite", "btn", "btn-secondary"]).removeClass(["removeFavorite", "btn", "btn-warning"]);
         curElem.click(function () { addFavoriteList($(this)) });

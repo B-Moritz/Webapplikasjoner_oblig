@@ -9,7 +9,6 @@ $(function () {
     });
 
     $("#ClearTransactionBtn").click(function () {
-
         clearTransaction();
     });
 
