@@ -418,6 +418,9 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<List<Trade>> GetAllTrades(int userId)
         {
+
+            return await _tradingRepo.GetAllTradesAsync(userId);
+
             return await _tradingRepo.GetAllTradesAsync(userId);
         }
 
@@ -426,9 +429,12 @@ namespace Webapplikasjoner_oblig.Controllers
             return await _tradingRepo.GetOneTradeAsync(id);
         }
 
-        public async Task ClearTradeHistory(int userId)
+        public async Task<Portfolio> ClearTradeHistory(int userId, string symbol)
         {
-            throw new NotImplementedException();
+            await _tradingRepo.ClearTradeHistoryAsync(userId, symbol);
+
+            return await ClearTradeHistory(userId);
+
         }
         public async Task<User> GetUser(int userId)
         {
@@ -448,8 +454,13 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();
         }
 
+        private Task<Portfolio> ClearTradeHistory(int userId)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<User> ResetProfile(int userId) {
             return await _tradingRepo.ResetPortfolio(userId);
         } 
+
     }
 }

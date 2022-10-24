@@ -333,7 +333,7 @@ namespace Webapplikasjoner_oblig.DAL
             */
             Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
             List<Trades> curTrader = dbUser.Trades;
-            List<Trade> alltrades = new List<Trade>();
+            List<Trade> trasaksjons = new List<Trade>();
 
             foreach(Trades curPortfolio in curTrader)
             {
@@ -342,11 +342,17 @@ namespace Webapplikasjoner_oblig.DAL
                     Id = curPortfolio.TradesId,
                     StockSymbol = curPortfolio.StocksId,
                     Date = curPortfolio.TradeTime,
-                    UserId = curPortfolio.UsersId
+                    UserId = curPortfolio.UsersId,
+                    UserBuying = curPortfolio.UserIsBying,
+                    StockCount = curPortfolio.StockCount,
+                    Price = curPortfolio.Saldo
                 };
-               
+
+                trasaksjons.Add(newTrade);
+
             }
-            return alltrades;
+            return trasaksjons;
+
             
             //throw new NotImplementedException();
         }
@@ -372,6 +378,14 @@ namespace Webapplikasjoner_oblig.DAL
             throw new NotImplementedException();
         }
 
+        public async Task ClearTradeHistoryAsync(int userId, string symbol)
+        {
+            Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
+            Stocks enstock = await _db.Stocks.SingleAsync(u => u.Symbol == symbol);
+            enUser.Favorites.Remove(enstock);
+            _db.SaveChanges();
+
+        }
         public async Task<User> ResetPortfolio(int userId) {
             // Obtain the user entity
             Users curUser = await _db.Users.SingleAsync<Users>(u => u.UsersId == userId);
