@@ -6,24 +6,58 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
     <link rel="stylesheet" href="../css/tradeSearch.css" />
+
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="../js/tradeSearch.js"></script>
+
 </head>
 <body>
-
+    
     <div class="container">
-        <h1>&#x2728;Stock Market &#x2728;</h1>
-        <div id="searchWrapper">
-            <input type="text"
-                   name="searchBar"
-                   id="SearchBar"
-                   placeholder="search for a character" />
-        </div>
-        <ul id="StockResultList" class="list-group"></ul>
-    </div>
+        <div class="navbar navbar-default navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <a href="index.html" class="navbar-brand">Trading</a>
+                    <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse" id="navbar-main">
+                    <ul class="nav navbar-nav">
+                        <li>
+                            <a href="tradeSearch.html">market</a>
+                        </li>
+                        <li>
+                            <a href="transaksjon.html">Transaksjoner</a>
+                        </li>
+                        <li>
+                            <a href="userSettings.html">user-info</a>
+                        </li>
+                    </ul>
 
+                    <!--<ul class="nav navbar-nav navbar-right">
+                  <li><a href="loggUt.html">Logg ut</a></li>
+                </ul> -->
+                </div>
+            </div>
+        </div>
+        <br /><br /><br />
+
+        <div class="container">
+            <h1>&#x2728;Stock Market &#x2728;</h1>
+            <div id="searchWrapper">
+                <input type="text"
+                       name="searchBar"
+                       id="SearchBar"
+                       placeholder="search for a character" />
+            </div>
+            <ul id="StockResultList" class="list-group"></ul>
+        </div>
+    </div>
 </body>
 </html>
 
