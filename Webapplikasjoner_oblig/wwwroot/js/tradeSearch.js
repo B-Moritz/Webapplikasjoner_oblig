@@ -62,34 +62,3 @@ function removeFavoriteList(curElem) {
         alert(resp.responseText);
     });
 }
-
-/*let hpCharacters = [];
-
-const loadCharacters = async () => {
-    try {
-        // https://hp-api.herokuapp.com/api/characters
-        const res = await fetch('_apiKey');
-        hpCharacters = await res.json();
-        displayCharacters(hpCharacters);
-    } catch (err) {
-        console.error(err);
-    }
-};
-
-const displayCharacters = (characters) => {
-    const htmlString = characters
-        .map((character) => {
-            return `
-            <li class="character">
-                <h2>${character.name}</h2>
-                <p>zone: ${character.zone}</p>
-                <img src="${character.price}"></img>
-            </li>
-        `;
-        })
-        .join('');
-    $("#charactersList").html(htmlString);
-};
-
-loadCharacters();
-*/
