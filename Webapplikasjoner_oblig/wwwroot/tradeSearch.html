@@ -5,17 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
-    <link rel="stylesheet" href="../css/tradeSearch.css" />
+    <link rel="stylesheet" href="../css/index.css">
 
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="../js/tradeSearch.js"></script>
 
+    <style>
+        input[type=text] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+        }
+
+        #searchBar {
+            width: 100%;
+            height: 32px;
+            border-radius: 3px;
+            border: 1px solid #eaeaea;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        #searchWrapper {
+            position: relative;
+        }
+
+        #searchWrapper::after {
+                content: '🔍';
+                position: absolute;
+                top: 21px;
+                right: 15px;
+        }
+    </style>
+
 </head>
 <body>
     
-    <div class="container">
+    <div class="bringBack">
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
@@ -29,13 +58,13 @@
                 <div class="navbar-collapse collapse" id="navbar-main">
                     <ul class="nav navbar-nav">
                         <li>
-                            <a href="tradeSearch.html">market</a>
+                            <a href="tradeSearch.html">Market</a>
                         </li>
                         <li>
-                            <a href="transaksjon.html">Transaksjoner</a>
+                            <a href="transaction.html">Transactions</a>
                         </li>
                         <li>
-                            <a href="userSettings.html">user-info</a>
+                            <a href="userSettings.html">User-info</a>
                         </li>
                     </ul>
 
@@ -45,17 +74,22 @@
                 </div>
             </div>
         </div>
-        <br /><br /><br />
+        <div id="MarketSiteContainer" class="siteContainer">
+            <div id="MarkerSearchContainer" class="featureContainer">
+                <div class="container" style="width:100%; z-index: 0">
+                    <h1>&#x2728;Stock Market &#x2728;</h1>
+                    <div id="searchWrapper">
+                        <input type="text"
+                               name="searchBar"
+                               id="SearchBar"
+                               placeholder="search for stocks" />
+                    </div>
 
-        <div class="container">
-            <h1>&#x2728;Stock Market &#x2728;</h1>
-            <div id="searchWrapper">
-                <input type="text"
-                       name="searchBar"
-                       id="SearchBar"
-                       placeholder="search for a character" />
+                    <table id="StockResultList" class="table table-striped">
+
+                    </table>
+                </div>
             </div>
-            <ul id="StockResultList" class="list-group"></ul>
         </div>
     </div>
 </body>

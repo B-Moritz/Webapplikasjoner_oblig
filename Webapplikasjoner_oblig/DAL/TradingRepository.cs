@@ -231,7 +231,14 @@ namespace Webapplikasjoner_oblig.DAL
 
             _db.Trades.Add(tradeLog);
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                Debug.WriteLine(ex);
+            }
         }
 
         public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
@@ -281,7 +288,15 @@ namespace Webapplikasjoner_oblig.DAL
             };
             dbUser.Trades.Add(newBuyTradeLog);
 
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex) 
+            { 
+                Debug.WriteLine(ex);
+            }
+            
         }
 
 

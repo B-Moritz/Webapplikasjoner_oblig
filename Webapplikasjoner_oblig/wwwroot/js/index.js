@@ -78,7 +78,7 @@ $(function () {
 
         createDialog(innerHtml, template, buyPortfolio);
 
-        $("#Confirm").click(buyPortfolio);
+        //$("#Confirm").click(buyPortfolio);
     });
 
     $("#BuyFavoriteBtn").click(function () {
@@ -130,7 +130,7 @@ $(function () {
 
         createDialog(innerHtml, template, buyFavorites);
 
-        $("#Confirm").click(buyFavorites);
+        //$("#Confirm").click(buyFavorites);
     });
 
     $("#SellPortfolioBtn").click(function () {
@@ -187,7 +187,7 @@ $(function () {
 
         createDialog(innerHtml, template, sellPortfolio);
 
-        $("#Confirm").click(sellPortfolio);
+        //$("#Confirm").click(sellPortfolio);
     });
 });
 
@@ -197,8 +197,8 @@ function reenablePortfolioWidget(isFromCancelBtn) {
     $("#BuyPortfolioBtn").removeClass("disabled").removeAttr("aria-disabled");
     if (selectedPortfolioStock != null && isFromCancelBtn == false) {
         // Make sure that the selected stock stil is selected after the dialog closes
-        $(`#${selectedPortfolioStock.symbol}_portfolio`).addClass("highlightRow");
-        selectedPortfolioStock = $(`#${selectedPortfolioStock.symbol}_portfolio`).data("StockData");
+        $(`#Portfolio_${selectedPortfolioStock.symbol}`).addClass("highlightRow");
+        selectedPortfolioStock = $(`#Portfolio_${selectedPortfolioStock.symbol}`).data("StockData");
     }
 }
 
@@ -208,8 +208,8 @@ function reenableFavoriteWidget(isFromCancelBtn) {
     $("#DeleteFavoriteBtn").removeClass("disabled").removeAttr("aria-disabled", "disabled");
     if (selectedFavoriteStock != null && isFromCancelBtn == false) {
         // Make sure that the selected stock stil is selected after the dialog closes
-        $(`#${selectedFavoriteStock.symbol}_favorites`).addClass("highlightRow");
-        selectedFavoriteStock = $(`#${selectedFavoriteStock.symbol}_favorites`).data().StockData;
+        $(`#Favorites_${selectedFavoriteStock.symbol}`).addClass("highlightRow");
+        selectedFavoriteStock = $(`#Favorites_${selectedFavoriteStock.symbol}`).data().StockData;
     }
 }
 
@@ -258,7 +258,7 @@ function createDialog(innerHtml, template, confirmCallback) {
             // If the value is valid, ensure that confirm is not disabled and error message is removed
             $(this).parent().addClass("has-success").removeClass("has-error");
             $("#DialogErrorMsg").empty();
-            $("#Confirm").removeClass("disabled").removeAttr("aria-disabled", "disabled").click(confirmCallback);;
+            $("#Confirm").removeClass("disabled").removeAttr("aria-disabled", "disabled").off().click(confirmCallback);
         }
     });
 }
