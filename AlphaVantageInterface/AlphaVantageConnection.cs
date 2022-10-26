@@ -83,14 +83,14 @@ namespace AlphaVantageInterface {
             // Documentation used: https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonelement?view=net-6.0
             StockQuote resultObject = new StockQuote {
                 Symbol = quoteTemp.GlobalQuote["01. symbol"].GetString(),
-                Open = double.Parse(quoteTemp.GlobalQuote["02. open"].GetString().Replace(".", ",")),
-                High = double.Parse(quoteTemp.GlobalQuote["03. high"].GetString().Replace(".", ",")),
-                Low = double.Parse(quoteTemp.GlobalQuote["04. low"].GetString().Replace(".", ",")),
-                Price = double.Parse(quoteTemp.GlobalQuote["05. price"].GetString().Replace(".", ",")),
+                Open = decimal.Parse(quoteTemp.GlobalQuote["02. open"].GetString().Replace(".", ",")),
+                High = decimal.Parse(quoteTemp.GlobalQuote["03. high"].GetString().Replace(".", ",")),
+                Low = decimal.Parse(quoteTemp.GlobalQuote["04. low"].GetString().Replace(".", ",")),
+                Price = decimal.Parse(quoteTemp.GlobalQuote["05. price"].GetString().Replace(".", ",")),
                 Volume = int.Parse(quoteTemp.GlobalQuote["06. volume"].GetString()),
                 LatestTradingDay = quoteTemp.GlobalQuote["07. latest trading day"].GetString(),
-                PreviousClose = double.Parse(quoteTemp.GlobalQuote["08. previous close"].GetString().Replace(".", ",")),
-                Change = double.Parse(quoteTemp.GlobalQuote["09. change"].GetString().Replace(".", ",")),
+                PreviousClose = decimal.Parse(quoteTemp.GlobalQuote["08. previous close"].GetString().Replace(".", ",")),
+                Change = decimal.Parse(quoteTemp.GlobalQuote["09. change"].GetString().Replace(".", ",")),
                 ChangePercent = quoteTemp.GlobalQuote["10. change percent"].GetString()
             };
 
@@ -148,10 +148,11 @@ namespace AlphaVantageInterface {
             }
 
             curStatus.CallCounter += addCounter;
-            
+
             // Change write possition:
-            curStatusStream.Seek(0, SeekOrigin.Begin);
-            
+            //curStatusStream.Seek(0, SeekOrigin.Begin);
+            curStatusStream.SetLength(0);
+
             // Write to file
             await JsonSerializer.SerializeAsync<ConnectionStatus>(curStatusStream, curStatus);
             curStatusStream.Dispose();

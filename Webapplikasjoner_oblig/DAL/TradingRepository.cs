@@ -204,7 +204,9 @@ namespace Webapplikasjoner_oblig.DAL
 
             // Remove stock 
             StockOwnerships curOwnership = curUser.Portfolio.Single<StockOwnerships>(t => t.StocksId == symbol);
-
+            if (curOwnership.StockCounter < count) {
+                throw new ArgumentException("The specified amount of stocks to sell exceeds the amount of shares owned!");
+            }
             curOwnership.StockCounter -= count;
             curOwnership.SpentValue -= saldo;
 
@@ -226,7 +228,6 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             _db.Trades.Add(tradeLog);
-
             try
             {
                 await _db.SaveChangesAsync();

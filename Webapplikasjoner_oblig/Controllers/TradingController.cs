@@ -365,16 +365,25 @@ namespace Webapplikasjoner_oblig.Controllers
             if (curStockQuote is null)
             {
                 // get a new quote from Alpha vantage api
-                AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
-                // Adding stock quote to db and get the StockQuotes object 
-                StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
-                // Set the new StockQuotes object as current quote
-                curStockQuote = newConvertedQuote;
+                try
+                {
+                    AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
+                    // Adding stock quote to db and get the StockQuotes object 
+                    StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
+                    // Set the new StockQuotes object as current quote
+                    curStockQuote = newConvertedQuote;
+                }
+                catch (NullReferenceException ex)
+                { 
+                    Debug.WriteLine(ex.Message);
+                }
+                
+
             }
             else
             {
                 // Check that the stored quote is not outdated
-                double timeSinceLastUpdate = (DateTime.Now - curStockQuote.Timestamp).TotalHours;
+                double timeSinceLastUpdate = (DateTime.Now - curStockQuote.LatestTradingDay.AddDays(1)).TotalHours;
 
                 if (timeSinceLastUpdate >= _quoteCacheTime)
                 {

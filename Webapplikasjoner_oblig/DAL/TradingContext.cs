@@ -222,7 +222,7 @@ namespace Webapplikasjoner_oblig.DAL
         public decimal Low { get; set; }
         public decimal Price { get; set; }
         public int Volume { get; set; }
-        public DateTime? LatestTradingDay { get; set; }
+        public DateTime LatestTradingDay { get; set; }
         public decimal PreviousClose { get; set; }
         public decimal Change { get; set; }
         public string? ChangePercent { get; set; }
