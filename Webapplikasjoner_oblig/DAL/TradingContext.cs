@@ -138,6 +138,7 @@ namespace Webapplikasjoner_oblig.DAL
         virtual public List<StockQuotes>? StockQuotes { get; set; }
         // List of all searchresults that this stock is part of
         virtual public List<SearchResults>? SearchResults { get; set; }
+        virtual public List<StockOwnerships> Owners { get; set; }
     }
 
     public class Users
