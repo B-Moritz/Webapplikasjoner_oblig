@@ -7,6 +7,7 @@
     <UserSecretsId>dotnet-TradingSchemaWorker-7a8cd4aa-7d94-4664-aa3e-0fe5ffb5ebfc</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'TradingSchemaWorker' " />
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
   </ItemGroup>
