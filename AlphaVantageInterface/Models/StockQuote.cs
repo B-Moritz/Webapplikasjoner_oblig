@@ -6,14 +6,14 @@ namespace AlphaVantageInterface.Models  {
     public class StockQuote
     {
         public string? Symbol {get; set;}
-        public double Open {get; set;}
-        public double High {get; set;}
-        public double Low {get; set;}
-        public double Price {get; set;}
+        public decimal Open {get; set;}
+        public decimal High {get; set;}
+        public decimal Low {get; set;}
+        public decimal Price {get; set;}
         public int Volume {get; set;}
         public string? LatestTradingDay {get; set;}
-        public double PreviousClose {get; set;}
-        public double Change {get; set;}
+        public decimal PreviousClose {get; set;}
+        public decimal Change {get; set;}
         public string? ChangePercent {get; set;}
 
         public override string ToString()

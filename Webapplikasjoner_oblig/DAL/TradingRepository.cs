@@ -44,18 +44,9 @@ namespace Webapplikasjoner_oblig.DAL
             return stockQuote;
         }
 
-        public async Task<Stocks> GetStockAsync(string symbol)
+        public async Task<Stocks>? GetStockAsync(string symbol)
         {
-            Stocks curStock = new Stocks();
-
-            try
-            {
-                curStock = await _db.Stocks.SingleAsync(s => string.Compare(s.Symbol, symbol) == 0);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+            Stocks? curStock = await _db.Stocks.FindAsync(symbol);
 
             return curStock;
         }
@@ -196,6 +187,10 @@ namespace Webapplikasjoner_oblig.DAL
             oldUser.FundsAvailable = oldUser.FundsAvailable * exchangeRate;
             oldUser.FundsSpent = oldUser.FundsSpent * exchangeRate;
             oldUser.PortfolioCurrency = curUser.Currency;
+            foreach (StockOwnerships ownership in oldUser.Portfolio)
+            {
+                ownership.SpentValue = ownership.SpentValue * exchangeRate;
+            }
             _db.SaveChanges();
         }
 
@@ -209,6 +204,7 @@ namespace Webapplikasjoner_oblig.DAL
 
             // Remove stock 
             StockOwnerships curOwnership = curUser.Portfolio.Single<StockOwnerships>(t => t.StocksId == symbol);
+
             curOwnership.StockCounter -= count;
             curOwnership.SpentValue -= saldo;
 
@@ -274,6 +270,7 @@ namespace Webapplikasjoner_oblig.DAL
 
             Users dbUser = _db.Users.Single(u => u.UsersId == curUser.UsersId);
             dbUser.FundsAvailable -= saldo;
+            dbUser.FundsSpent += saldo;
 
             // Add a trade object
             Trades newBuyTradeLog = new Trades
@@ -299,8 +296,6 @@ namespace Webapplikasjoner_oblig.DAL
             
         }
 
-
-
         public async Task<List<Trade>> GetAllTradesAsync(int userId)
         {
             Users dbUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
@@ -315,13 +310,11 @@ namespace Webapplikasjoner_oblig.DAL
                     StockSymbol = curPortfolio.StocksId,
                     Date = curPortfolio.TradeTime,
                     UserId = curPortfolio.UsersId,
-                    UserBuying = curPortfolio.UserIsBying,
+                    TransactionType = (curPortfolio.UserIsBying ? "Buying" : "Selling"),
                     StockCount = curPortfolio.StockCount,
-                    Price = curPortfolio.Saldo
+                    Saldo = string.Format("{0:N} {1}", curPortfolio.Saldo, dbUser.PortfolioCurrency)
                 };
-
                 trasaksjons.Add(newTrade);
-
             }
             return trasaksjons;
         }
@@ -357,8 +350,27 @@ namespace Webapplikasjoner_oblig.DAL
                 FundsSpent = string.Format("{0:N} {1}", curUser.FundsSpent, curUser.PortfolioCurrency),
                 Currency = curUser.PortfolioCurrency
             };
-
             return outObj;
-        } 
+        }
+        public async Task CleanTradingSchemaAsync() 
+        {
+            // This method will remove stocks, stock quotes and search results, which are older than a day
+
+            // Get the old search results
+            List<SearchResults> searchResults = await _db.SearchResults.ToListAsync();
+            IEnumerable<SearchResults> oldResults = searchResults.Where(searchResult => (DateTime.Now - searchResult.SearchTimestamp).TotalHours >= 24);
+            _db.SearchResults.RemoveRange(oldResults);
+            // Remove all stocks that have no reference to a user or a search result
+            var oldStocks = await _db.Stocks.Where(curStock => (curStock.SearchResults.Count() == 0) && (curStock.FavoriteUsers.Count() == 0)).ToListAsync();
+            foreach (Stocks oldStock in oldStocks)
+            {
+                if (oldStock.StockQuotes is not null)
+                {
+                    _db.StockQuotes.RemoveRange(oldStock.StockQuotes);
+                }
+                _db.Stocks.Remove(oldStock);
+            }
+            await _db.SaveChangesAsync();
+        }
     }
 }

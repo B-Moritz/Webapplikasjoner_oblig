@@ -33,8 +33,7 @@ namespace Webapplikasjoner_oblig.DAL
         {
             // connect to sqlite database
             options.UseSqlite(_configuration.GetConnectionString("WebApiDatabase"))
-                   .UseLazyLoadingProxies()
-                   .EnableSensitiveDataLogging();
+                   .UseLazyLoadingProxies();
         }
 
         public DbSet<Stocks> Stocks { get; set; }
@@ -64,21 +63,6 @@ namespace Webapplikasjoner_oblig.DAL
                 // Seed database if the app is running in development mode
                 // Resource used: https://code-maze.com/migrations-and-seed-data-efcore/
 
-                // Defining Stock Quotes:
-                var stockQuote1 = new StockQuotes
-                {
-                    StocksId = "MSFT",
-                    Open = 151.6500,
-                    High = 153.4200,
-                    Low = 151.0200,
-                    Price = 152.0600,
-                    Volume = 9425575,
-                    LatestTradingDay = new DateTime(2019, 12, 12),
-                    PreviousClose = 151.7000,
-                    Change = 0.3600,
-                    ChangePercent = "0.2373%",
-                };
-
                 // Defining users:
                 var user1 = new Users
                 {
@@ -92,29 +76,6 @@ namespace Webapplikasjoner_oblig.DAL
                     PortfolioCurrency = "NOK"
                 };
 
-                var newStock1 = new Stocks
-                {
-                    Symbol = "MSFT",
-                    StockName = "Microsoft",
-                    Description = "Tech company",
-                    LastUpdated = DateTime.Now,
-                    Currency = "USD"
-                };
-
-                var searchResult1 = new SearchResults
-                {
-                    SearchKeyword = "MICROSOFT",
-                    SearchTimestamp = DateTime.Now
-                };
-
-                var own2 = new StockOwnerships
-                {
-                    UsersId = 1,
-                    StocksId = "MSFT",
-                    StockCounter = 20,
-                    SpentValue = 100M
-                };
-
                 // Configure favoriteLists table
                 // https://learn.microsoft.com/en-us/ef/core/modeling/relationships?tabs=fluent-api%2Cfluent-api-simple-key%2Csimple-key#join-entity-type-configuration
                 // We  specify a many to many relationship between Users
@@ -122,36 +83,16 @@ namespace Webapplikasjoner_oblig.DAL
                 modelBuilder.Entity<Users>()
                         .HasMany(favStocks => favStocks.Favorites)
                         .WithMany(u => u.FavoriteUsers)
-                        .UsingEntity(j => j.ToTable("FavoriteLists"));//.HasData(new { FavoritesSymbol = "MSFT", FavoriteUsersUsersId = 1 }));
+                        .UsingEntity(j => j.ToTable("FavoriteLists"));
 
                 // Configuration of the StockOccurances join table used to store the many to many relationship between 
                 // Search results and stocks
                 modelBuilder.Entity<SearchResults>()
                         .HasMany(d => d.Stocks)
                         .WithMany(d => d.SearchResults)
-                        .UsingEntity(t => t.ToTable("StockOccurances"));//.HasData(new { SearchResultsSearchKeyword = "Microsoft", StocksSymbol = "MSFT" }));
-
-                modelBuilder.Entity<StockQuotes>();//.HasData(stockQuote1);
-
-                modelBuilder.Entity<Stocks>();//;.HasData(newStock1);
+                        .UsingEntity(t => t.ToTable("StockOccurances"));
 
                 modelBuilder.Entity<Users>().HasData(user1);
-
-                modelBuilder.Entity<Trades>();//;.HasData(
-                    /*new Trades
-                    {
-                        TradesId = 1,
-                        StockCount = 10,
-                        TradeTime = DateTime.Now,
-                        UserIsBying = true,
-                        Saldo = 100M,
-                        StocksId = "MSFT",
-                        UsersId = 1,
-                        Currency = "NOK"
-                    });*/
-
-                modelBuilder.Entity<SearchResults>();//.HasData(searchResult1);
-                modelBuilder.Entity<StockOwnerships>();//.HasData(own2);
             }
             else
             {
@@ -276,14 +217,14 @@ namespace Webapplikasjoner_oblig.DAL
         // Navigation property to the stock that this quote is for
         virtual public Stocks? Stock { get; set; }
         public DateTime Timestamp { get; set; }
-        public double Open { get; set; }
-        public double High { get; set; }
-        public double Low { get; set; }
-        public double Price { get; set; }
+        public decimal Open { get; set; }
+        public decimal High { get; set; }
+        public decimal Low { get; set; }
+        public decimal Price { get; set; }
         public int Volume { get; set; }
         public DateTime? LatestTradingDay { get; set; }
-        public double PreviousClose { get; set; }
-        public double Change { get; set; }
+        public decimal PreviousClose { get; set; }
+        public decimal Change { get; set; }
         public string? ChangePercent { get; set; }
     }
 

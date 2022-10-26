@@ -5,6 +5,7 @@ using AlphaVantageInterface.Models;
 using EcbCurrencyInterface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
+using PeanutButter.Utils;
 using Webapplikasjoner_oblig.DAL;
 using Webapplikasjoner_oblig.Model;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -25,7 +26,7 @@ namespace Webapplikasjoner_oblig.Controllers
         private readonly string _apiKey;
 
 
-        public TradingController(ITradingRepository db,ISearchResultRepositry searchResultRepositry, IConfiguration config)
+        public TradingController(ITradingRepository db, ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
             _tradingRepo = db;
             // Adding configuration object that contains the appsettings.json content
@@ -72,7 +73,9 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Model.SearchResult> GetUserSearchResult(string keyword, int userId) 
         {
+            
             Users curUser = await _tradingRepo.GetUsersAsync(userId);
+
             List<Stocks> stockList = curUser.Favorites;
             Model.SearchResult result = await SaveSearchResult(keyword);
 
@@ -83,10 +86,6 @@ namespace Webapplikasjoner_oblig.Controllers
                     if (curStock.Symbol == favStock.Symbol)
                     {
                         curStock.IsFavorite = true;
-                    }
-                    else
-                    {
-                        curStock.IsFavorite = false;
                     }
                 }
                 
@@ -149,17 +148,17 @@ namespace Webapplikasjoner_oblig.Controllers
             var StockDetailsList = new List<StockSearchResult>();
             foreach (Stock stock in alphaObject.BestMatches)
             {
-                var stockDetails = new StockSearchResult();
-                stockDetails.StockName = stock.Name;
-                stockDetails.Symbol = stock.Symbol;
-                stockDetails.Description = stock.Type;
-                stockDetails.StockCurrency = stock.Currency;
-                stockDetails.LastUpdated = DateTime.Now;
+                StockSearchResult newStockDetail = new StockSearchResult();
+                newStockDetail.StockName = stock.Name;
+                newStockDetail.Symbol = stock.Symbol;
+                newStockDetail.Description = stock.Type;
+                newStockDetail.StockCurrency = stock.Currency;
+                newStockDetail.LastUpdated = DateTime.Now;
 
-                StockDetailsList.Add(stockDetails);
+                StockDetailsList.Add(newStockDetail);
             }
 
-            // SearchResults list properties is assigned a list holding stockDetail objects.
+            // SearchResults list properties is assigned the list holding stockDetail objects.
             modelSearchResult.StockList = StockDetailsList;
 
             // SearchResult is passed to a function in searchResultRepositry to be added to the database
@@ -230,7 +229,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 // Find the unrealized profit/loss
                 curUnrealizedPL = curStockValue - ownership.SpentValue;
                 newPortfolioStock.UnrealizedPL = String.Format("{0}{1:N} {2}", 
-                                                              (curUnrealizedPL > 0 ? "+" : ""), 
+                                                              (Math.Round(curUnrealizedPL, 2) > 0 ? "+" : ""), 
                                                                curUnrealizedPL,
                                                                userCurrency);
                 outPortfolio.Stocks.Add(newPortfolioStock);
@@ -246,7 +245,7 @@ namespace Webapplikasjoner_oblig.Controllers
             outPortfolio.BuyingPower = String.Format("{0:N} {1}", curUser.FundsAvailable, userCurrency);
             decimal unrealizedPortfolioPL = portfolioTotalValue - totalValueSpent;
             outPortfolio.UnrealizedPL = String.Format("{0}{1:N} {2}",
-                                                     (unrealizedPortfolioPL > 0 ? "+" : ""),
+                                                     (Math.Round(unrealizedPortfolioPL, 2) > 0 ? "+" : ""),
                                                       unrealizedPortfolioPL,
                                                       userCurrency);
 
@@ -332,15 +331,16 @@ namespace Webapplikasjoner_oblig.Controllers
             StockQuotes curQuote = await GetUpdatedQuote(symbol);
 
             // Get user
-            User identifiedUser = await _tradingRepo.GetUserAsync(userId);
+            Users identifiedUser = await _tradingRepo.GetUsersAsync(userId);
+
 
             // We now have a stock quote - find the total that needs to be added to the users funds
             // We need to handle currency
             decimal exchangeRate = 1;
-            if (identifiedUser.Currency != curStock.Currency)
+            if (identifiedUser.PortfolioCurrency != curStock.Currency)
             {
                 // Get the exchange rate from Ecb
-                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, identifiedUser.Currency);
+                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, identifiedUser.PortfolioCurrency);
                 // Likning
                 // n curStock_cur = exchange * n user_cur
             }
@@ -348,7 +348,7 @@ namespace Webapplikasjoner_oblig.Controllers
             decimal saldo = (decimal) curQuote.Price * count * exchangeRate;
 
             Debug.WriteLine($"\n*******\nStock Price: {curQuote.Price}\nStock Currency: {curStock.Currency}\n" +
-                              $"User currency: {identifiedUser.Currency}\nResult: {saldo}\n*******\n");
+                              $"User currency: {identifiedUser.PortfolioCurrency}\nResult: {saldo}\n*******\n");
 
             // One transaction to sell the stocks
             await _tradingRepo.SellStockTransactionAsync(userId, symbol, saldo, count);
@@ -414,14 +414,13 @@ namespace Webapplikasjoner_oblig.Controllers
         {
 
             return await _tradingRepo.GetAllTradesAsync(userId);
-
-            return await _tradingRepo.GetAllTradesAsync(userId);
         }
 
         public async Task ClearAllTradeHistory(int userId)
         {
             await _tradingRepo.ClearAllTradeHistoryAsync(userId);
         }
+        
         public async Task<User> GetUser(int userId)
         {
             return await _tradingRepo.GetUserAsync(userId);

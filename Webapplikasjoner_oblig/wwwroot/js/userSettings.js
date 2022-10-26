@@ -9,11 +9,12 @@ $(function () {
         const dialogHtml = `<h3 style="grid-area: Title">Reset the user account</h3>
                             <p style="grid-area: Text">Please note that the action of resetting your user account will remove
                             your entire wachlist, portfolio, earnings and trade history. The funds available will be set to 1 000 000 NOK</p>
-                            <button id="ConfirmReset" style="grid-area: ResetBtn" class="btnbtn-lg btn-danger">Confirm reset</button>
-                            <button id="CancelReset" style="grid-area: CancelBtn" class="btnbtn-lg btn-secondary">Cancel</button>`;
+                            <button id="ConfirmReset" style="grid-area: ResetBtn" class="btn btn-lg btn-danger">Confirm reset</button>
+                            <button id="CancelReset" style="grid-area: CancelBtn" class="btn btn-lg btn-secondary">Cancel</button>`;
 
         $("#InnerDialog").html(dialogHtml).css("grid-template-areas", `'Title Title' 'Text Text' 'ResetBtn CancelBtn'`);
-        $("#DialogContainer").removeClass("hideDialog");
+        $("#DialogContainer").removeClass("hideDialog").addClass("showDialog");
+        $("body").css("overflow", "hidden");
 
         // Disable functionality
         $("input:enabled").prop("disabled", true);
@@ -35,11 +36,13 @@ $(function () {
                 enableFunctionality();
                 $("#UserLoading").addClass("hideLoading").removeClass("displayLoading");
             });
-            $("#DialogContainer").addClass("hideDialog");
+            $("body").css("overflow", "auto");
+            $("#DialogContainer").addClass("hideDialog").removeClass("showDialog");
         });
 
         $("#CancelReset").click(function () {
-            $("#DialogContainer").addClass("hideDialog");
+            $("#DialogContainer").addClass("hideDialog").removeClass("showDialog");
+            $("body").css("overflow", "auto");
             // Enable functionality
             enableFunctionality();
         });
