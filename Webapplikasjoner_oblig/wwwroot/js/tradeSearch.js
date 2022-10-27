@@ -57,7 +57,7 @@ function addFavoriteList (curElem) {
     const url = `/trading/addToFavoriteList?userId=${userId}&symbol=${curElem.data().searchStock.symbol}`;
     $.post(url, function () {
         curElem.text("Remove from watchlist").removeClass("addFavorite btn-secondary").addClass("removeFavorite btn-warning");
-        curElem.click(function () { removeFavoriteList($(this))});
+        curElem.off().click(function () { removeFavoriteList($(this))});
     }).fail(function (resp) {
         alert(resp.responseText);
     });
@@ -67,7 +67,7 @@ function removeFavoriteList(curElem) {
     const url = `/trading/deleteFromFavoriteList?userId=${userId}&symbol=${curElem.data().searchStock.symbol}`
     $.post(url, function () {
         curElem.text("Add to watchlist").removeClass("removeFavorite btn-warning").addClass("addFavorite btn-secondary");
-        curElem.click(function () { addFavoriteList($(this))});
+        curElem.off().click(function () { addFavoriteList($(this))});
     }).fail(function (resp) {
         alert(resp.responseText);
     });

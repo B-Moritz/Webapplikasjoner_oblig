@@ -204,7 +204,9 @@ namespace Webapplikasjoner_oblig.DAL
 
             // Remove stock 
             StockOwnerships curOwnership = curUser.Portfolio.Single<StockOwnerships>(t => t.StocksId == symbol);
-
+            if (curOwnership.StockCounter < count) {
+                throw new ArgumentException("The specified amount of stocks to sell exceeds the amount of shares owned!");
+            }
             curOwnership.StockCounter -= count;
             curOwnership.SpentValue -= saldo;
 
@@ -226,7 +228,6 @@ namespace Webapplikasjoner_oblig.DAL
             };
 
             _db.Trades.Add(tradeLog);
-
             try
             {
                 await _db.SaveChangesAsync();
@@ -361,7 +362,7 @@ namespace Webapplikasjoner_oblig.DAL
             IEnumerable<SearchResults> oldResults = searchResults.Where(searchResult => (DateTime.Now - searchResult.SearchTimestamp).TotalHours >= 24);
             _db.SearchResults.RemoveRange(oldResults);
             // Remove all stocks that have no reference to a user or a search result
-            var oldStocks = await _db.Stocks.Where(curStock => (curStock.SearchResults.Count() == 0) && (curStock.FavoriteUsers.Count() == 0)).ToListAsync();
+            var oldStocks = await _db.Stocks.Where(curStock => (curStock.Owners.Count() == 0) && (curStock.SearchResults.Count() == 0) && (curStock.FavoriteUsers.Count() == 0)).ToListAsync();
             foreach (Stocks oldStock in oldStocks)
             {
                 if (oldStock.StockQuotes is not null)

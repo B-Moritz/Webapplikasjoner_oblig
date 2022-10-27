@@ -138,6 +138,7 @@ namespace Webapplikasjoner_oblig.DAL
         virtual public List<StockQuotes>? StockQuotes { get; set; }
         // List of all searchresults that this stock is part of
         virtual public List<SearchResults>? SearchResults { get; set; }
+        virtual public List<StockOwnerships> Owners { get; set; }
     }
 
     public class Users
@@ -222,7 +223,7 @@ namespace Webapplikasjoner_oblig.DAL
         public decimal Low { get; set; }
         public decimal Price { get; set; }
         public int Volume { get; set; }
-        public DateTime? LatestTradingDay { get; set; }
+        public DateTime LatestTradingDay { get; set; }
         public decimal PreviousClose { get; set; }
         public decimal Change { get; set; }
         public string? ChangePercent { get; set; }

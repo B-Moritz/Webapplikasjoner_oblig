@@ -148,10 +148,11 @@ namespace AlphaVantageInterface {
             }
 
             curStatus.CallCounter += addCounter;
-            
+
             // Change write possition:
-            curStatusStream.Seek(0, SeekOrigin.Begin);
-            
+            //curStatusStream.Seek(0, SeekOrigin.Begin);
+            curStatusStream.SetLength(0);
+
             // Write to file
             await JsonSerializer.SerializeAsync<ConnectionStatus>(curStatusStream, curStatus);
             curStatusStream.Dispose();
