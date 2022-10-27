@@ -25,6 +25,8 @@ namespace Webapplikasjoner_oblig.Controllers
 
         private readonly string _apiKey;
 
+        private readonly int _alphaVantageDailyCallLimit = 122;
+
 
         public TradingController(ITradingRepository db, ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
@@ -135,7 +137,7 @@ namespace Webapplikasjoner_oblig.Controllers
             var modelSearchResult = new Model.SearchResult();
 
             // Connection to alpha vantage api
-            AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+            AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnectionAsync(_apiKey, true, _alphaVantageDailyCallLimit);
 
             // Fetch stocks from api using the given name 
             var alphaObject = await AlphaV.findStockAsync(keyword);
@@ -359,7 +361,7 @@ namespace Webapplikasjoner_oblig.Controllers
         private async Task<StockQuotes> GetUpdatedQuote(string symbol)
         {
             // Create the api object
-            AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnection(_apiKey, true);
+            AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnectionAsync(_apiKey, true, _alphaVantageDailyCallLimit);
             // Check if there are stock quotes
             StockQuotes curStockQuote = _tradingRepo.GetStockQuote(symbol);
             if (curStockQuote is null)
