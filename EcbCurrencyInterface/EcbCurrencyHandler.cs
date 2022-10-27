@@ -1,3 +1,7 @@
+// Webapplikasjoner oblig 1     OsloMet     28.10.2022
+
+// This file contains code used to handle the http requests sent to the ecb currency rss feed
+
 // The currency calculator was created using the following resources:
 // https://www.codementor.io/@dewetvanthomas/tutorial-currency-converter-application-for-c-121yicb1es
 
@@ -7,9 +11,17 @@ using System.Globalization;
 
 namespace EcbCurrencyInterface;
 
+/***
+ * This class contains the code used to handle the http connections with the ecb rss feed
+ */
 public class EcbCurrencyHandler
 {
+    // The rss base uri used for the http requests
     private static string rssUri = "https://www.ecb.europa.eu/rss/fxref-";
+    
+    /***
+     * This method provides the f
+     * */
     public async static Task<decimal> getExchangeRateAsync(string baseCurr, string targetCurr)
     {
         // n base = exhangeRate * n target
