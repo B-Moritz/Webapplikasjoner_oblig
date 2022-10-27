@@ -7,7 +7,7 @@ namespace Webapplikasjoner_oblig.DAL
     public interface ITradingRepository
     {
         Task<List<Trade>> GetAllTradesAsync(int userId);
-        Task<Stocks> GetStockAsync(string symbol);
+        Task<Stocks>? GetStockAsync(string symbol);
         StockQuotes GetStockQuote(string symbol);
 
         Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count);
@@ -27,6 +27,8 @@ namespace Webapplikasjoner_oblig.DAL
         Task UpdateUserAsync(User curUser);
 
         Task ClearAllTradeHistoryAsync(int userId);
+
+        Task CleanTradingSchemaAsync();
 
     }
 

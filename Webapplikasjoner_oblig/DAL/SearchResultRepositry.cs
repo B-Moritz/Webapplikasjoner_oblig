@@ -84,7 +84,6 @@ namespace Webapplikasjoner_oblig.DAL
             SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
             var stockDList = new List<StockSearchResult>();
 
-
             if (searchResult is null)
             {
                 return null;
@@ -122,20 +121,41 @@ namespace Webapplikasjoner_oblig.DAL
        /**
        * This method saves SearchResult object by mapping to SearchResults table
        */
-       public async Task<bool> SaveSearchResultAsync(SearchResult result)
+       public async Task SaveSearchResultAsync(SearchResult result)
         {
-            
+            // Converting StockSearchResult to Stocks objects if it does not already exist in the database
             var stocksList = new List<Stocks>();
 
             foreach (var stock in result.StockList)
             {
-                var newStock = new Stocks();
-                newStock.StockName = stock.StockName;
-                newStock.Symbol = stock.Symbol;
-                newStock.LastUpdated = stock.LastUpdated;
-                newStock.Description = stock.Description;
-                newStock.Currency = stock.StockCurrency;
-                stocksList.Add(newStock);
+                // Find the first stock in the database that has the same stock symbol
+                Stocks? curDbStock = await _db.Stocks.FindAsync(stock.Symbol);
+
+                if (curDbStock is null)
+                {
+                    curDbStock = new Stocks();
+                    curDbStock.StockName = stock.StockName;
+                    curDbStock.Symbol = stock.Symbol;
+                    curDbStock.LastUpdated = stock.LastUpdated;
+                    curDbStock.Description = stock.Description;
+                    curDbStock.Currency = stock.StockCurrency;
+                } 
+                else if ((DateTime.Now - curDbStock.LastUpdated).TotalHours >= 24) 
+                {
+                    if (curDbStock.StockQuotes is not null) {
+                        _db.StockQuotes.RemoveRange(curDbStock.StockQuotes);
+                    }
+                    _db.Stocks.Remove(curDbStock);
+
+                    // If the existing stock is old, add the new stocck object
+                    curDbStock = new Stocks();
+                    curDbStock.StockName = stock.StockName;
+                    curDbStock.Symbol = stock.Symbol;
+                    curDbStock.LastUpdated = stock.LastUpdated;
+                    curDbStock.Description = stock.Description;
+                    curDbStock.Currency = stock.StockCurrency;
+                }
+                stocksList.Add(curDbStock);
             }
 
             var dbSearchResult = new SearchResults();
@@ -145,9 +165,6 @@ namespace Webapplikasjoner_oblig.DAL
 
             await _db.SearchResults.AddAsync(dbSearchResult);
             await _db.SaveChangesAsync();
-
-
-            return true;
         }
 
     /**

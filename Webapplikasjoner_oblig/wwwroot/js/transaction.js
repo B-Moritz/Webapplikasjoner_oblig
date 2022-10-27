@@ -33,10 +33,10 @@ function formatTransaction(data) {
         const transactionListHeader = `
                 <tr>
                     <th>Symbol</th >
-                    <th>Amount</th>
-                    <th>UserBuying</th>
-                    <th>Price(NOK)</th>               
-                    <th>Date</th>
+                    <th>Quantity</th>
+                    <th>Transaction type</th>
+                    <th>Saldo</th>               
+                    <th>Timestamp</th>
 
                 </tr>`;
         transactionTableElement.append(transactionListHeader);
@@ -45,8 +45,8 @@ function formatTransaction(data) {
             let transactionListRow = `<tr class="PortfolioRow">
                     <td>${transaction.stockSymbol}</td>
                     <td>${transaction.stockCount}</td>
-                    <td>${transaction.userBuying}</td>
-                    <td>${transaction.price}</td>
+                    <td>${transaction.transactionType}</td>
+                    <td>${transaction.saldo}</td>
                     <td>${dateTimeFormat(transaction.date)}</td>
                 </tr>`
             transactionTableElement.append(transactionListRow)
