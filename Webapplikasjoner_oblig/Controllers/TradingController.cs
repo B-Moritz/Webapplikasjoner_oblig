@@ -46,7 +46,7 @@ namespace Webapplikasjoner_oblig.Controllers
          */
         public async Task<Model.SearchResult> FindStock(string keyword) 
         {
-            Model.SearchResult? searchResult = await _searchResultRepositry.GetOneKeywordAsync(keyword);
+            Model.SearchResult? searchResult = await _searchResultRepositry.GetOneKeywordAsync(keyword.ToUpper());
 
             if(searchResult is null)
             {
