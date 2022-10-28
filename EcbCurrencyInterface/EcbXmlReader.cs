@@ -2,7 +2,7 @@
 
 // This file contains code used to handle the http requests sent to the ecb currency rss feed
 
-// The xml reader was created with the following resources:
+// The xml reader was created with inspiration from the following resources:
 // https://learn.microsoft.com/en-us/troubleshoot/developer/visualstudio/csharp/language-compilers/read-xml-data-from-url
 // https://www.codementor.io/@dewetvanthomas/tutorial-currency-converter-application-for-c-121yicb1es
 
