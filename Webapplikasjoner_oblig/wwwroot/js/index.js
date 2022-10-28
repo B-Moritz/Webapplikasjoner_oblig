@@ -241,6 +241,8 @@ function createDialog(innerHtml, template, confirmCallback) {
         reenableFavoriteWidget(true);
         $("body").css("overflow", "auto");
     });
+    // Ensure that the confirm button is active as default
+    $("#Confirm").off().click(confirmCallback);
 
     // Add change event handler to the input element for amount of shares
     $("#StockCounterInput").change(function () {

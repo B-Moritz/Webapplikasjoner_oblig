@@ -239,20 +239,12 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
         public async Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count) {
-            StockOwnerships currentOwnership;
-            try
-            {
-                currentOwnership = _db.StockOwnerships.Single<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
-            }
-            catch (InvalidOperationException ex)
-            {
-                Debug.WriteLine(ex);
-                currentOwnership = null;
-            }
+            // Try to find an existing stock ownership matching the user and specified stock.
+            StockOwnerships? currentOwnership = await _db.StockOwnerships.FirstOrDefaultAsync<StockOwnerships>(o => o.StocksId == curStock.Symbol && o.UsersId == curUser.UsersId);
             
             if (currentOwnership is null)
             {
-                // The user has no existing ownership. Create new ownership
+                // The user has no existing ownership. Create a new ownership
                 StockOwnerships newOwnership = new StockOwnerships
                 {
                     StocksId = curStock.Symbol,
@@ -269,11 +261,13 @@ namespace Webapplikasjoner_oblig.DAL
                 currentOwnership.StockCounter += count;
             }
 
+            // Get the user object from db
             Users dbUser = _db.Users.Single(u => u.UsersId == curUser.UsersId);
+            // Modify the FundsAvailable and FundsSpent properties of the user
             dbUser.FundsAvailable -= saldo;
             dbUser.FundsSpent += saldo;
 
-            // Add a trade object
+            // Add a trade object to log the transaction
             Trades newBuyTradeLog = new Trades
             {
                 StockCount = count,
@@ -284,17 +278,10 @@ namespace Webapplikasjoner_oblig.DAL
                 Stock = curStock,
                 User = dbUser
             };
+            // Add the trade list of the user
             dbUser.Trades.Add(newBuyTradeLog);
-
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex) 
-            { 
-                Debug.WriteLine(ex);
-            }
-            
+            // Execute the transaction
+            await _db.SaveChangesAsync();
         }
 
         public async Task<List<Trade>> GetAllTradesAsync(int userId)
