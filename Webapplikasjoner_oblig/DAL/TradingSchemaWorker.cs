@@ -40,7 +40,17 @@ public class TradingSchemaWorker : IHostedService, IDisposable
         int start = DateTime.Now.Millisecond;
         using (var scope = _service.CreateScope()) {
             ITradingRepository curTradingRepo = scope.ServiceProvider.GetRequiredService<ITradingRepository>();
-            await curTradingRepo.CleanTradingSchemaAsync();
+            try
+            {
+                // Try to clean the database
+                await curTradingRepo.CleanTradingSchemaAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log that the CLean operation failed.
+                Debug.WriteLine(ex.Message);
+            }
+            
         }
         
         int stop = DateTime.Now.Millisecond;
