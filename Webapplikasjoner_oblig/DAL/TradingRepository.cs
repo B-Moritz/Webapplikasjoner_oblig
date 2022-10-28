@@ -182,7 +182,7 @@ namespace Webapplikasjoner_oblig.DAL
             decimal exchangeRate = 1;
             if (oldUser.PortfolioCurrency != curUser.Currency)
             {
-                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(oldUser.PortfolioCurrency, curUser.Currency);
+                exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(oldUser.PortfolioCurrency, curUser.Currency);
             }
             oldUser.FundsAvailable = oldUser.FundsAvailable * exchangeRate;
             oldUser.FundsSpent = oldUser.FundsSpent * exchangeRate;

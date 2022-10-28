@@ -206,6 +206,8 @@ namespace AlphaVantageInterface {
                 }
 
                 // The received data is restructured into the StockQuote object 
+                // Note how the string are parsed to decimal with CultureInfo.InvaiantCulture. The "." separator is interpreted as decimal separator.
+                // The "," separator as thousend separator: "123,456,123.1234" -> 123456123.1234 
                 // Documentation used: https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonelement?view=net-6.0
                 StockQuote newRefinedQuote = new StockQuote {
                     Symbol = quoteTemp.GlobalQuote?["01. symbol"].GetString(),

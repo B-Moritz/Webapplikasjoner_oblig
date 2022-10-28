@@ -9,15 +9,23 @@
 using System.Xml;
 
 namespace EcbCurrencyInterface;
+
+/***
+ * This class contains the code used to obtain data from an endpoint that responds with xml data
+ * Usage:
+ *  Build the object with BuildEcbXmlReaderAsync(rssUri). This will also execute the http request and create an XmlTextReader.
+ *  The method then returns an instance of the EcbXmlReader.
+ *  The client code then runs the GetNodeValues() method to traverse the xml and find the wanted values.
+ */
 public class EcbXmlReader
 {
-    private readonly string rssUri;
+    private readonly string _rssUri;
     // The xml reader object used to read the xml response
     private XmlTextReader? reader;
     public EcbXmlReader(string rssUri)
     {
-
-        this.rssUri = rssUri;
+        // Set the uri used to make the http request
+        this._rssUri = rssUri;
     }
 
     /***
@@ -39,7 +47,7 @@ public class EcbXmlReader
     public void GetCurrencyData()
     {
         // Makes the http request and createss the XmlTextReader.
-        this.reader = new XmlTextReader(this.rssUri);
+        this.reader = new XmlTextReader(this._rssUri);
     }
 
     /***
@@ -87,12 +95,16 @@ public class EcbXmlReader
         {
             while(reader.Read())
             {
+                // While the reader stream still has a node
                 if (reader.NodeType == XmlNodeType.Element && node == reader.Name)
                 {
+                    // If the name of the current node in the reader matches the targetnode
+                    // Move to the next node which should contain the target value
                     reader.Read();
-                    // If the reader value is the target, add it to the result aray.
+                    // Add the value to the result array
                     results[i] = reader.Value;
                     i++;
+                    // Break the while loop in order to work on the next targetnode.
                     break;
                 }
             }

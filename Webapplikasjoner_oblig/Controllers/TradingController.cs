@@ -4,11 +4,8 @@ using AlphaVantageInterface;
 using AlphaVantageInterface.Models;
 using EcbCurrencyInterface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using PeanutButter.Utils;
 using Webapplikasjoner_oblig.DAL;
 using Webapplikasjoner_oblig.Model;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
@@ -211,7 +208,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 // Check the currency
                 if (userCurrency != curStock.Currency)
                 {
-                    exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, userCurrency);
+                    exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(curStock.Currency, userCurrency);
                 }
                 // Add the estimated price obtained from the quote
                 curStockPrice = exchangeRate * (decimal) curQuote.Price;
@@ -299,7 +296,7 @@ namespace Webapplikasjoner_oblig.Controllers
             decimal exchangeRate = 1;
             if (curUser.PortfolioCurrency != curStock.Currency)
             {
-                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, curUser.PortfolioCurrency);
+                exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(curStock.Currency, curUser.PortfolioCurrency);
             }
             decimal saldo = exchangeRate * (decimal)curQuote.Price * count;
 
@@ -341,7 +338,7 @@ namespace Webapplikasjoner_oblig.Controllers
             if (identifiedUser.PortfolioCurrency != curStock.Currency)
             {
                 // Get the exchange rate from Ecb
-                exchangeRate = await EcbCurrencyHandler.getExchangeRateAsync(curStock.Currency, identifiedUser.PortfolioCurrency);
+                exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(curStock.Currency, identifiedUser.PortfolioCurrency);
                 // Likning
                 // n curStock_cur = exchange * n user_cur
             }
