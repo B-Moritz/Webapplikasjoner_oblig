@@ -99,7 +99,11 @@ namespace Webapplikasjoner_oblig.DAL
 
         
         public async Task<FavoriteList> GetFavoriteList(int userId)
-        { 
+        {
+            // this metode will obtain favorites for the user that muches userId
+            // create an empty stockbase
+            // adds a new stockbase
+
             try
             {
                 Users enUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
