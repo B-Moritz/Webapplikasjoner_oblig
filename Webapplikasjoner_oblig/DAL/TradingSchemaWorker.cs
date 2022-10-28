@@ -47,7 +47,7 @@ public class TradingSchemaWorker : IHostedService, IDisposable
             }
             catch (Exception ex)
             {
-                // Log that the CLean operation failed.
+                // Log that the Clean operation failed.
                 Debug.WriteLine(ex.Message);
             }
             
