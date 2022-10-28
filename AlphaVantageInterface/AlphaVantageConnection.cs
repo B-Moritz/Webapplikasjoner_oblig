@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AlphaVantageInterface.Models;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace AlphaVantageInterface {
 
@@ -208,14 +209,14 @@ namespace AlphaVantageInterface {
                 // Documentation used: https://docs.microsoft.com/en-us/dotnet/api/system.text.json.jsonelement?view=net-6.0
                 StockQuote newRefinedQuote = new StockQuote {
                     Symbol = quoteTemp.GlobalQuote?["01. symbol"].GetString(),
-                    Open = decimal.Parse(quoteTemp.GlobalQuote?["02. open"].GetString().Replace(".", ",")),
-                    High = decimal.Parse(quoteTemp.GlobalQuote?["03. high"].GetString().Replace(".", ",")),
-                    Low = decimal.Parse(quoteTemp.GlobalQuote?["04. low"].GetString().Replace(".", ",")),
-                    Price = decimal.Parse(quoteTemp.GlobalQuote?["05. price"].GetString().Replace(".", ",")),
+                    Open = decimal.Parse(quoteTemp.GlobalQuote?["02. open"].GetString(), CultureInfo.InvariantCulture),
+                    High = decimal.Parse(quoteTemp.GlobalQuote?["03. high"].GetString(), CultureInfo.InvariantCulture),
+                    Low = decimal.Parse(quoteTemp.GlobalQuote?["04. low"].GetString(), CultureInfo.InvariantCulture),
+                    Price = decimal.Parse(quoteTemp.GlobalQuote?["05. price"].GetString(), CultureInfo.InvariantCulture),
                     Volume = int.Parse(quoteTemp.GlobalQuote?["06. volume"].GetString()),
                     LatestTradingDay = quoteTemp.GlobalQuote?["07. latest trading day"].GetString(),
-                    PreviousClose = decimal.Parse(quoteTemp.GlobalQuote?["08. previous close"].GetString().Replace(".", ",")),
-                    Change = decimal.Parse(quoteTemp.GlobalQuote?["09. change"].GetString().Replace(".", ",")),
+                    PreviousClose = decimal.Parse(quoteTemp.GlobalQuote?["08. previous close"].GetString(), CultureInfo.InvariantCulture),
+                    Change = decimal.Parse(quoteTemp.GlobalQuote?["09. change"].GetString(), CultureInfo.InvariantCulture),
                     ChangePercent = quoteTemp.GlobalQuote?["10. change percent"].GetString()
                 };
                 return newRefinedQuote;
