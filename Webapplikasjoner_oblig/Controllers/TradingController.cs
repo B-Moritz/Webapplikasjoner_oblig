@@ -277,7 +277,6 @@ namespace Webapplikasjoner_oblig.Controllers
 
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
-
             // Test endpoint: localhost:1635/trading/buyStock?userId=1&symbol=MSFT&count=5
             // Validate count input value
             if (count < 1) {
