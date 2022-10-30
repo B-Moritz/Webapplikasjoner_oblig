@@ -80,7 +80,7 @@ namespace AlphaVantageInterface {
             // Create an object of the AlphaVantageConnection class
             AlphaVantageConnection newConnection = new AlphaVantageConnection(apiKey, isLimited, CallLimitDaily);
             // Load the temporary stored data for the api connection and verify that calls can be made
-            await newConnection.verifyStatusCacheAsync();
+            await newConnection.VerifyStatusCacheAsync();
             // Returns the connection object
             return newConnection;
         }
@@ -93,14 +93,14 @@ namespace AlphaVantageInterface {
         *   (string) keyword: the keyword used to search for stocks
         * Return: A SearchResult object
         */
-        public async Task<SearchResult> findStockAsync(string keyword)
+        public async Task<SearchResult> FindStockAsync(string keyword)
         {
             // The request uri is constructed
             string function = "SYMBOL_SEARCH";
             string searchUri = $"{_baseUri}function={function}&keywords={keyword}&apikey={_apiKey}";
 
             // Verifing that the api key can be used
-            await verifyStatusCacheAsync();
+            await VerifyStatusCacheAsync();
             // Making the http request
             var response = await _cli.GetAsync(searchUri, HttpCompletionOption.ResponseHeadersRead);
             // Ensure that HttpRequestException is thrown if the request was not successfull (status code is not in range 200-299).
@@ -108,7 +108,7 @@ namespace AlphaVantageInterface {
             // Creates a StreamReader for the response body
             var respStream = response.Content.ReadAsStreamAsync();
             // Adding to the call counter in the status cache
-            await addCallCounterAsync();
+            await AddCallCounterAsync();
 
             // Extract the response as a string
             string msg = "";
@@ -154,13 +154,13 @@ namespace AlphaVantageInterface {
         *   (string) symbol: The symbol of the stock which the probram sohould obtian the quote for.
         * Return: A new StockQuote object is returned, matching the stock symbol provided as argument.
         */
-        public async Task<StockQuote> getStockQuoteAsync(string symbol) {
+        public async Task<StockQuote> GetStockQuoteAsync(string symbol) {
             // Definition of the request uri used to reach teh Quote endpoint
             string function = "GLOBAL_QUOTE";
             string requestUri = $"{this._baseUri}function={function}&symbol={symbol}&apikey={this._apiKey}";
 
             // Verifing that the api key can be used
-            await verifyStatusCacheAsync();
+            await VerifyStatusCacheAsync();
             // Making the http request
             var response = await _cli.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
             // Ensure that HttpRequestException is thrown if the request was not successfull.
@@ -168,7 +168,7 @@ namespace AlphaVantageInterface {
             // Creates a StreamReader for the response body
             var respStream = response.Content.ReadAsStreamAsync();
             // Adding to the call counter in the status cache
-            await addCallCounterAsync();
+            await AddCallCounterAsync();
            
             // Extract the response as a string
             string msg = "";
@@ -233,14 +233,14 @@ namespace AlphaVantageInterface {
         *   (Stock) stock: The Stock object that the stock quote should be added to.
         * Return: Reference to the uppdated Stock object
         */
-        public async Task getStockQuoteAsync(Stock stock) {
+        public async Task GetStockQuoteAsync(Stock stock) {
             if (stock.Symbol is null) {
                 // Verify that a stock symbol was provided-
                 // If the stock object has no symbol, no api call can be made.
                 throw new NullReferenceException("Stock symbol is null.");
             }
             // Get the stock quote
-            StockQuote curQuote = await getStockQuoteAsync(stock.Symbol);
+            StockQuote curQuote = await GetStockQuoteAsync(stock.Symbol);
             // reference the StockQuote object in the Stock object
             stock.StockQuoteObject = curQuote;
         }
@@ -248,12 +248,12 @@ namespace AlphaVantageInterface {
         /***
         * This method reads the Status Cache file and checks is the call limit per day is within the specified limit
         */
-        private async Task verifyStatusCacheAsync()
+        private async Task VerifyStatusCacheAsync()
         {
             // Get the current status from file
-            ConnectionStatus curStatus = await readStatusFileAsync();
+            ConnectionStatus curStatus = await ReadStatusFileAsync();
             // Make sure that call counter is from today
-            cleanStatusCache(curStatus);
+            CleanStatusCache(curStatus);
 
             if (this.IsLimited && curStatus.CallCounter >= CallLimitDaily) {
                 // If the api key is limited and the call counter is higher than the specified limit,
@@ -269,9 +269,9 @@ namespace AlphaVantageInterface {
         /***
         *  This method ensures that the call counter in the status cache is incremented by 1
         */
-        private async Task addCallCounterAsync()
+        private async Task AddCallCounterAsync()
         {
-            await updateStatusCacheAsync(1);
+            await UpdateStatusCacheAsync(1);
         }
 
         /***
@@ -281,7 +281,7 @@ namespace AlphaVantageInterface {
         *   (int) addCounter: The amount of calls that the call counter should be incremented by
         * Return: A Task object, ensures that exceptions are passed to the caller from the asynchronous method
         */
-        private async Task updateStatusCacheAsync(int addCounter = 0) {
+        private async Task UpdateStatusCacheAsync(int addCounter = 0) {
             // Create the FileStream object
             FileStream curStatusStream = File.Open(_connectionStatusCache, System.IO.FileMode.OpenOrCreate);
             // Read the cached status from file
@@ -298,7 +298,7 @@ namespace AlphaVantageInterface {
             }     
             else {
                 // Ensure that the callcounter is reset if the last timestamp was yesterday (local time).
-                cleanStatusCache(curStatus);               
+                CleanStatusCache(curStatus);               
 
                 if (this.IsLimited && curStatus.CallCounter >= CallLimitDaily) {
                     // Close file with no writing if the call counter exceeds the specified limit
@@ -326,7 +326,7 @@ namespace AlphaVantageInterface {
         * Parameters: 
         *   (ConnectionStatus) curStatus: The status that shoul be verified and changed
         */
-        private void cleanStatusCache(ConnectionStatus curStatus)
+        private void CleanStatusCache(ConnectionStatus curStatus)
         {
             if (DateTime.Today.Date == curStatus.LastCallTime.AddDays(1).Date) 
                 {
@@ -341,7 +341,7 @@ namespace AlphaVantageInterface {
         * The method creates a new ConnectionStatusCache file if it does not exist and adds a new ConnectionStatus
         * object if the file is empty.
         */
-        private async Task<ConnectionStatus> readStatusFileAsync() 
+        private async Task<ConnectionStatus> ReadStatusFileAsync() 
         {
             ConnectionStatus? latestStatus;
             Stream statusFileStream;

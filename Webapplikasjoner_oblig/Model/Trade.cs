@@ -1,5 +1,9 @@
 ﻿namespace Webapplikasjoner_oblig.Model
 {
+    /***
+     * The Trade class models an object containing information about a buy or sell trade.
+     * Objects of this type is returned by the GetAllTrades endpoint.
+     */
     public class Trade
     {
         public int Id { get; set; }

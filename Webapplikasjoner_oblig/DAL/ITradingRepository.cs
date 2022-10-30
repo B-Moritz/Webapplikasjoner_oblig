@@ -7,8 +7,8 @@ namespace Webapplikasjoner_oblig.DAL
     public interface ITradingRepository
     {
         Task<List<Trade>> GetAllTradesAsync(int userId);
-        Task<Stocks>? GetStockAsync(string symbol);
-        StockQuotes GetStockQuote(string symbol);
+        Task<Stocks?> GetStockAsync(string symbol);
+        Task<StockQuotes?> GetStockQuoteAsync(string symbol);
 
         Task SellStockTransactionAsync(int userId, string symbol, decimal saldo, int count);
         Task BuyStockTransactionAsync(Users curUser, Stocks curStock, decimal saldo, int count);
@@ -20,7 +20,7 @@ namespace Webapplikasjoner_oblig.DAL
         Task AddToFavoriteListAsync(int userId, string symbol);
         Task DeleteFromFavoriteListAsync(int userId, string symbol);
 
-        Task<Users> GetUsersAsync(int userId);
+        Task<Users?> GetUsersAsync(int userId);
 
         Task<User> ResetPortfolio(int userId);
 

@@ -1,4 +1,9 @@
 ﻿
+// Webapplikasjoner oblig 1     OsloMet     30.10.2022
+
+// This file contains code defining the main controller for the webapplication.
+// It contains all the REST endpoints used to trade stocks (buying, selling and searching for stocks) 
+
 using System.Diagnostics;
 using AlphaVantageInterface;
 using AlphaVantageInterface.Models;
@@ -9,32 +14,34 @@ using Webapplikasjoner_oblig.Model;
 
 namespace Webapplikasjoner_oblig.Controllers
 {
+
     [Route("[controller]/[action]")]
     public class TradingController : ControllerBase
     {
+        // The number of hours that a stock quote can be cached
         private readonly int _quoteCacheTime = 24;
-
+        // Reference to TradingRepository used to access the database
         private readonly ITradingRepository _tradingRepo;
-
+        // Object containing the configuration data defined in appsettings.json
         private readonly IConfiguration _config;
-
+        // The searchResult repository used to access the database
         private readonly ISearchResultRepositry _searchResultRepositry;
-
+        // The api key used for the AlphaVantageInterface
         private readonly string _apiKey;
-
+        // The allowed number Alpha Vantage API calls per day
         private readonly int _alphaVantageDailyCallLimit = 122;
 
 
         public TradingController(ITradingRepository db, ISearchResultRepositry searchResultRepositry, IConfiguration config)
         {
+            // Accessing databse for operations related to trading stocks
             _tradingRepo = db;
+            // Accessing search results in the database
+            _searchResultRepositry = searchResultRepositry;
             // Adding configuration object that contains the appsettings.json content
             _config = config;
-            // We can now access the AlphaVantage api key:
+            // The AlphaVantage API key can now be accessed:
             _apiKey = _config["AlphaVantageApi:ApiKey"];
-            // Accessing search results 
-            _searchResultRepositry = searchResultRepositry;
-
         }
 
         /**
@@ -58,32 +65,55 @@ namespace Webapplikasjoner_oblig.Controllers
             return searchResult;
         }
 
+        /***
+         * This method creates and returns a list containing all search results that are cached in the database.
+         * It returns null if there are no search results in the database.
+         */
         public async Task<List<Model.SearchResult>> GetAllFromDB()
         {
+            // Collecting all search result objects stored in the database
             var list = _searchResultRepositry.GetAllKeywordsAsync();
-
-            if(list is null)
-            {
-                return null;
-            }
-
             return await list;
         }
 
+        /**
+         * This method executes the search operation used to find stocks with a given keyword.
+         * It is used as the endpoint for stock search on the client side. The endpoint returns a SearchResult 
+         * object containing a list of StockSearchResult objects containg the IsFavorite flag, which indicates 
+         * if the stock is in the watchlist of the user with the specified userId
+         * Parameters: 
+         *      (string) keyword: The search keyword used to match the availabel stocks.
+         *      (int) userId: The userId of a user, used to identify if a stock is in the watchlist or not.
+         * Return: The method returns a SearchResult object
+         */
         public async Task<Model.SearchResult> GetUserSearchResult(string keyword, int userId) 
         {
-            
+            // Checking that the keyword is not an empty string
+            if (keyword == "")
+            {
+                // Return an empty SearchResult object
+                return new Model.SearchResult();
+            }
+            // Obtaining the Users object (entity)             
             Users curUser = await _tradingRepo.GetUsersAsync(userId);
-
-            List<Stocks> stockList = curUser.Favorites;
+            if (curUser is null)
+            {
+                throw new ArgumentException("The specified user was not recognized");
+            }
+            // Obtaining the watchlist of the user, adding an empty list if the favorites property is null
+            List<Stocks> favoriteStockList = (curUser.Favorites is null ? new List<Stocks>() : curUser.Favorites);
+            // Executing the search and making sure that the search result is stored in the database
             Model.SearchResult result = await SaveSearchResult(keyword);
 
+            // Going through the stocks in the search results
             foreach (StockSearchResult curStock in result.StockList)
             {
-                foreach (Stocks favStock in stockList)
+                // For each search result stock, check if it is in the watchlist
+                foreach (Stocks favStock in favoriteStockList)
                 {
                     if (curStock.Symbol == favStock.Symbol)
                     {
+                        // Setting the IsFavorite flag on the stock if it is in the watchlist
                         curStock.IsFavorite = true;
                     }
                 }
@@ -122,23 +152,28 @@ namespace Webapplikasjoner_oblig.Controllers
             double timeSinceLastUpdate = (DateTime.Now - res.SearchTime).TotalHours;
             if (timeSinceLastUpdate >= _quoteCacheTime)
             {
+                // If the search result is older than the QuoteCacheTime, delete the search resutl and create a new one.
                 _searchResultRepositry.DeleteSearchResult(keyword);
                 return await createNewSearchResult(keyword);
             }
             return res;
         }
 
+        /**
+         * This method is used to obtain a new search result from the AlphaVantage api and save it in the database.
+         * The method checks that the search result does not already exist or is too young before makeing the Alpha Vantage request.
+         * Parameters:
+         *      (string) keyword: The keyword used for the search
+         * Return: The resulting SearchResult object consisting of a list of StockSearchResult objects.
+         */ 
         private async Task<Model.SearchResult> createNewSearchResult(string keyword)
         {
             // Search result object from Model 
             var modelSearchResult = new Model.SearchResult();
-
             // Connection to alpha vantage api
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnectionAsync(_apiKey, true, _alphaVantageDailyCallLimit);
-
             // Fetch stocks from api using the given name 
-            var alphaObject = await AlphaV.findStockAsync(keyword);
-
+            var alphaObject = await AlphaV.FindStockAsync(keyword);
             // Initiate a new searchResult object
             modelSearchResult.SearchKeyword = keyword;
             modelSearchResult.SearchTime = DateTime.Now;
@@ -150,7 +185,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 StockSearchResult newStockDetail = new StockSearchResult();
                 newStockDetail.StockName = stock.Name;
                 newStockDetail.Symbol = stock.Symbol;
-                newStockDetail.Description = stock.Type;
+                newStockDetail.Type = stock.Type;
                 newStockDetail.StockCurrency = stock.Currency;
                 newStockDetail.LastUpdated = DateTime.Now;
 
@@ -166,40 +201,95 @@ namespace Webapplikasjoner_oblig.Controllers
             return modelSearchResult;
         }
 
+        /**
+         * This method formats the monetary value given as input to this method to a string value rounded to two decimals.
+         * Furthermore, the currency code is added at the end:
+         *      Example: 123 341,50 NOK
+         * Parameters:
+         *      (decimal) monetaryValue: The value used in the monetary representation
+         *      (string) currency: The currency code that should be added to the end
+         * Return: The resulting formated string presenting the monetary value is returned
+         */
+        private string FormatMonetaryValue(decimal monetaryValue, string currency)
+        {
+            return String.Format("{0:N} {1}", monetaryValue, currency);
+        }
+
+        /**
+         * This method formats the monetary value given as input to this method with a "+" sign if it is 
+         * positive. Furthermore, the value is rounded to two decimals and the currency code is added at the end:
+         *      Example: + 123 341,50 NOK
+         * Parameters:
+         *      (decimal) monetaryValue: The value used in the monetary representation
+         *      (string) currency: The currency code that should be added to the end
+         * Return: The resulting formated string presenting the monetary value is returned
+         */
+        private string FormatSignedMonetaryValue(decimal monetaryValue, string currency)
+        {
+            return String.Format("{0}{1:N} {2}",
+                                (Math.Round(monetaryValue, 2) > 0 ? "+" : ""),
+                                 monetaryValue,
+                                 currency);
+        }
+
+        /**
+         * This method defines the endpoint used to obtain a users position at the moment that the request is 
+         * executed. A Portfolio object is returned containing data about the users investment (e.g unrealized 
+         * profit/loss per stock and in total). All monetary values are in the currency specified on the user.
+         * Parameters: 
+         *      (int) userId: The user that the portfolio object should describe.
+         * Return: The method returns a Portfolio object containing data about the portfolio of the user specified 
+         * as an argument to this method.
+         */
         public async Task<Portfolio> GetPortfolio(int userId)
         {
-            // Obtain the user from the database
+            // Obtaining the user entity from the database
             Users curUser = await _tradingRepo.GetUsersAsync(userId);
-
-            // Create the Portfolio object that the endpoint should return
+            // Definition and initialization of the Portfolio object that should be returned
             Portfolio outPortfolio = new Portfolio();
-            outPortfolio.Stocks = new List<PortfolioStock>();
+            // Definition and initialization of an empty StockPortfolio list used to contain the found portfolio stocks later
+            outPortfolio.Stocks = new List<StockPortfolio>();
 
-            // Defining variables
+            // Definition of help variables
             StockQuotes curQuote;
             Stocks curStock;
+            StockPortfolio newPortfolioStock;
+
+            // Variable for the collective value of the portfolio (all stocks)
             decimal portfolioTotalValue = 0;
+            // The total value that the user has invested at the moment
             decimal totalValueSpent = 0;
+
             decimal exchangeRate = 1;
             decimal curStockValue = 0;
             decimal curStockPrice = 0;
-            PortfolioStock newPortfolioStock;
+            // The currency that all monetary values should have
             string userCurrency = curUser.PortfolioCurrency;
             decimal curUnrealizedPL = 0;
+            // List containing the estimated value of the shares of a stock owned by a user
+            // Used to find the relative value of each stock compared to each other in the portfolio
             List<decimal> totalStockValueList = new List<decimal>();
 
             foreach (StockOwnerships ownership in curUser.Portfolio)
             {
-                newPortfolioStock = new PortfolioStock();
+                // Foreach Stocks entity that the user owns,
+                // convert it to a StockPortfolio object and add to the total values
+
+                // Initializing a new instance of the StockPortfolio object
+                newPortfolioStock = new StockPortfolio();
+                // Obtaining the latest quote for the current stock
                 curQuote = await GetUpdatedQuote(ownership.StocksId);
+                // Getting the stocks entity from the database
                 curStock = ownership.Stock;
+
+                // Adding property values to the new PortfolioStock instance
 
                 // Add the symbol
                 newPortfolioStock.Symbol = curStock.Symbol;
                 // Add stock name
                 newPortfolioStock.StockName = curStock.StockName;
-                // Add description
-                newPortfolioStock.Description = curStock.Description;
+                // Add the type (e.g equity)
+                newPortfolioStock.Type = curStock.Type;
                 // Add stock currency
                 newPortfolioStock.StockCurrency = curStock.Currency;
                 // Add the qunatity to the out object
@@ -208,114 +298,164 @@ namespace Webapplikasjoner_oblig.Controllers
                 // Check the currency
                 if (userCurrency != curStock.Currency)
                 {
+                    // If the user currency is different the stock currency, get the exchange rate from ECB
                     exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(curStock.Currency, userCurrency);
                 }
-                // Add the estimated price obtained from the quote
+                // Calculating the estimated price obtained from the quote
                 curStockPrice = exchangeRate * (decimal) curQuote.Price;
-                newPortfolioStock.EstPrice = String.Format("{0:N} {1}", curStockPrice, userCurrency);
+                // Adding a formated version of the estimated price to the PortfolioStock
+                newPortfolioStock.EstPrice = FormatMonetaryValue(curStockPrice, userCurrency);
 
-                // Calculate the estimated market value of the shares owned by the user
+                // Calculating the estimated market value of the shares owned by the user
                 curStockValue = (decimal) curQuote.Price * ownership.StockCounter * exchangeRate;
-                newPortfolioStock.EstTotalMarketValue = String.Format("{0:N} {1}", curStockValue, userCurrency);
-                // Add the estimated stock value to the total portfolio value
+                // Setting the Estimated total market value of the owned shares
+                newPortfolioStock.EstTotalMarketValue = FormatMonetaryValue(curStockValue, userCurrency);
+                // Adding the estimated stock value to the total portfolio value
                 portfolioTotalValue += curStockValue;
+                // Adding the value to the list of stock values
                 totalStockValueList.Add(curStockValue);
 
-                // Set the total cost
-                newPortfolioStock.TotalCost = String.Format("{0:N} {1}", ownership.SpentValue, userCurrency); 
+                // Setting the value for how much the user has invested in the stock
+                newPortfolioStock.TotalCost = FormatMonetaryValue(ownership.SpentValue, userCurrency);
+                // Adding to the total spent value for the entire portfolio
                 totalValueSpent += ownership.SpentValue;
 
-                // Find the unrealized profit/loss
+                // Finding the unrealized profit/loss of the stock
                 curUnrealizedPL = curStockValue - ownership.SpentValue;
-                newPortfolioStock.UnrealizedPL = String.Format("{0}{1:N} {2}", 
-                                                              (Math.Round(curUnrealizedPL, 2) > 0 ? "+" : ""), 
-                                                               curUnrealizedPL,
-                                                               userCurrency);
+                newPortfolioStock.UnrealizedPL = FormatSignedMonetaryValue(curUnrealizedPL, userCurrency);
+                // Add the new PortfolioStock object to the Portfolio object
                 outPortfolio.Stocks.Add(newPortfolioStock);
             }
 
             for (int i = 0; i < totalStockValueList.Count; i++) {
-                // Finde the relative size of the stock compared to the entire portfolio
-                outPortfolio.Stocks[i].PortfolioPortion = String.Format("{0:N}%", (totalStockValueList[i] / portfolioTotalValue) * 100);
+                // Finding the relative value of each stock compared to the total portfolio value
+                outPortfolio.Stocks[i].PortfolioPortion = String.Format("{0:N}%", 
+                                                                       (totalStockValueList[i] / portfolioTotalValue) * 100);
             }
-
-            outPortfolio.EstPortfolioValue = String.Format("{0:N} {1}", portfolioTotalValue, userCurrency);
-            outPortfolio.TotalValueSpent = String.Format("{0:N} {1}",totalValueSpent, userCurrency);
-            outPortfolio.BuyingPower = String.Format("{0:N} {1}", curUser.FundsAvailable, userCurrency);
+            // Setting the portfolio properties
+            outPortfolio.EstPortfolioValue = FormatMonetaryValue(portfolioTotalValue, userCurrency);
+            outPortfolio.TotalValueSpent = FormatMonetaryValue(totalValueSpent, userCurrency);
+            outPortfolio.BuyingPower = FormatMonetaryValue(curUser.FundsAvailable, userCurrency);
+            // Finding the total unrealized profit/loss
             decimal unrealizedPortfolioPL = portfolioTotalValue - totalValueSpent;
-            outPortfolio.UnrealizedPL = String.Format("{0}{1:N} {2}",
-                                                     (Math.Round(unrealizedPortfolioPL, 2) > 0 ? "+" : ""),
-                                                      unrealizedPortfolioPL,
-                                                      userCurrency);
+            outPortfolio.UnrealizedPL = FormatSignedMonetaryValue(unrealizedPortfolioPL, userCurrency);
 
             outPortfolio.PortfolioCurrency = userCurrency;
             outPortfolio.LastUpdate = DateTime.Now;
+            // The Portfolio object is returned
             return outPortfolio;        
         }
 
+        /**
+         * This method is uesed as an endpoint for finding the watchlist/favorites of a user.
+         * The favorite list contains a list of all stocks that a user has marked as a favorite.
+         * Parameters:
+         *      (int) userId: The user that is connected to the favorite list.
+         * Return: A FavoriteList object.
+         */
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
+            // The favorite list is obtained from the repository
             return await _tradingRepo.GetFavoriteList(userId);
         }
 
+        /**
+         * This method acts as an endpoint used to remove one specific stock from the favorite list of a specific 
+         * user.
+         * Parameters:
+         *      (int) userId: The user connected to the favorite list
+         *      (string) symbol: The stock id for identifying the stock to remove from the favorite list
+         * Return: An updated FavoriteList object.
+         */
         public async Task<FavoriteList> DeleteFromFavoriteList(int userId, string symbol)
         {
+            // Removing the stock from the favorite list in the database
             await _tradingRepo.DeleteFromFavoriteListAsync(userId, symbol);
-
+            // Return the current favorite list of the user
             return await GetFavoriteList(userId);
         }
 
+        /**
+         * This method is an endpoint used to add a stock to the favorite list of a user.
+         * Parameters:
+         *      (int) userId: The user connected to the favorite list
+         *      (string) symbol: The stock id for identifying the stock to remove from the favorite list
+         * Return: An updated FavoriteList object.
+         */
         public async Task<FavoriteList> AddToFavoriteList(int userId, string symbol)
         {
+            // Adding the stock to the favorite list in the database
             await _tradingRepo.AddToFavoriteListAsync(userId, symbol);
-
+            // Returning the current favorite list of the user
             return await GetFavoriteList(userId);
         }
 
+        /**
+         * This method is the endpoint used to execute a buy operation for a specific user.  
+         * Parameters:
+         *      (int) userId: The user that is buying.
+         *      (string) symbol: The identity of the stock that should be bought.
+         *      (int) count: The amount of shares that should be bought of the specified stock.
+         * Return: An updated Portfolio object that reflects the latest buy operation for the user.
+         */
         public async Task<Portfolio> BuyStock(int userId, string symbol, int count)
         {
-            // Test endpoint: localhost:1635/trading/buyStock?userId=1&symbol=MSFT&count=5
             // Validate count input value
             if (count < 1) {
                 throw new ArgumentException("The provided count value is not valid. It must be an integer greater than 0.");
             }
-            // Get the user object
-            Users curUser = await _tradingRepo.GetUsersAsync(userId);
+            // Get the user object from database
+            Users? curUser = await _tradingRepo.GetUsersAsync(userId);
+            // Verifying that a user was found
             if (curUser is null)
             {
                 throw new ArgumentException("The provided userId did not match any user in the database!");
             }
             // Get the stock
-            Stocks curStock = await _tradingRepo.GetStockAsync(symbol);
+            Stocks? curStock = await _tradingRepo.GetStockAsync(symbol);
+            // Verify that a stock with the specified stock symbol was found
             if (curStock is null)
             {
                 throw new ArgumentException("The specified stock was not found in the database");
             }
-            // Calculate the saldo required to by the amount of stocks
+
+            // Calculating the saldo required to buy the specified amount of shares
+            // Finding the latest stock quote containing the price per share value
             StockQuotes curQuote = await GetUpdatedQuote(symbol);
+            // Finding the exchange rate
             decimal exchangeRate = 1;
             if (curUser.PortfolioCurrency != curStock.Currency)
             {
+                // If the stock currency is not equal to the user currency,
+                // get the exchange rate with the user currency as target
                 exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(curStock.Currency, curUser.PortfolioCurrency);
             }
+            // Calculating the saldo that needs to be paid
             decimal saldo = exchangeRate * (decimal)curQuote.Price * count;
 
-            // Check that the user has the funds needed to perform the transaction
+            // Checking that the user has the funds needed to perform the transaction
             if (curUser.FundsAvailable - saldo < 0)
             {
                 throw new Exception("The user has not enough funds to perform this transaction!");
             }
-
+            // Execute the buy transaction with the database
             await _tradingRepo.BuyStockTransactionAsync(curUser, curStock, saldo, count);
-
+            // Return the updated portfolio object
             return await GetPortfolio(userId);
         }
 
+        /**
+        * This method is the endpoint used to execute a sell operation for a specific user.  
+        * Parameters:
+        *      (int) userId: The user that is selling.
+        *      (string) symbol: The identity of the stock that should be sold.
+        *      (int) count: The amount of shares that should be sold of the specified stock
+        * Return: An updated Portfolio object that reflects the latest selling operation for the user.
+        */
         public async Task<Portfolio> SellStock(int userId, string symbol, int count)
         {
-            // Test http request: localhost:1633/trading/sellStock?userId=1&symbol=MSFT&count=5
             // Check if the stock exists in the database
-            Stocks curStock = await _tradingRepo.GetStockAsync(symbol);
+            Stocks? curStock = await _tradingRepo.GetStockAsync(symbol);
             if (curStock is null) 
             {
                 throw new NullReferenceException("The stock was not found in the database");
@@ -329,54 +469,53 @@ namespace Webapplikasjoner_oblig.Controllers
             StockQuotes curQuote = await GetUpdatedQuote(symbol);
 
             // Get user
-            Users identifiedUser = await _tradingRepo.GetUsersAsync(userId);
+            Users? identifiedUser = await _tradingRepo.GetUsersAsync(userId);
+            // Verifying that a user was found
+            if (identifiedUser is null)
+            {
+                throw new ArgumentException("The provided userId did not match any user in the database!");
+            }
 
-
-            // We now have a stock quote - find the total that needs to be added to the users funds
-            // We need to handle currency
+            // Finding the total that needs to be added to the users funds
             decimal exchangeRate = 1;
             if (identifiedUser.PortfolioCurrency != curStock.Currency)
             {
-                // Get the exchange rate from Ecb
+                // Get the exchange rate from Ecb if the user currency differs from the stock currency
                 exchangeRate = await EcbCurrencyHandler.GetExchangeRateAsync(curStock.Currency, identifiedUser.PortfolioCurrency);
-                // Likning
-                // n curStock_cur = exchange * n user_cur
             }
             // Calculating the total saldo with the amount of stocks and correct currency
             decimal saldo = (decimal) curQuote.Price * count * exchangeRate;
 
-            Debug.WriteLine($"\n*******\nStock Price: {curQuote.Price}\nStock Currency: {curStock.Currency}\n" +
-                              $"User currency: {identifiedUser.PortfolioCurrency}\nResult: {saldo}\n*******\n");
-
-            // One transaction to sell the stocks
+            // Execute the sell transaction against the database
             await _tradingRepo.SellStockTransactionAsync(userId, symbol, saldo, count);
-
+            // Return an updated portfolio object
             return await GetPortfolio(userId);
         }
 
+        /**
+         * This method obtains the latest StockQuote containing information about the value and the volume of the stock 
+         * provided as an argument to this method. The method tries to find the quote in the database. If it is not found or 
+         * if it has been stored for a longer time than the number of hours defined in the _quoteCacheTime, then a new quote is 
+         * retreived from the Alpha Vantage api. The new Quote is then added to the database, replacing an old quote if that 
+         * quote existed.
+         * Parameters:
+         *      (string) symbol: The stock symbol of the stock quote that should be obtained.
+         * Return: The StockQuotes object containing the 
+         */
         private async Task<StockQuotes> GetUpdatedQuote(string symbol)
         {
-            // Create the api object
+            // Create the api object used to obtain new stock quotes
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnectionAsync(_apiKey, true, _alphaVantageDailyCallLimit);
-            // Check if there are stock quotes
-            StockQuotes curStockQuote = _tradingRepo.GetStockQuote(symbol);
+            // Trying to get the latest stock object from the the database
+            StockQuotes? curStockQuote = await _tradingRepo.GetStockQuoteAsync(symbol);
             if (curStockQuote is null)
             {
-                // get a new quote from Alpha vantage api
-                try
-                {
-                    AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
-                    // Adding stock quote to db and get the StockQuotes object 
-                    StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
-                    // Set the new StockQuotes object as current quote
-                    curStockQuote = newConvertedQuote;
-                }
-                catch (NullReferenceException ex)
-                { 
-                    Debug.WriteLine(ex.Message);
-                }
-                
-
+                // Getting a new quote from Alpha vantage api if the stock quote was not found the in the database
+                AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.GetStockQuoteAsync(symbol);
+                // Adding stock quote to db and get the StockQuotes object 
+                StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
+                // Set the new StockQuotes object as current quote
+                curStockQuote = newConvertedQuote;
             }
             else
             {
@@ -388,7 +527,7 @@ namespace Webapplikasjoner_oblig.Controllers
                     // If the quote was not updated within the specified _quoteCachedTime, then a new quote is obtained from api
                     // Remove the existing stock quotes from db
                     _tradingRepo.RemoveStockQuotes(symbol);
-                    AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.getStockQuoteAsync(symbol);
+                    AlphaVantageInterface.Models.StockQuote newQuote = await AlphaV.GetStockQuoteAsync(symbol);
                     // Adding stock quote to db
                     StockQuotes newConvertedQuote = await _tradingRepo.AddStockQuoteAsync(newQuote);
                     curStockQuote = newConvertedQuote;
@@ -397,47 +536,86 @@ namespace Webapplikasjoner_oblig.Controllers
             return curStockQuote;
         }
 
+        /**
+         * This method is the endpoint used to obtain the Quote object of a stock
+         * Parameters:
+         *      (string) symbol: The stock symbol of the stock that the quote should be obtained for
+         * Return: The StockQuote object matching the provided stock symbol.
+         */
         public async Task<Model.StockQuote> GetStockQuote(string symbol) {
+            // Get the latest stock quote
             StockQuotes curQuote = await GetUpdatedQuote(symbol);
+            // Getting the stock currency
             string stockCurrency = curQuote.Stock.Currency;
+            // Creating a new StockQuote object
             Model.StockQuote newStockQuote = new Model.StockQuote {
                 Symbol = curQuote.StocksId,
                 StockName = curQuote.Stock.StockName,
                 LastUpdated = curQuote.Timestamp,
-                Open = String.Format("{0:N} {1}", curQuote.Open, stockCurrency),
-                High = String.Format("{0:N} {1}", curQuote.High, stockCurrency),
-                Low = String.Format("{0:N} {1}", curQuote.Low, stockCurrency),
-                Price = String.Format("{0:N} {1}", curQuote.Price, stockCurrency),
+                Open = FormatMonetaryValue(curQuote.Open, stockCurrency),
+                High = FormatMonetaryValue(curQuote.High, stockCurrency),
+                Low = FormatMonetaryValue(curQuote.Low, stockCurrency),
+                Price = FormatMonetaryValue(curQuote.Price, stockCurrency),
                 Volume = curQuote.Volume,
                 LatestTradingDay = curQuote.LatestTradingDay,
-                PreviousClose = String.Format("{0:N} {1}", curQuote.PreviousClose, stockCurrency),
+                PreviousClose = FormatMonetaryValue(curQuote.PreviousClose, stockCurrency),
                 Change = curQuote.Change.ToString(),
                 ChangePercent = curQuote.ChangePercent
             };
             return newStockQuote;
         }
 
+        /**
+         * This method works as an endpoint used to obtain the trade history for a given user.
+         * Parameters:
+         *      (int) userId: The user connected to the returned trade records.
+         * Return: A list containing Trade objects
+         */
         public async Task<List<Trade>> GetAllTrades(int userId)
         {
-
+            // Get all the trades related to the provided userId
             return await _tradingRepo.GetAllTradesAsync(userId);
         }
 
+        /**
+         * This method works as an endpoint for clearing the trade history of a given user.
+         * Parameters:
+         *      (int) userId: The user connected to the returned trade records.
+         */
         public async Task ClearAllTradeHistory(int userId)
         {
+            // Removing the trade records connected to the provided userId
             await _tradingRepo.ClearAllTradeHistoryAsync(userId);
         }
         
+        /**
+         * This method worsk as an endpoint used to obtain information about a given user
+         * Parameters:
+         *      (int) userId: The user to find information about
+         * Return: The User object containing information about the user
+         */
         public async Task<User> GetUser(int userId)
         {
+            // Obtaining the user from the database
             return await _tradingRepo.GetUserAsync(userId);
         }
 
+        /**
+         * This method is used as an endpoint to update the information and settings for the given user
+         * Parameter:
+         *      (int) userId: The user to apply the changes to.
+         * Return: An updated User object.
+         */
         public async Task<User> UpdateUser(User curUser) {
+            // Update the user in the database
             await _tradingRepo.UpdateUserAsync(curUser);
+            // Returning the updated user object
             return await _tradingRepo.GetUserAsync(curUser.Id);
         }
 
+        /**
+         * 
+         */
         public async Task CreateUser(int userId) {
             throw new NotImplementedException();
         }
@@ -446,6 +624,14 @@ namespace Webapplikasjoner_oblig.Controllers
             throw new NotImplementedException();
         }
 
+        /**
+         * This method is used as an endpoint to reset the profile of a given user. 
+         * This will reset the valueSpent property to 0, the BuyingPower to 1,000,000.00 NOK and the 
+         * Currency to NOK.
+         * Parameters:
+         *      (int) userId: The user that should be resetted.
+         * Return: An updated User object.
+         */
         public async Task<User> ResetProfile(int userId) {
             return await _tradingRepo.ResetPortfolio(userId);
         } 

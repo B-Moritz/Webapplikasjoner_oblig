@@ -54,7 +54,7 @@ namespace Webapplikasjoner_oblig.DAL
                         {
                             Symbol = stock.Symbol,
                             StockName = stock.StockName,
-                            Description = stock.Description,
+                            Type = stock.Type,
                             StockCurrency = stock.Currency,
                             LastUpdated = stock.LastUpdated,
                         };
@@ -137,7 +137,7 @@ namespace Webapplikasjoner_oblig.DAL
                     curDbStock.StockName = stock.StockName;
                     curDbStock.Symbol = stock.Symbol;
                     curDbStock.LastUpdated = stock.LastUpdated;
-                    curDbStock.Description = stock.Description;
+                    curDbStock.Type = stock.Type;
                     curDbStock.Currency = stock.StockCurrency;
                 } 
                 else if ((DateTime.Now - curDbStock.LastUpdated).TotalHours >= 24) 
@@ -152,7 +152,7 @@ namespace Webapplikasjoner_oblig.DAL
                     curDbStock.StockName = stock.StockName;
                     curDbStock.Symbol = stock.Symbol;
                     curDbStock.LastUpdated = stock.LastUpdated;
-                    curDbStock.Description = stock.Description;
+                    curDbStock.Type = stock.Type;
                     curDbStock.Currency = stock.StockCurrency;
                 }
                 stocksList.Add(curDbStock);

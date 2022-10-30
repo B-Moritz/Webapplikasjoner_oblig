@@ -30,7 +30,7 @@ $(function () {
                     searchStock: {
                         symbol: stock.symbol,
                         stockName: stock.stockName,
-                        description: stock.description
+                        type: stock.type
                     }
                 }
                 $("#StockResultList").append(outHtml);

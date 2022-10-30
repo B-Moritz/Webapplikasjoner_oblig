@@ -329,7 +329,7 @@ function updatePortfolioList(data) {
                     symbol: stock.symbol,
                     stockName: stock.stockName,
                     quantity: stock.quantity,
-                    description: stock.description,
+                    type: stock.type,
                     totalCost: stock.totalCost,
                     estTotalMarketValue: stock.estTotalMarketValue,
                     estPrice: stock.estPrice,
@@ -410,7 +410,7 @@ function formatFavorite(favorites) {
             favoriteTableContainer.append(`<tr id="${curId}" class="favoritesRow">
                     <td>${enfavorite.stockName}</td >
                     <td>${enfavorite.symbol}</td>
-                    <td>${enfavorite.description}</td>
+                    <td>${enfavorite.type}</td>
                     <td>${dateTimeFormat(enfavorite.lastUpdated)}</td>
                     </tr >`);
 
@@ -418,7 +418,7 @@ function formatFavorite(favorites) {
                 StockData: {
                     symbol: enfavorite.symbol,
                     stockName: enfavorite.stockName,
-                    description: enfavorite.description,
+                    type: enfavorite.type,
                     lastUpdated: enfavorite.lastUpdated
                 }
             };

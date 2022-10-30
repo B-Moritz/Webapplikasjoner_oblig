@@ -124,20 +124,20 @@ namespace Webapplikasjoner_oblig.DAL
         [Key]
         public string Symbol { get; set; }
         public string StockName { get; set; }
-        public string Description { get; set; }
+        public string Type { get; set; }
         public DateTime LastUpdated { get; set; }
 
         public string Currency { get; set; }
 
         // Navigation properties:
         // List of users that have stock in their favorite list
-        virtual public List<Users>? FavoriteUsers { get; set; }
+        virtual public List<Users> FavoriteUsers { get; set; }
         // list of Trades about this stock
-        virtual public List<Trades>? TradeOccurances { get; set; }
+        virtual public List<Trades> TradeOccurances { get; set; }
         // List of all stored stockQuotes for the stock (idealy only one record)
-        virtual public List<StockQuotes>? StockQuotes { get; set; }
+        virtual public List<StockQuotes> StockQuotes { get; set; }
         // List of all searchresults that this stock is part of
-        virtual public List<SearchResults>? SearchResults { get; set; }
+        virtual public List<SearchResults> SearchResults { get; set; }
         virtual public List<StockOwnerships> Owners { get; set; }
     }
 
@@ -145,10 +145,10 @@ namespace Webapplikasjoner_oblig.DAL
     {
         // Infered primary key because the property UsersId follows convention <Type name>Id
         public int UsersId { get; set; }
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public string? Password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
         public decimal FundsAvailable { get; set; }
         public decimal FundsSpent { get; set; }
 
@@ -156,9 +156,9 @@ namespace Webapplikasjoner_oblig.DAL
         // Navigation properties
 
         // List containing favorite stocks
-        virtual public List<Stocks>? Favorites { get; set; }
+        virtual public List<Stocks> Favorites { get; set; }
         // List containing all trades associated to the user
-        virtual public List<Trades>? Trades { get; set; }
+        virtual public List<Trades> Trades { get; set; }
 
         virtual public List<StockOwnerships> Portfolio { get; set; }
     }
@@ -179,7 +179,7 @@ namespace Webapplikasjoner_oblig.DAL
         public string Currency { get; set; }
 
         // Expllicit foreign keys
-        public string? StocksId { get; set; }
+        public string StocksId { get; set; }
         public int UsersId { get; set; }
 
         // Navigation properties
@@ -216,7 +216,7 @@ namespace Webapplikasjoner_oblig.DAL
         [Key] // Attribute sets StocksId as primary key of the table
         public string StocksId { get; set; }
         // Navigation property to the stock that this quote is for
-        virtual public Stocks? Stock { get; set; }
+        virtual public Stocks Stock { get; set; }
         public DateTime Timestamp { get; set; }
         public decimal Open { get; set; }
         public decimal High { get; set; }
@@ -226,7 +226,7 @@ namespace Webapplikasjoner_oblig.DAL
         public DateTime LatestTradingDay { get; set; }
         public decimal PreviousClose { get; set; }
         public decimal Change { get; set; }
-        public string? ChangePercent { get; set; }
+        public string ChangePercent { get; set; }
     }
 
     public class SearchResults
