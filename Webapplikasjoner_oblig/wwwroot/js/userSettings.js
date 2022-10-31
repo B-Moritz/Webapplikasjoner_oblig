@@ -1,4 +1,10 @@
-﻿const userId = 1;
+﻿/**
+ * In this js file function for veiwing and changing user details are handled.
+ **/
+
+
+
+const userId = 1;
 $(function () {
     getUser()
 
