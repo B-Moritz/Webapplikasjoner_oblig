@@ -43,17 +43,6 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
         /**
-         * This method retreives the StockQuotes object matching the stock symbol given as input to the method.
-         * Parameters:
-         *      (string) symbol: The stock symbol used to identify the requested StockQuotes object.
-         * Return: The StocksQuote object matching the given symbol
-         */
-        public async Task<StockQuotes?> GetStockQuoteAsync(string symbol)
-        {
-            return await _db.StockQuotes.FindAsync(symbol);
-        }
-
-        /**
          * This method finds the Stocks entity matching the stock symbol provided as arguement to the method
          * Parameters:
          *      (string) symbol: The stock symbol of the wanted stock
@@ -63,6 +52,20 @@ namespace Webapplikasjoner_oblig.DAL
         {
             // Getting the Stocks object from the database
             return await _db.Stocks.FindAsync(symbol);
+        }
+
+        /**
+         * This method retreives the StockQuotes object matching the stock symbol given as input to the method.
+         * Parameters:
+         *      (string) symbol: The stock symbol used to identify the requested StockQuotes object.
+         * Return: The StocksQuote object matching the given symbol
+         */
+        public async Task<StockQuotes?> GetStockQuoteAsync(string symbol)
+        {
+            // Get all the Stock quotes matching the stock symbol
+            List<StockQuotes> foundQuotes = await _db.StockQuotes.Where(s => s.StocksId == symbol).ToListAsync();
+            // Return the first Stock Quote or null if the list is empty
+            return foundQuotes.FirstOrDefault();
         }
 
         /**
@@ -76,7 +79,6 @@ namespace Webapplikasjoner_oblig.DAL
         {
             // Parse the LatestTradingDay to datetime object
             Regex LatestTradingdayPattern = new Regex("([0-9]*)-([0-9]*)-([0-9]*)");
-
             Match matches = LatestTradingdayPattern.Match(stockQuote.LatestTradingDay);
             GroupCollection gc = matches.Groups;
             // Converting the Alpha Vantage StockQuote to a StockQuotes object

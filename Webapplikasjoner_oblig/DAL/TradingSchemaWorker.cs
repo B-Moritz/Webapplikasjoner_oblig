@@ -1,3 +1,7 @@
+// Webapplikasjoner oblig 1     OsloMet     31.10.2022
+
+// This file contains code defining the worker object that should clean the database once a day.
+// It removes old resources that are not used by any user.
 
 // Resources used: https://learn.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-6.0&tabs=netcore-cli
 
@@ -10,6 +14,7 @@ namespace TradingSchemaSp;
 public class TradingSchemaWorker : IHostedService, IDisposable
 {
     private IServiceProvider _service;
+    // The timer used to scedule a task once a day
     private Timer? _timer = null;
 
     public TradingSchemaWorker(IServiceProvider service)
@@ -19,6 +24,7 @@ public class TradingSchemaWorker : IHostedService, IDisposable
 
     public Task StartAsync(CancellationToken stoppingToken)
     {
+        // calculate the amount of seconds untill midnight (local time)
         int startTime = 0;
         DateTime curTime = DateTime.Now;
         startTime += (60 - curTime.Second);
@@ -37,6 +43,7 @@ public class TradingSchemaWorker : IHostedService, IDisposable
     public async void CleanSearchResults(Object? state)
     {
         Debug.WriteLine($"TradingSchemaWorker: Executing Cleanup {DateTime.Now}");
+        // Start a timer
         int start = DateTime.Now.Millisecond;
         using (var scope = _service.CreateScope()) {
             ITradingRepository curTradingRepo = scope.ServiceProvider.GetRequiredService<ITradingRepository>();
@@ -50,9 +57,8 @@ public class TradingSchemaWorker : IHostedService, IDisposable
                 // Log that the Clean operation failed.
                 Debug.WriteLine(ex.Message);
             }
-            
         }
-        
+        // Take the end time
         int stop = DateTime.Now.Millisecond;
         Debug.WriteLine($"TradingSchemaWorker: Executed Cleanup in {(stop - start):N} milliseconds");
     }

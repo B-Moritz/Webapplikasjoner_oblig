@@ -233,19 +233,14 @@ namespace Webapplikasjoner_oblig.DAL
     {
         [Key] // Used to specify that SearchKeyword is primary key.
         // The kyword used to search with the Alpha Vantage api
-        public string? SearchKeyword { get; set; }
+        public string SearchKeyword { get; set; }
         // Timestamp for when the search executed
         public DateTime SearchTimestamp { get; set; }
 
         // Navigation properties
 
         // List of stocks in the search result
-        virtual public List<Stocks>? Stocks { get; set; }
-
-        public static implicit operator string?(SearchResults? v)
-        {
-            throw new NotImplementedException();
-        }
+        virtual public List<Stocks> Stocks { get; set; }
     }
 
 }

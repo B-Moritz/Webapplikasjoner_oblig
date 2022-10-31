@@ -19,12 +19,12 @@ namespace Webapplikasjoner_oblig.DAL
         }
 
     
-    /**
-     * A method to retreiv all serchResults from database
-     */
-    public async Task<List<SearchResult>> GetAllKeywordsAsync()
-    {   
-                //list of all search results
+        /**
+         * A method to retreiv all serchResults from database
+         */
+        public async Task<List<SearchResult>?> GetAllKeywordsAsync()
+        {   
+            //list of all search results
             List<SearchResults> keywords = await _db.SearchResults.ToListAsync();
 
             if (!(keywords is null))
@@ -66,21 +66,18 @@ namespace Webapplikasjoner_oblig.DAL
                 }
                 return result;
             }
+            return null;
+         }
 
-               return null;
-     }
 
-
-        public async Task<SearchResult>? GetOneKeywordAsync(string keyWord)
+        public async Task<SearchResult?> GetOneKeywordAsync(string keyWord)
         {
-            if (keyWord == null)
+            if (keyWord == "")
             {
-                throw new ArgumentNullException();
+                throw new ArgumentException();
             }            
 
-
-
-            // get a search result that has primary key og keyword
+            // get a search result that has primary key as keyword
             SearchResults searchResult = await _db.SearchResults.FindAsync(keyWord);
             var stockDList = new List<StockSearchResult>();
 
@@ -122,80 +119,79 @@ namespace Webapplikasjoner_oblig.DAL
        * This method saves SearchResult object by mapping to SearchResults table
        */
        public async Task SaveSearchResultAsync(SearchResult result)
-        {
-            // Converting StockSearchResult to Stocks objects if it does not already exist in the database
-            var stocksList = new List<Stocks>();
+       {
+           // Converting StockSearchResult to Stocks objects if it does not already exist in the database
+           var stocksList = new List<Stocks>();
 
-            foreach (var stock in result.StockList)
-            {
-                // Find the first stock in the database that has the same stock symbol
-                Stocks? curDbStock = await _db.Stocks.FindAsync(stock.Symbol);
+           foreach (var stock in result.StockList)
+           {
+               // Find the first stock in the database that has the same stock symbol
+               Stocks? curDbStock = await _db.Stocks.FindAsync(stock.Symbol);
 
-                if (curDbStock is null)
-                {
-                    curDbStock = new Stocks();
-                    curDbStock.StockName = stock.StockName;
-                    curDbStock.Symbol = stock.Symbol;
-                    curDbStock.LastUpdated = stock.LastUpdated;
-                    curDbStock.Type = stock.Type;
-                    curDbStock.Currency = stock.StockCurrency;
-                } 
-                else if ((DateTime.Now - curDbStock.LastUpdated).TotalHours >= 24) 
-                {
-                    if (curDbStock.StockQuotes is not null) {
-                        _db.StockQuotes.RemoveRange(curDbStock.StockQuotes);
-                    }
-                    _db.Stocks.Remove(curDbStock);
+               if (curDbStock is null)
+               {
+                   curDbStock = new Stocks();
+                   curDbStock.StockName = stock.StockName;
+                   curDbStock.Symbol = stock.Symbol;
+                   curDbStock.LastUpdated = stock.LastUpdated;
+                   curDbStock.Type = stock.Type;
+                   curDbStock.Currency = stock.StockCurrency;
+               } 
+               else if ((DateTime.Now - curDbStock.LastUpdated).TotalHours >= 24) 
+               {
+                   if (curDbStock.StockQuotes is not null) {
+                       _db.StockQuotes.RemoveRange(curDbStock.StockQuotes);
+                   }
+                   _db.Stocks.Remove(curDbStock);
+                   // If the existing stock is old, add the new stocck object
+                   curDbStock = new Stocks();
+                   curDbStock.StockName = stock.StockName;
+                   curDbStock.Symbol = stock.Symbol;
+                   curDbStock.LastUpdated = stock.LastUpdated;
+                   curDbStock.Type = stock.Type;
+                   curDbStock.Currency = stock.StockCurrency;
+               }
+               stocksList.Add(curDbStock);
+           }
 
-                    // If the existing stock is old, add the new stocck object
-                    curDbStock = new Stocks();
-                    curDbStock.StockName = stock.StockName;
-                    curDbStock.Symbol = stock.Symbol;
-                    curDbStock.LastUpdated = stock.LastUpdated;
-                    curDbStock.Type = stock.Type;
-                    curDbStock.Currency = stock.StockCurrency;
-                }
-                stocksList.Add(curDbStock);
-            }
+           var dbSearchResult = new SearchResults();
+           dbSearchResult.SearchKeyword = result.SearchKeyword;
+           dbSearchResult.SearchTimestamp = DateTime.Now;
+           dbSearchResult.Stocks = stocksList;
 
-            var dbSearchResult = new SearchResults();
-            dbSearchResult.SearchKeyword = result.SearchKeyword;
-            dbSearchResult.SearchTimestamp = DateTime.Now;
-            dbSearchResult.Stocks = stocksList;
-
-            await _db.SearchResults.AddAsync(dbSearchResult);
-            await _db.SaveChangesAsync();
-        }
+           await _db.SearchResults.AddAsync(dbSearchResult);
+           await _db.SaveChangesAsync();
+       }
 
     /**
     * This method finds matching searchResult using keyword
     */
     public async Task<bool> FindMatchAsync(string? word)
-     {
-            try
-            {
-               var match = await _db.SearchResults.FindAsync(word);
+    {
+        try
+        {
+            var match = await _db.SearchResults.FindAsync(word);
 
-                if(match != null)
-                {
-                    return true;
-                }
-                return false;
-            }
-            catch(Exception e)
+            if(match != null)
             {
-                
-                Debug.WriteLine(e.ToString());
-                return false;
-
+                return true;
             }
-        } 
+            return false;
+        }
+        catch(Exception e)
+        {    
+            Debug.WriteLine(e.ToString());
+            return false;
+
+        }
+    } 
 
     public void DeleteSearchResult(string keyword)
     {
-        // This method removes all searchResults of the specified keyword. There should only be one quote stored for each stock
+        // This method removes all searchResults of the specified keyword. There should only be one search result stored for each stock
         var remove = _db.SearchResults.Where<SearchResults>(t => t.SearchKeyword == keyword);
         _db.SearchResults.RemoveRange(remove);
+        _db.SaveChanges();
       }
 
     }

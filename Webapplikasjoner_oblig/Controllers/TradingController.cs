@@ -145,7 +145,7 @@ namespace Webapplikasjoner_oblig.Controllers
             // Alpha vantage api
             if (res is null)
             {
-                return await createNewSearchResult(keyword);
+                return await CreateNewSearchResult(keyword);
             }
 
             // If there exist a search result match then check when it was added.
@@ -154,7 +154,7 @@ namespace Webapplikasjoner_oblig.Controllers
             {
                 // If the search result is older than the QuoteCacheTime, delete the search resutl and create a new one.
                 _searchResultRepositry.DeleteSearchResult(keyword);
-                return await createNewSearchResult(keyword);
+                return await CreateNewSearchResult(keyword);
             }
             return res;
         }
@@ -166,7 +166,7 @@ namespace Webapplikasjoner_oblig.Controllers
          *      (string) keyword: The keyword used for the search
          * Return: The resulting SearchResult object consisting of a list of StockSearchResult objects.
          */ 
-        private async Task<Model.SearchResult> createNewSearchResult(string keyword)
+        private async Task<Model.SearchResult> CreateNewSearchResult(string keyword)
         {
             // Search result object from Model 
             var modelSearchResult = new Model.SearchResult();
@@ -520,9 +520,9 @@ namespace Webapplikasjoner_oblig.Controllers
             else
             {
                 // Check that the stored quote is not outdated
-                double timeSinceLastUpdate = (DateTime.Now - curStockQuote.LatestTradingDay.AddDays(1)).TotalHours;
-
-                if (timeSinceLastUpdate >= _quoteCacheTime)
+                double timeSinceLastTradeDay = (DateTime.Now - curStockQuote.LatestTradingDay.AddDays(1)).TotalHours;
+                double timeSinceLastUpdate = (DateTime.Now - curStockQuote.Timestamp).TotalHours;
+                if (timeSinceLastTradeDay >= _quoteCacheTime && timeSinceLastUpdate >= 1)
                 {
                     // If the quote was not updated within the specified _quoteCachedTime, then a new quote is obtained from api
                     // Remove the existing stock quotes from db
