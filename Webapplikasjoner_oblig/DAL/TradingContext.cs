@@ -1,4 +1,8 @@
-﻿using System.Reflection;
+﻿// Webapplikasjoner oblig 1     OsloMet     31.10.2022
+
+// This file contains code defining database model used by the application
+
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Webapplikasjoner_oblig.Model;
 using System.ComponentModel.DataAnnotations;
