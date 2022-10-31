@@ -16,7 +16,7 @@ namespace Webapplikasjoner_oblig.DAL
 
         Task<User> GetUserAsync(int userId);
         Task<StockQuotes> AddStockQuoteAsync(AlphaVantageInterface.Models.StockQuote stockQuote);
-        Task<FavoriteList> GetFavoriteList(int userId);
+        Task<FavoriteList> GetFavoriteListAsync(int userId);
         Task AddToFavoriteListAsync(int userId, string symbol);
         Task DeleteFromFavoriteListAsync(int userId, string symbol);
 

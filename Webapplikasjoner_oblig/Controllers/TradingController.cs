@@ -278,7 +278,7 @@ namespace Webapplikasjoner_oblig.Controllers
                 // Initializing a new instance of the StockPortfolio object
                 newPortfolioStock = new StockPortfolio();
                 // Obtaining the latest quote for the current stock
-                curQuote = await GetUpdatedQuote(ownership.StocksId);
+                curQuote = await GetUpdatedQuoteAsync(ownership.StocksId);
                 // Getting the stocks entity from the database
                 curStock = ownership.Stock;
 
@@ -356,7 +356,7 @@ namespace Webapplikasjoner_oblig.Controllers
         public async Task<FavoriteList> GetFavoriteList(int userId)
         {
             // The favorite list is obtained from the repository
-            return await _tradingRepo.GetFavoriteList(userId);
+            return await _tradingRepo.GetFavoriteListAsync(userId);
         }
 
         /**
@@ -421,7 +421,7 @@ namespace Webapplikasjoner_oblig.Controllers
 
             // Calculating the saldo required to buy the specified amount of shares
             // Finding the latest stock quote containing the price per share value
-            StockQuotes curQuote = await GetUpdatedQuote(symbol);
+            StockQuotes curQuote = await GetUpdatedQuoteAsync(symbol);
             // Finding the exchange rate
             decimal exchangeRate = 1;
             if (curUser.PortfolioCurrency != curStock.Currency)
@@ -466,7 +466,7 @@ namespace Webapplikasjoner_oblig.Controllers
             }
 
             // Get the updated quote for the stock
-            StockQuotes curQuote = await GetUpdatedQuote(symbol);
+            StockQuotes curQuote = await GetUpdatedQuoteAsync(symbol);
 
             // Get user
             Users? identifiedUser = await _tradingRepo.GetUsersAsync(userId);
@@ -502,7 +502,7 @@ namespace Webapplikasjoner_oblig.Controllers
          *      (string) symbol: The stock symbol of the stock quote that should be obtained.
          * Return: The StockQuotes object containing the 
          */
-        private async Task<StockQuotes> GetUpdatedQuote(string symbol)
+        private async Task<StockQuotes> GetUpdatedQuoteAsync(string symbol)
         {
             // Create the api object used to obtain new stock quotes
             AlphaVantageConnection AlphaV = await AlphaVantageConnection.BuildAlphaVantageConnectionAsync(_apiKey, true, _alphaVantageDailyCallLimit);
@@ -544,7 +544,7 @@ namespace Webapplikasjoner_oblig.Controllers
          */
         public async Task<Model.StockQuote> GetStockQuote(string symbol) {
             // Get the latest stock quote
-            StockQuotes curQuote = await GetUpdatedQuote(symbol);
+            StockQuotes curQuote = await GetUpdatedQuoteAsync(symbol);
             // Getting the stock currency
             string stockCurrency = curQuote.Stock.Currency;
             // Creating a new StockQuote object

@@ -129,7 +129,7 @@ namespace Webapplikasjoner_oblig.DAL
          *      (int) userId: The user to find the favorite list for.
          *  Return: FavoriteList object containing the favorite list of the given user
          */
-        public async Task<FavoriteList> GetFavoriteList(int userId)
+        public async Task<FavoriteList> GetFavoriteListAsync(int userId)
         {
             // Find the user in the database
             Users oneUser = await _db.Users.SingleAsync(u => u.UsersId == userId);
@@ -158,8 +158,6 @@ namespace Webapplikasjoner_oblig.DAL
                 StockList = stockFavorite
             };
             return currentFavorite;
-
-            
         }
 
         /**
