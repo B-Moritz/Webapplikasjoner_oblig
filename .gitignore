@@ -13,6 +13,7 @@ node_modules
 .vs
 ConnectionStatusCache.json
 TradingSchema.db
+Migrations/
 
 # Cusom ignores
 node_modules
